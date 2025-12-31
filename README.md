@@ -1,4 +1,4 @@
-# GSMNP 900 Miler Information
+# GSMNP 900 Miler Resources
 Resources for "completing the map" of all official hiking trails in [Great Smoky Mountains National Park](https://www.nps.gov/grsm/).
 
 # Datasets & Maps
