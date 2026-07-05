@@ -84,8 +84,22 @@ function buildGeomAndDays(itinerary, directedGeom, namedGeom, nodeCoords) {
   let cumReqMiles = 0;
   const covByDay = [], daysData = [];
 
-  function resolveCoords(u, v, trailName, edgeId, isDh) {
-    const gkey = (!isDh && edgeId != null) ? String(edgeId) : undirectedKey(u, v);
+  // A required edge is one the solver credits with map coverage somewhere in
+  // the itinerary (its single is_deadhead=false "coverage copy").  Everything
+  // else traversed is a connector (roads, optional paths).
+  const requiredEids = new Set();
+  for (const dayInfo of itinerary.days)
+    for (const arc of dayInfo.arcs)
+      if (!arc.is_deadhead && arc.edge_id != null) requiredEids.add(String(arc.edge_id));
+
+  // Traversal categories are derived from walk order, not the solver's copy
+  // bookkeeping: the solver flags whichever duplicate copy balances the Euler
+  // tour, so a required trail's *first* physical traversal can carry
+  // is_deadhead=true.  What the hiker cares about is first pass vs repeat.
+  const traversed = new Set();
+
+  function resolveCoords(u, v, trailName, edgeId) {
+    const gkey = edgeId != null ? String(edgeId) : undirectedKey(u, v);
     if (!(gkey in geomDict)) {
       const nk  = `${u}|${v}|${trailName || ''}`;
       const nkr = `${v}|${u}|${trailName || ''}`;
@@ -105,36 +119,46 @@ function buildGeomAndDays(itinerary, directedGeom, namedGeom, nodeCoords) {
 
   for (const dayInfo of itinerary.days) {
     const steps = [];
-    let dayTotalS = 0, dayReqS = 0, dayDhS = 0;
-    let dayMiles = 0, dayGain = 0, dayReqMiles = 0, dayNewReqMiles = 0;
+    let dayTotalS = 0, dayNewS = 0, dayConnS = 0, dayRepS = 0;
+    let dayMiles = 0, dayGain = 0, dayNewReqMiles = 0, dayRepMiles = 0;
 
     for (const arc of dayInfo.arcs) {
-      const { from: u, to: v, is_deadhead: isDh, edge_id: eid, trail, miles, seconds, gain } = arc;
-      const { gkey, geomFwd } = resolveCoords(u, v, isDh ? null : trail, eid, isDh);
+      const { from: u, to: v, edge_id: eid, trail, miles, seconds, gain } = arc;
+      const eidStr = eid != null ? String(eid) : null;
+      const isRequired = eidStr != null && requiredEids.has(eidStr);
+      const tkey = eidStr ?? undirectedKey(u, v);
+      const firstPass = !traversed.has(tkey);
+      traversed.add(tkey);
+      const cat = !firstPass ? 'repeat' : (isRequired ? 'new' : 'connector');
+
+      const { gkey, geomFwd } = resolveCoords(u, v, trail, eid);
       dayTotalS += seconds; dayMiles += miles; dayGain += gain;
-      const tlabel = isDh ? trail : trailLabel(trail);
+      const tlabel = isRequired ? trailLabel(trail) : trail;
       steps.push({
         key: gkey, eid, geom_fwd: geomFwd, trail: tlabel,
         from: u, to: v, miles, seconds, gain,
         popup: `<b>${tlabel}</b><br>${u} → ${v}<br>${miles.toFixed(2)} mi &nbsp; ${fmtHM(seconds)}<br>+${gain.toLocaleString()} ft`,
-        is_dh: isDh,
+        cat,
       });
-      if (isDh) {
-        dayDhS += seconds;
+      if (cat === 'repeat') {
+        dayRepS += seconds; dayRepMiles += miles;
+      } else if (cat === 'connector') {
+        dayConnS += seconds;
       } else {
-        dayReqS += seconds; dayReqMiles += miles;
-        if (eid != null && !globalSeen.has(eid)) { globalSeen.add(eid); dayNewReqMiles += miles; }
+        dayNewS += seconds; dayNewReqMiles += miles;
+        globalSeen.add(eid);
       }
     }
     cumReqMiles += dayNewReqMiles;
     covByDay.push(new Set(globalSeen));
     daysData.push({
       day: dayInfo.day, start_node: dayInfo.start_node, end_node: dayInfo.end_node,
-      total_s: dayTotalS, req_s: dayReqS, dh_s: dayDhS,
-      miles:         Math.round(dayMiles    * 100) / 100,
+      total_s: dayTotalS, new_s: dayNewS, conn_s: dayConnS, rep_s: dayRepS,
+      miles:         Math.round(dayMiles       * 100) / 100,
       gain:          Math.round(dayGain),
-      req_miles:     Math.round(dayReqMiles * 100) / 100,
-      cum_req_miles: Math.round(cumReqMiles * 100) / 100,
+      req_miles:     Math.round(dayNewReqMiles * 100) / 100,
+      rep_miles:     Math.round(dayRepMiles    * 100) / 100,
+      cum_req_miles: Math.round(cumReqMiles    * 100) / 100,
       start_coords: nodeCoords[dayInfo.start_node] || null,
       end_coords:   nodeCoords[dayInfo.end_node]   || null,
       steps,
@@ -191,8 +215,9 @@ const NODE_NAME = {};
 // Leaflet layer groups (created once, contents cleared on preset change)
 const bgGroup           = L.layerGroup();
 const covGroup          = L.layerGroup();
-const reqGroup          = L.layerGroup();
-const dhGroup           = L.layerGroup();
+const reqGroup          = L.layerGroup();   // today: first pass of required trails
+const connGroup         = L.layerGroup();   // today: first pass of connectors (roads, optional paths)
+const dhGroup           = L.layerGroup();   // today: repeats (edges already traversed)
 const arrowGroup        = L.layerGroup();
 const optGroup          = L.layerGroup();
 const intersectionGroup = L.layerGroup();
@@ -255,14 +280,18 @@ function addPoly(group, coords, opts, popup, tooltip) {
 }
 
 // ── Rendering ──────────────────────────────────────────────────────────────
-const showDH = () => document.getElementById('togDH').checked;
+const showRep  = () => document.getElementById('togDH').checked;
+const showConn = () => document.getElementById('togConn').checked;
+const CAT_COLOR = { new:'#f7882f', connector:'#2980b9', repeat:'#c0392b' };
 function nodeName(id) { return NODE_NAME[id] || id; }
 
 function buildItinerary(d) {
   const day = DAYS[d - 1];
   document.getElementById('itinerary').innerHTML = day.steps.map((s, i) => {
-    const dot   = s.is_dh ? '#c0392b' : '#f7882f';
-    const extra = s.is_dh ? ' <span style="color:#c0392b;font-size:10px">(backtrack)</span>' : '';
+    const dot   = CAT_COLOR[s.cat];
+    const extra = s.cat === 'repeat'    ? ' <span style="color:#c0392b;font-size:10px">(repeat)</span>'
+                : s.cat === 'connector' ? ' <span style="color:#2980b9;font-size:10px">(connector)</span>'
+                : '';
     return `<div class="itin-step" data-step="${i+1}" style="padding:3px 4px 3px 6px;border-radius:3px;cursor:pointer;border-left:3px solid transparent">
       <span style="color:${dot};font-weight:700">${i+1}.</span>
       <b>${s.trail}</b>${extra}<br>
@@ -295,9 +324,25 @@ function highlightItineraryStep(step) {
   }
 }
 
+function stepGroup(cat) {
+  return cat === 'repeat' ? dhGroup : cat === 'connector' ? connGroup : reqGroup;
+}
+
+function stepStyle(cat) {
+  if (cat === 'repeat')    return { color:'#c0392b', weight:5, opacity:0.9, dashArray:'6,5' };
+  if (cat === 'connector') return { color:'#2980b9', weight:5, opacity:0.9 };
+  return { color:'#f7882f', weight:5, opacity:1 };
+}
+
+function stepVisible(cat) {
+  if (cat === 'repeat')    return showRep();
+  if (cat === 'connector') return showConn();
+  return true;
+}
+
 function renderForStep(d, step) {
   const day = DAYS[d - 1];
-  [covGroup, reqGroup, dhGroup, arrowGroup].forEach(g => g.clearLayers());
+  [covGroup, reqGroup, connGroup, dhGroup, arrowGroup].forEach(g => g.clearLayers());
 
   for (const seg of BG) {
     if (!cumCov[d - 1].has(seg.eid)) continue;
@@ -310,12 +355,12 @@ function renderForStep(d, step) {
   for (let i = 0; i < count; i++) {
     const s = day.steps[i], isLast = (i === count - 1);
     let lineOpts, arrowColor;
-    if (isLast)     { lineOpts = { color:'#FFD700', weight:7, opacity:1 };                         arrowColor = '#FFD700';  }
-    else if (s.is_dh) {
-      if (!showDH()) continue;
-      lineOpts = { color:'#c0392b', weight:5, opacity:0.9, dashArray:'6,5' }; arrowColor = '#c0392b';
-    } else          { lineOpts = { color:'#f7882f', weight:5, opacity:1 };                         arrowColor = '#f7882f';  }
-    addPolyDecorated(s.is_dh ? dhGroup : reqGroup, arrowGroup, s, lineOpts, arrowColor);
+    if (isLast) { lineOpts = { color:'#FFD700', weight:7, opacity:1 }; arrowColor = '#FFD700'; }
+    else {
+      if (!stepVisible(s.cat)) continue;
+      lineOpts = stepStyle(s.cat); arrowColor = CAT_COLOR[s.cat];
+    }
+    addPolyDecorated(stepGroup(s.cat), arrowGroup, s, lineOpts, arrowColor);
   }
 }
 
@@ -324,7 +369,7 @@ function updateDay(d) {
   const day = DAYS[d - 1];
   const tot = META.total_required_miles;
 
-  [covGroup, reqGroup, dhGroup, arrowGroup].forEach(g => g.clearLayers());
+  [covGroup, reqGroup, connGroup, dhGroup, arrowGroup].forEach(g => g.clearLayers());
   if (startMarker) { startMarker.remove(); startMarker = null; }
   if (endMarker)   { endMarker.remove();   endMarker   = null; }
   if (selectedBgPoly) { selectedBgPoly.setStyle(BG_NORMAL); selectedBgPoly = null; }
@@ -335,11 +380,9 @@ function updateDay(d) {
       `<b>${seg.trail}</b><br>${seg.from} ↔ ${seg.to}<br>${seg.miles.toFixed(2)} mi &nbsp; ${fmtHM(seg.seconds)}<br>+${seg.gain.toLocaleString()} ft`,
       seg.trail);
   }
-  for (const a of day.steps.filter(s => !s.is_dh))
-    addPolyDecorated(reqGroup, arrowGroup, a, { color:'#f7882f', weight:5, opacity:1 }, '#f7882f');
-  if (showDH())
-    for (const a of day.steps.filter(s => s.is_dh))
-      addPolyDecorated(dhGroup, arrowGroup, a, { color:'#c0392b', weight:5, opacity:0.9, dashArray:'6,5' }, '#c0392b');
+  for (const a of day.steps)
+    if (stepVisible(a.cat))
+      addPolyDecorated(stepGroup(a.cat), arrowGroup, a, stepStyle(a.cat), CAT_COLOR[a.cat]);
 
   if (day.start_coords)
     startMarker = L.marker(day.start_coords, { icon:triIcon('#27ae60', true), zIndexOffset:1000 })
@@ -352,11 +395,13 @@ function updateDay(d) {
   document.getElementById('sbDay').textContent   = `Day ${d} of ${META.n_days}`;
   document.getElementById('sbRoute').textContent = `${nodeName(day.start_node)} → ${nodeName(day.end_node)}`;
   document.getElementById('sbTime').textContent  = fmtHM(day.total_s);
-  document.getElementById('sbReq').textContent   = fmtHM(day.req_s);
-  document.getElementById('sbDH').textContent    = fmtHM(day.dh_s);
+  document.getElementById('sbReq').textContent   = fmtHM(day.new_s);
+  document.getElementById('sbConn').textContent  = fmtHM(day.conn_s);
+  document.getElementById('sbDH').textContent    = fmtHM(day.rep_s);
   document.getElementById('sbMiles').textContent = day.miles.toFixed(1) + ' mi';
   document.getElementById('sbGain').textContent  = '+' + day.gain.toLocaleString() + ' ft';
   document.getElementById('sbReqMi').textContent = day.req_miles.toFixed(1) + ' mi';
+  document.getElementById('sbRepMi').textContent = day.rep_miles.toFixed(1) + ' mi';
   document.getElementById('dayLbl').textContent  = `Day ${d} / ${META.n_days}`;
   document.getElementById('daySlider').value     = d;
 
@@ -415,7 +460,7 @@ function initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, cov) {
   for (const n of allNodes) NODE_NAME[n.id] = n.name;
 
   // Clear all data layers
-  [bgGroup, covGroup, reqGroup, dhGroup, arrowGroup, optGroup,
+  [bgGroup, covGroup, reqGroup, connGroup, dhGroup, arrowGroup, optGroup,
    intersectionGroup, campingGroup, trailheadGroup].forEach(g => g.clearLayers());
   if (startMarker) { startMarker.remove(); startMarker = null; }
   if (endMarker)   { endMarker.remove();   endMarker   = null; }
@@ -563,7 +608,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ).addTo(map);
 
   // Persistent layer groups
-  [bgGroup, covGroup, reqGroup, dhGroup, arrowGroup].forEach(g => g.addTo(map));
+  [bgGroup, covGroup, connGroup, dhGroup, reqGroup, arrowGroup].forEach(g => g.addTo(map));
 
   map.on('click', () => {
     if (selectedBgPoly)  { selectedBgPoly.setStyle(BG_NORMAL);   selectedBgPoly  = null; }
@@ -647,6 +692,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Toggle controls ──────────────────────────────────────────────────────
   document.getElementById('togDH').addEventListener('change', () => updateDay(currentDay));
+  document.getElementById('togConn').addEventListener('change', () => updateDay(currentDay));
   ['togIntersections','togCamping','togTrailheads'].forEach(id =>
     document.getElementById(id).addEventListener('change', updateNodeVisibility));
   document.getElementById('togOpt').addEventListener('change', function() {

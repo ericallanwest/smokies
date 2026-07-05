@@ -57,11 +57,13 @@
   <div class="sec-title">Today</div>
   <div class="stat-grid">
     <span class="stat-lbl">Total time</span>  <span class="stat-val" id="sbTime">—</span>
-    <span class="stat-lbl">Required</span>    <span class="stat-val" id="sbReq">—</span>
-    <span class="stat-lbl">Deadhead</span>    <span class="stat-val" id="sbDH">—</span>
+    <span class="stat-lbl">New trail</span>   <span class="stat-val" id="sbReq">—</span>
+    <span class="stat-lbl">Connector</span>   <span class="stat-val" id="sbConn">—</span>
+    <span class="stat-lbl">Repeat</span>      <span class="stat-val" id="sbDH">—</span>
     <span class="stat-lbl">Miles</span>       <span class="stat-val" id="sbMiles">—</span>
     <span class="stat-lbl">Gain</span>        <span class="stat-val" id="sbGain">—</span>
-    <span class="stat-lbl">Req miles</span>   <span class="stat-val" id="sbReqMi">—</span>
+    <span class="stat-lbl">New miles</span>   <span class="stat-val" id="sbReqMi">—</span>
+    <span class="stat-lbl">Repeat miles</span><span class="stat-val" id="sbRepMi">—</span>
   </div>
   <div class="sec-title">Map Completion</div>
   <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
@@ -72,10 +74,11 @@
   <div class="badge" id="completeBadge">✓ All required trails covered!</div>
   <div class="sec-title">Legend</div>
   <div class="legend">
-    <div><span class="leg-line" style="background:#999"></span>Required — not yet covered</div>
-    <div><span class="leg-line" style="background:#333333"></span>Required — covered</div>
-    <div><span class="leg-line" style="background:#f7882f"></span>Today — required</div>
-    <div><span class="leg-line" style="background:#c0392b"></span>Today — deadhead</div>
+    <div><span class="leg-line" style="background:#999"></span>Required — not yet hiked</div>
+    <div><span class="leg-line" style="background:#333333"></span>Required — hiked</div>
+    <div><span class="leg-line" style="background:#f7882f"></span>Today — new trail</div>
+    <div><span class="leg-line" style="background:#2980b9"></span>Today — connector</div>
+    <div><span class="leg-line" style="background:#c0392b"></span>Today — repeat</div>
   </div>
   <div class="sec-title">Today's Route</div>
   <div id="itinerary" style="font-size:11px;line-height:1.7;"></div>
@@ -102,8 +105,9 @@
     <button class="btn" id="btnZoomStep">⊕ Zoom to Step</button>
   </div>
   <div class="toggle-row">
-    <label><input type="checkbox" id="togDH" checked> Backtracking</label>
-    <label><input type="checkbox" id="togOpt">        Optional trails</label>
+    <label><input type="checkbox" id="togDH" checked>   Repeats</label>
+    <label><input type="checkbox" id="togConn" checked> Connectors</label>
+    <label><input type="checkbox" id="togOpt">          Optional trails</label>
     <span style="margin:0 2px;color:#ccc">|</span>
     <label><input type="checkbox" id="togTrailheads">    Trailheads</label>
     <label><input type="checkbox" id="togCamping">       Camping</label>
