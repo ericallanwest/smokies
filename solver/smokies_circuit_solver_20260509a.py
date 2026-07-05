@@ -6,7 +6,6 @@ from collections import Counter
 
 _ap = argparse.ArgumentParser(description='GSMNP circuit solver')
 _ap.add_argument('--max-hours', type=float, default=12.0, help='Max hiking hours per day (default: 12)')
-_ap.add_argument('--min-hours', type=float, default=10.0, help='Min hiking hours per day, last day exempt (default: 10)')
 _args = _ap.parse_args()
 
 # ---------------------------------------------------------------------------
@@ -15,7 +14,9 @@ _args = _ap.parse_args()
 
 CSV_PATH = 'smokies_edge_list_20260509a.csv'
 MAX_DAY_SECONDS = int(_args.max_hours * 3600)
-MIN_DAY_SECONDS = int(_args.min_hours * 3600)
+# There is no user-facing minimum-day parameter.  The day split first finds
+# the minimum possible day count with no floor, then maximizes the shortest
+# day at that count (see split_days_balanced).
 BC_SINGLE_NIGHT_IDS = {'BC113'}  # former shelter -- 1 consecutive night cap like SH nodes
 
 # Resupply configuration
@@ -1315,42 +1316,86 @@ def day_cat_seconds(day_arcs, day_cats):
     return tot
 
 
-# Run constrained DP for closed and open circuits; greedy+detour fallback if needed
+def split_days_balanced(arc_seq):
+    """Two-phase day split with no user-facing minimum-day parameter.
+
+    Phase 1: DP with no daily floor -- since the DP minimizes day count,
+    a floor can only cost days, so this yields the true minimum count.
+    Phase 2: binary-search the largest daily floor (last day exempt) that
+    still admits a split at that count, so the shortest day is as long as
+    possible without giving up a single day of optimality.
+    Returns (days, floor_seconds), or (None, None) if no floor-0 split
+    exists (an overnight gap exceeds the daily budget; detours needed).
+    """
+    base = day_split_dp_constrained(arc_seq, overnight_set, single_night,
+                                    MAX_DAY_SECONDS, 0,
+                                    resupply_set, MAX_DAYS_BETWEEN_RESUPPLY)
+    if base is None:
+        return None, None
+    target = len(base)
+    lo, hi, best = 0, MAX_DAY_SECONDS, base
+    while hi - lo > 60:                      # 1-minute precision
+        mid = (lo + hi) // 2
+        trial = day_split_dp_constrained(arc_seq, overnight_set, single_night,
+                                         MAX_DAY_SECONDS, mid,
+                                         resupply_set, MAX_DAYS_BETWEEN_RESUPPLY)
+        if trial is not None and len(trial) == target:
+            best, lo = trial, mid
+        else:
+            hi = mid
+    return best, lo
+
+
+# Run the balanced day split for closed and open circuits; greedy+detour
+# fallback if no floor-0 split exists
 dp_results: dict[str, list | None] = {}
 for label, arc_seq in [("Closed", circuit), ("Open", open_circuit)]:
     if arc_seq is None:
         dp_results[label] = None
         continue
 
-    days   = day_split_dp_constrained(arc_seq, overnight_set, single_night,
-                                      MAX_DAY_SECONDS, MIN_DAY_SECONDS,
-                                      resupply_set, MAX_DAYS_BETWEEN_RESUPPLY)
-    method = "DP (constrained)"
+    days, floor_s = split_days_balanced(arc_seq)
+    method = "DP (min days, floor maximized)"
 
     if days is None:
-        days  = day_split_greedy_detour(arc_seq, overnight_set, single_night,
-                                        MAX_DAY_SECONDS, MIN_DAY_SECONDS,
-                                        nearest_overnight, P, G, D)
-        n_det = sum(1 for day in days for _, _, k, _ in day if k.startswith("det_"))
-        print(f"\n{label}: DP infeasible -- greedy+detour  "
-              f"({n_det} detour arcs inserted, {len(days)} days before refinement)")
+        # No detour-free split exists: some overnight gap exceeds the daily
+        # budget.  Where the greedy heuristic inserts detours depends heavily
+        # on its floor parameter, so sweep the floor internally, refine each
+        # candidate with the exact floor-0 DP, and keep the fewest-day result
+        # -- trading solve time for optimality instead of asking the user.
+        print(f"\n{label}: no detour-free DP split -- sweeping greedy detour floors")
+        best = None            # (n_days, floor_frac, augmented_seq, greedy_days)
+        for frac in (0.0, 0.3, 0.4, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 5/6, 0.85, 0.9):
+            cand = day_split_greedy_detour(arc_seq, overnight_set, single_night,
+                                           MAX_DAY_SECONDS, int(frac * MAX_DAY_SECONDS),
+                                           nearest_overnight, P, G, D)
+            if cand is None:
+                continue
+            aug     = [arc for day in cand for arc in day]
+            refined = day_split_dp_constrained(aug, overnight_set, single_night,
+                                               MAX_DAY_SECONDS, 0,
+                                               resupply_set, MAX_DAYS_BETWEEN_RESUPPLY)
+            n = len(refined) if refined is not None else len(cand)
+            n_det = sum(1 for _, _, k, _ in aug if k.startswith("det_"))
+            print(f"    floor {frac:>5.0%}: {n} days  ({n_det} detour arcs)")
+            if best is None or n < best[0]:
+                best = (n, frac, aug, cand)
 
-        # DP refinement pass on augmented arc sequence
-        augmented    = [arc for day in days for arc in day]
-        days_refined = day_split_dp_constrained(augmented, overnight_set, single_night,
-                                                MAX_DAY_SECONDS, MIN_DAY_SECONDS,
-                                                resupply_set, MAX_DAYS_BETWEEN_RESUPPLY)
-        if days_refined is not None and len(days_refined) <= len(days):
-            days   = days_refined
-            method = "greedy+detour -> DP refined"
+        n_best, frac, augmented, greedy_days = best
+        days_bal, floor_s = split_days_balanced(augmented)
+        if days_bal is not None and len(days_bal) <= len(greedy_days):
+            days   = days_bal
+            method = f"greedy+detour (floor {frac:.0%}) -> DP balanced"
         else:
-            method = "greedy+detour"
+            days, floor_s = greedy_days, None
+            method = f"greedy+detour (floor {frac:.0%})"
 
     dp_results[label] = days
     t  = sum(d['weight'] for day in days for _, _, _, d in day)
-    dh = sum(d['weight'] for day in days for _, _, _, d in day if d['is_deadhead'])
+    shortest = (min(sum(d['weight'] for *_, d in day) for day in days[:-1])
+                if len(days) > 1 else sum(d['weight'] for *_, d in days[-1]))
     print(f"  {label} [{method}]: {len(days)} days  "
-          f"({t / 3600:.1f}h total, {dh / 3600:.1f}h deadhead)")
+          f"({t / 3600:.1f}h total, shortest non-last day {fmt_hm(shortest)})")
 
 # ---------------------------------------------------------------------------
 # Step 7 -- Output & Reporting
@@ -1461,10 +1506,12 @@ for lbl in ("Closed", "Open"):
 # --- Constraint verification ---
 print()
 print("Constraint verification:")
-n_short     = sum(1 for i, t in enumerate(day_times)
-                  if t < MIN_DAY_SECONDS and i < n_days - 1)
-print(f"  Days below {MIN_DAY_SECONDS//3600}h min (excl. last): {n_short}"
-      + ("  OK" if n_short == 0 else "  VIOLATION"))
+n_over = sum(1 for t in day_times if t > MAX_DAY_SECONDS)
+print(f"  Days over {MAX_DAY_SECONDS//3600}h max: {n_over}"
+      + ("  OK" if n_over == 0 else "  VIOLATION"))
+if n_days > 1:
+    print(f"  Shortest non-last day: {fmt_hm(min(day_times[:-1]))} "
+          f"(floor maximized at the optimal day count; no user minimum)")
 
 consec_violations = 0
 last_cs, consec_ct = None, 0
@@ -1515,8 +1562,7 @@ else:
 # Write full arc-level itinerary to text file
 # ---------------------------------------------------------------------------
 _max_h = int(_args.max_hours)
-_min_h = int(_args.min_hours)
-OUT_PATH = f'smokies_itinerary_{_max_h}h_{_min_h}h.txt'
+OUT_PATH = f'smokies_itinerary_{_max_h}h.txt'
 with open(OUT_PATH, 'w', encoding='utf-8') as f:
     f.write(f"GSMNP Complete Trail Itinerary -- {itinerary_label} Circuit\n")
     f.write(f"{'=' * 70}\n")
@@ -1614,7 +1660,7 @@ for _lbl in ("Open", "Closed"):
         print(f"  {_lbl}: no valid partition — skipped")
         continue
     _export = _build_preset(_lbl, _days)
-    _fname  = f"preset_{_lbl.lower()}_{_max_h}h_{_min_h}h.json"
+    _fname  = f"preset_{_lbl.lower()}_{_max_h}h.json"
     _path   = os.path.join(_preset_dir, _fname)
     with open(_path, "w", encoding="utf-8") as _jf:
         _json.dump(_export, _jf, indent=2)

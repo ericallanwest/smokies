@@ -540,7 +540,10 @@ async function ensureBaseData() {
   ]);
 }
 
+let _loadSeq = 0;   // last-click-wins: stale loads abandon before rendering
+
 async function loadPreset(filename) {
+  const seq = ++_loadSeq;
   showLoading(true);
   const errEl = document.getElementById('presetError');
   errEl.style.display = 'none';
@@ -548,6 +551,7 @@ async function loadPreset(filename) {
     await ensureBaseData();
     const itinerary = await fetch(`data/${filename}`)
       .then(r => { if (!r.ok) throw new Error(`${filename} not found — has it been pre-computed?`); return r.json(); });
+    if (seq !== _loadSeq) return;   // superseded by a newer selection
 
     const { geom, named }               = buildDirectedGeom(_linesGJ);
     const nodeCoords                     = buildNodeCoords(_pointsGJ);
@@ -562,18 +566,18 @@ async function loadPreset(filename) {
     };
     initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, covByDay);
   } catch (err) {
+    if (seq !== _loadSeq) return;
     errEl.textContent    = err.message;
     errEl.style.display  = 'block';
   } finally {
-    showLoading(false);
+    if (seq === _loadSeq) showLoading(false);
   }
 }
 
 function currentPresetFile() {
   const max = document.querySelector('input[name="max_day"]:checked')?.value  ?? '12';
-  const min = document.querySelector('input[name="min_day"]:checked')?.value  ?? '10';
   const cir = document.querySelector('input[name="circuit"]:checked')?.value  ?? 'open';
-  return `preset_${cir}_${max}h_${min}h.json`;
+  return `preset_${cir}_${max}h.json`;
 }
 
 // ── Node layer visibility (zoom-dependent) ─────────────────────────────────
@@ -724,9 +728,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ── Left sidebar preset selectors ────────────────────────────────────────
-  document.querySelectorAll('input[name="max_day"], input[name="min_day"], input[name="circuit"]')
+  document.querySelectorAll('input[name="max_day"], input[name="circuit"]')
     .forEach(el => el.addEventListener('change', () => loadPreset(currentPresetFile())));
 
   // Load the default preset on startup
-  loadPreset('preset_open_12h_10h.json');
+  loadPreset('preset_open_12h.json');
 });

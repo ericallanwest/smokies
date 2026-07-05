@@ -1,40 +1,39 @@
 GSMNP Complete Trail Itinerary -- Open Circuit
 ======================================================================
   Total days : 41
-  Total time : 446.7h  (321.1h new trail + 8.8h connector + 116.8h repeat)
-  Total miles: 1112.4 mi
-  Elev gain  : 283,499 ft
+  Total time : 436.2h  (321.2h new trail + 8.7h connector + 106.3h repeat)
+  Total miles: 1087.8 mi
+  Elev gain  : 276,418 ft
 
   Arc tags: untagged = new trail (first pass of a required trail)
             [CN] = connector (first pass of a non-required road/path)
             [RP] = repeat (edge already traversed)
 
 ======================================================================
-DAY  1  |  TH245 -> BC040
-        11h26m total  (new 8h29m, conn 0h20m, repeat 2h36m)  29.5 mi  +6,271 ft
+DAY  1  |  TH250 -> BC041
+        9h15m total  (new 6h59m, conn 0h20m, repeat 1h55m)  24.1 mi  +5,087 ft
 ----------------------------------------------------------------------
-       A->B  TH245    -> TH250       57min   2.60mi  Flat Creek
   [CN]  --   TH250    -> TH252       20min   0.90mi  Heintooga Ridge Road
        B->A  TH252    -> TI255       68min   3.50mi  Rough Fork
-        --   TI255    -> BC041       30min   1.40mi  Caldwell Fork
-        --   BC041    -> TI260        3min   0.30mi  Caldwell Fork
+       B->A  TI255    -> BC041       30min   1.40mi  Caldwell Fork
+       B->A  BC041    -> TI260        3min   0.30mi  Caldwell Fork
        B->A  TI260    -> TI269       28min   1.40mi  Caldwell Fork
         --   TI269    -> TI278       77min   2.30mi  McKee Branch
        B->A  TI278    -> TH279      101min   4.60mi  Cataloochee Divide
   [RP]  --   TH279    -> TI278      112min   4.60mi  Cataloochee Divide
         --   TI278    -> TI271       43min   1.80mi  Cataloochee Divide
        A->B  TI271    -> TI260       66min   3.00mi  Hemphill Bald
-  [RP] A->B  TI260    -> BC041        3min   0.30mi  Caldwell Fork
-  [RP] A->B  BC041    -> TI255       41min   1.40mi  Caldwell Fork
-       B->A  TI255    -> BC040       32min   1.40mi  Rough Fork
+  [RP]  --   TI260    -> BC041        3min   0.30mi  Caldwell Fork
 
 ======================================================================
-DAY  2  |  BC040 -> SH102
-        11h52m total  (new 10h12m, conn 0h14m, repeat 1h25m)  28.7 mi  +8,675 ft
+DAY  2  |  BC041 -> BC037
+        9h49m total  (new 8h13m, conn 0h14m, repeat 1h21m)  24.0 mi  +6,381 ft
 ----------------------------------------------------------------------
+  [RP]  --   BC041    -> TI255       41min   1.40mi  Caldwell Fork
+       B->A  TI255    -> BC040       32min   1.40mi  Rough Fork
        B->A  BC040    -> TH261       26min   1.50mi  Rough Fork
   [CN]  --   TH261    -> TH263       14min   0.80mi  Cataloochee Entrance Road
-        --   TH263    -> TI262       16min   0.80mi  Pretty Hollow Gap
+       A->B  TH263    -> TI262       16min   0.80mi  Pretty Hollow Gap
        A->B  TI262    -> TI274      104min   4.10mi  Little Cataloochee
         --   TI274    -> TH276       24min   1.00mi  Little Cataloochee
   [RP] B->A  TH276    -> TI274       24min   1.00mi  Little Cataloochee
@@ -45,30 +44,31 @@ DAY  2  |  BC040 -> SH102
         --   TI259    -> TI256       30min   1.40mi  Mount Sterling Ridge
        B->A  TI256    -> TI251       85min   4.00mi  Swallow Fork
        A->B  TI251    -> BC037        3min   0.20mi  Big Creek
-       A->B  BC037    -> TI244       72min   2.50mi  Low Gap I
-       A->B  TI244    -> TI249       54min   2.10mi  Appalachian
-  [RP]  --   TI249    -> TI244       45min   2.10mi  Appalachian
-        --   TI244    -> SH102       24min   0.80mi  Appalachian
 
 ======================================================================
-DAY  3  |  SH102 -> CGCOS
-        9h40m total  (new 6h35m, conn 0h42m, repeat 2h22m)  23.8 mi  +5,447 ft
+DAY  3  |  BC037 -> CGCOS
+        9h33m total  (new 8h13m, conn 0h36m, repeat 0h43m)  22.9 mi  +6,246 ft
 ----------------------------------------------------------------------
-  [RP]  --   SH102    -> TI244       17min   0.80mi  Appalachian
-  [RP]  --   TI244    -> TI249       54min   2.10mi  Appalachian
+       A->B  BC037    -> TI244       72min   2.50mi  Low Gap I
+       A->B  TI244    -> TI249       54min   2.10mi  Appalachian
         --   TI249    -> TI253       14min   0.60mi  Mount Cammerer
   [RP] B->A  TI253    -> TI249       14min   0.60mi  Mount Cammerer
        A->B  TI249    -> TI254       50min   2.30mi  Appalachian
-       A->B  TI254    -> TI257       21min   0.90mi  Appalachian
+        --   TI254    -> TI257       21min   0.90mi  Appalachian
        B->A  TI257    -> TH266       46min   2.10mi  Chestnut Branch
   [CN]  --   TH266    -> RI268        4min   0.30mi  Big Creek Entrance Road
   [CN]  --   RI268    -> TH264       31min   1.00mi  Mount Sterling Road
        B->A  TH264    -> SH101       30min   0.90mi  Appalachian
        B->A  SH101    -> TI257       32min   1.00mi  Appalachian
-  [RP]  --   TI257    -> TI254       28min   0.90mi  Appalachian
+  [RP] B->A  TI257    -> TI254       28min   0.90mi  Appalachian
        B->A  TI254    -> BC035       90min   4.00mi  Lower Mount Cammerer
        B->A  BC035    -> TI238       71min   3.30mi  Lower Mount Cammerer
         --   TI238    -> CGCOS        8min   0.40mi  Low Gap II
+
+======================================================================
+DAY  4  |  CGCOS -> SH102
+        10h59m total  (new 9h54m, conn 0h05m, repeat 0h59m)  26.4 mi  +8,694 ft
+----------------------------------------------------------------------
   [RP] A->B  CGCOS    -> TI238       10min   0.40mi  Low Gap II
        B->A  TI238    -> TH235        2min   0.10mi  Lower Mount Cammerer
   [CN]  --   TH235    -> TH234        1min   0.00mi  Lower Mount Cammerer Connector
@@ -76,18 +76,7 @@ DAY  3  |  SH102 -> CGCOS
         --   TI237    -> TI240        5min   0.10mi  Cosby Campground
   [RP] B->A  TI240    -> TI237        4min   0.10mi  Cosby Campground
        B->A  TI237    -> TI233        8min   0.40mi  Cosby Campground
-        --   TI233    -> TH229        4min   0.30mi  Snake Den Ridge
-  [RP] A->B  TH229    -> TI233        6min   0.30mi  Snake Den Ridge
-  [RP]  --   TI233    -> TH229        4min   0.30mi  Snake Den Ridge
-  [CN]  --   TH229    -> TH230        1min   0.10mi  Cosby Campground A-B Connector
-  [CN]  --   TH230    -> CGCOS        3min   0.20mi  Cosby Campground A Section
-
-======================================================================
-DAY  4  |  CGCOS -> SH102
-        10h22m total  (new 9h01m, conn 0h04m, repeat 1h17m)  25.0 mi  +8,331 ft
-----------------------------------------------------------------------
-  [RP]  --   CGCOS    -> TH230        5min   0.20mi  Cosby Campground A Section
-  [RP]  --   TH230    -> TH229        2min   0.10mi  Cosby Campground A-B Connector
+       B->A  TI233    -> TH229        4min   0.30mi  Snake Den Ridge
   [RP]  --   TH229    -> TI233        6min   0.30mi  Snake Den Ridge
        A->B  TI233    -> TI221      133min   4.30mi  Snake Den Ridge
         --   TI221    -> BC029       32min   1.60mi  Maddron Bald
@@ -105,31 +94,29 @@ DAY  4  |  CGCOS -> SH102
        B->A  TH231    -> TI238       19min   1.00mi  Cosby Campground
        A->B  TI238    -> TI240       12min   0.40mi  Low Gap II
        A->B  TI240    -> TI244       68min   2.10mi  Low Gap II
-  [RP] B->A  TI244    -> SH102       24min   0.80mi  Appalachian
+       B->A  TI244    -> SH102       24min   0.80mi  Appalachian
 
 ======================================================================
-DAY  5  |  SH102 -> BC034
-        11h01m total  (new 7h59m, conn 0h00m, repeat 3h02m)  29.1 mi  +5,899 ft
+DAY  5  |  SH102 -> BC029
+        8h34m total  (new 7h44m, conn 0h00m, repeat 0h49m)  22.5 mi  +4,895 ft
 ----------------------------------------------------------------------
        B->A  SH102    -> TI236       36min   1.60mi  Appalachian
         --   TI236    -> TI247       83min   4.10mi  Camel Gap
        A->B  TI247    -> TI241      122min   4.10mi  Gunter Fork
-        --   TI241    -> TI242       18min   0.90mi  Balsam Mountain
-  [RP] A->B  TI242    -> TI241       17min   0.90mi  Balsam Mountain
+       B->A  TI241    -> TI242       18min   0.90mi  Balsam Mountain
+  [RP]  --   TI242    -> TI241       17min   0.90mi  Balsam Mountain
        A->B  TI241    -> SH103      107min   4.90mi  Balsam Mountain
         --   SH103    -> TI223       81min   3.70mi  Appalachian
        B->A  TI223    -> TI221       13min   0.70mi  Snake Den Ridge
   [RP] B->A  TI221    -> BC029       32min   1.60mi  Maddron Bald
+
+======================================================================
+DAY  6  |  BC029 -> BC032
+        10h08m total  (new 7h41m, conn 0h36m, repeat 1h50m)  26.8 mi  +5,239 ft
+----------------------------------------------------------------------
   [RP] B->A  BC029    -> TI218       50min   2.40mi  Maddron Bald
        B->A  TI218    -> TI217       15min   0.70mi  Albright Grove Loop
   [RP] B->A  TI217    -> TI219       34min   1.70mi  Maddron Bald
-  [RP]  --   TI219    -> BC034       47min   1.80mi  Gabes Mountain
-
-======================================================================
-DAY  6  |  BC034 -> BC032
-        9h06m total  (new 7h26m, conn 0h36m, repeat 1h03m)  23.8 mi  +5,146 ft
-----------------------------------------------------------------------
-  [RP]  --   BC034    -> TI219       37min   1.80mi  Gabes Mountain
        B->A  TI219    -> BC033      218min   9.20mi  Old Settlers
        B->A  BC033    -> TH184      149min   6.60mi  Old Settlers
   [CN]  --   TH184    -> TH194       33min   1.40mi  Ramsey Prong Road
@@ -162,8 +149,8 @@ DAY  8  |  BC032 -> BC031
   [RP]  --   TH144    -> TH143        1min   0.00mi  Roaring Fork Motor Nature Trail
        B->A  TH143    -> TH137       72min   2.70mi  Baskins Creek
         --   TH137    -> TI133       12min   0.50mi  Trillium Gap
-       B->A  TI133    -> TH134        1min   0.10mi  Rainbow Falls
-  [RP]  --   TH134    -> TI133        1min   0.10mi  Rainbow Falls
+        --   TI133    -> TH134        1min   0.10mi  Rainbow Falls
+  [RP] A->B  TH134    -> TI133        1min   0.10mi  Rainbow Falls
        A->B  TI133    -> TI149      182min   6.00mi  Rainbow Falls
         --   TI149    -> TI151       16min   0.50mi  Rainbow Falls
         --   TI151    -> TI152        2min   0.10mi  Rainbow Falls
@@ -195,7 +182,7 @@ DAY  9  |  BC031 -> SH114
 
 ======================================================================
 DAY 10  |  SH114 -> SH115
-        11h41m total  (new 7h37m, conn 0h00m, repeat 4h04m)  25.5 mi  +7,076 ft
+        9h20m total  (new 6h15m, conn 0h00m, repeat 3h04m)  20.5 mi  +5,244 ft
 ----------------------------------------------------------------------
   [RP]  --   SH114    -> TI152        2min   0.20mi  Boulevard
   [RP]  --   TI152    -> TI151        2min   0.10mi  Rainbow Falls
@@ -206,25 +193,23 @@ DAY 10  |  SH114 -> SH115
        B->A  SH114    -> TI180      128min   5.20mi  Boulevard
         --   TI180    -> TI174       21min   1.00mi  Appalachian
        B->A  TI174    -> SH115       84min   3.70mi  Sweat Heifer Creek
-        --   SH115    -> TI193       81min   2.50mi  Grassy Branch
-  [RP]  --   TI193    -> SH115       59min   2.50mi  Grassy Branch
 
 ======================================================================
 DAY 11  |  SH115 -> BC052
-        11h38m total  (new 8h18m, conn 0h11m, repeat 3h07m)  26.9 mi  +8,616 ft
+        11h38m total  (new 9h40m, conn 0h11m, repeat 1h46m)  26.9 mi  +8,616 ft
 ----------------------------------------------------------------------
-  [RP]  --   SH115    -> TI193       81min   2.50mi  Grassy Branch
+        --   SH115    -> TI193       81min   2.50mi  Grassy Branch
         --   TI193    -> TI196       68min   2.90mi  Dry Sluice Gap
         --   TI196    -> BC049       13min   0.60mi  Cabin Flats
   [RP] B->A  BC049    -> TI196       12min   0.60mi  Cabin Flats
-       B->A  TI196    -> TI197        5min   0.30mi  Cabin Flats
+        --   TI196    -> TI197        5min   0.30mi  Cabin Flats
        B->A  TI197    -> TI198       40min   2.30mi  Bradley Fork
-        --   TI198    -> BC050        9min   0.50mi  Bradley Fork
-  [RP] A->B  BC050    -> TI198       11min   0.50mi  Bradley Fork
+       B->A  TI198    -> BC050        9min   0.50mi  Bradley Fork
+  [RP]  --   BC050    -> TI198       11min   0.50mi  Bradley Fork
        A->B  TI198    -> CGSMO      101min   3.90mi  Smokemont Loop
   [CN]  --   CGSMO    -> TH199       10min   0.60mi  Smokemont Campground Road
        A->B  TH199    -> TI202        6min   0.30mi  Bradley Fork
-       B->A  TI202    -> TI206        2min   0.10mi  Tow String
+        --   TI202    -> TI206        2min   0.10mi  Tow String
        A->B  TI206    -> TH204       22min   0.80mi  Benton MacKaye Connector
   [CN]  --   TH204    -> RI203        0min   0.00mi  Benton MacKaye Connector Road
   [CN]  --   RI203    -> TH201        0min   0.10mi  Smokemont Road
@@ -244,14 +229,14 @@ DAY 12  |  BC052 -> BC052
        A->B  TI185    -> TI178       62min   2.40mi  Thomas Divide
         --   TI178    -> TH172       42min   2.10mi  Thomas Divide
        A->B  TH172    -> TI169       19min   0.90mi  Stone Pile Gap
-        --   TI169    -> TI171        5min   0.30mi  Indian Creek
-  [RP] B->A  TI171    -> TI169        5min   0.30mi  Indian Creek
+       A->B  TI169    -> TI171        5min   0.30mi  Indian Creek
+  [RP]  --   TI171    -> TI169        5min   0.30mi  Indian Creek
        B->A  TI169    -> TI163        8min   0.50mi  Indian Creek
-       B->A  TI163    -> TI162        3min   0.10mi  Deep Creek
-  [RP]  --   TI162    -> TI163        3min   0.10mi  Deep Creek
+        --   TI163    -> TI162        3min   0.10mi  Deep Creek
+  [RP] A->B  TI162    -> TI163        3min   0.10mi  Deep Creek
        A->B  TI163    -> TI160       13min   0.70mi  Deep Creek
-       A->B  TI160    -> TH158        2min   0.10mi  Deep Creek
-  [RP]  --   TH158    -> TI160        2min   0.10mi  Deep Creek
+        --   TI160    -> TH158        2min   0.10mi  Deep Creek
+  [RP] B->A  TH158    -> TI160        2min   0.10mi  Deep Creek
        B->A  TI160    -> TI156        5min   0.20mi  Juney Whank Falls
        B->A  TI156    -> TI154        2min   0.10mi  Juney Whank Falls
         --   TI154    -> TI155        3min   0.10mi  Juney Whank Falls
@@ -263,8 +248,8 @@ DAY 12  |  BC052 -> BC052
        A->B  TI179    -> BC051        3min   0.20mi  Deeplow Gap
        A->B  BC051    -> TI185       51min   1.60mi  Deeplow Gap
        B->A  TI185    -> TI189       86min   3.10mi  Thomas Divide
-       B->A  TI189    -> TI186        7min   0.40mi  Thomas Divide
-  [RP]  --   TI186    -> TI189       10min   0.40mi  Thomas Divide
+        --   TI189    -> TI186        7min   0.40mi  Thomas Divide
+  [RP] A->B  TI186    -> TI189       10min   0.40mi  Thomas Divide
        B->A  TI189    -> BC052        1min   0.10mi  Newton Bald
 
 ======================================================================
@@ -282,7 +267,7 @@ DAY 13  |  BC052 -> BC044
   [CN]  --   RI207    -> RI213       28min   1.50mi  Newfound Gap Road
   [CN]  --   RI213    -> TH212        7min   0.40mi  Tow String Road
        A->B  TH212    -> TI206       53min   2.10mi  Tow String
-  [RP]  --   TI206    -> TI202        1min   0.10mi  Tow String
+  [RP] A->B  TI206    -> TI202        1min   0.10mi  Tow String
        A->B  TI202    -> BC050       18min   0.90mi  Bradley Fork
        A->B  BC050    -> BC048       60min   2.40mi  Chasteen Creek
        A->B  BC048    -> TI216       54min   1.60mi  Chasteen Creek
@@ -308,14 +293,14 @@ DAY 14  |  BC044 -> SH105
   [RP] B->A  TI205    -> SH104        8min   0.40mi  Hughes Ridge
   [RP]  --   SH104    -> TI209       39min   1.80mi  Hughes Ridge
        B->A  TI209    -> TI197       70min   3.30mi  Bradley Fork
-  [RP]  --   TI197    -> TI196        7min   0.30mi  Cabin Flats
+  [RP] A->B  TI197    -> TI196        7min   0.30mi  Cabin Flats
   [RP] A->B  TI196    -> TI193       95min   2.90mi  Dry Sluice Gap
         --   TI193    -> TI187       30min   1.30mi  Dry Sluice Gap
         --   TI187    -> SH105       38min   1.40mi  Appalachian
 
 ======================================================================
-DAY 15  |  SH105 -> BC060
-        11h58m total  (new 8h21m, conn 0h08m, repeat 3h28m)  30.0 mi  +6,283 ft
+DAY 15  |  SH105 -> BC046
+        9h20m total  (new 6h27m, conn 0h08m, repeat 2h45m)  23.2 mi  +4,950 ft
 ----------------------------------------------------------------------
   [RP]  --   SH105    -> TI187       31min   1.40mi  Appalachian
   [RP] B->A  TI187    -> TI193       28min   1.30mi  Dry Sluice Gap
@@ -328,22 +313,18 @@ DAY 15  |  SH105 -> BC060
        A->B  TI182    -> TI186       67min   2.80mi  Thomas Divide
        B->A  TI186    -> TI173      103min   4.90mi  Sunkota Ridge
        B->A  TI173    -> BC046       34min   1.50mi  Martins Gap
-       B->A  BC046    -> TI175       13min   0.70mi  Indian Creek
-       A->B  TI175    -> TI179       10min   0.40mi  Deeplow Gap
-  [RP]  --   TI179    -> TI175        7min   0.40mi  Deeplow Gap
-       B->A  TI175    -> TI171       39min   2.20mi  Indian Creek
-       A->B  TI171    -> TI167       16min   0.50mi  Loop
-       A->B  TI167    -> TI165       15min   0.60mi  Loop
-  [RP]  --   TI165    -> TI167       20min   0.60mi  Loop
-  [RP]  --   TI167    -> TI165       15min   0.60mi  Loop
-        --   TI165    -> BC060       19min   0.80mi  Deep Creek
 
 ======================================================================
-DAY 16  |  BC060 -> BC064
-        11h20m total  (new 10h09m, conn 0h00m, repeat 1h10m)  27.7 mi  +7,576 ft
+DAY 16  |  BC046 -> BC061
+        11h20m total  (new 10h39m, conn 0h00m, repeat 0h40m)  27.5 mi  +7,768 ft
 ----------------------------------------------------------------------
-  [RP]  --   BC060    -> TI165       18min   0.80mi  Deep Creek
-  [RP]  --   TI165    -> TI167       20min   0.60mi  Loop
+       B->A  BC046    -> TI175       13min   0.70mi  Indian Creek
+        --   TI175    -> TI179       10min   0.40mi  Deeplow Gap
+  [RP] B->A  TI179    -> TI175        7min   0.40mi  Deeplow Gap
+       B->A  TI175    -> TI171       39min   2.20mi  Indian Creek
+       A->B  TI171    -> TI167       16min   0.50mi  Loop
+        --   TI167    -> TI165       15min   0.60mi  Loop
+  [RP] B->A  TI165    -> TI167       20min   0.60mi  Loop
        A->B  TI167    -> TI173      105min   3.80mi  Sunkota Ridge
        A->B  TI173    -> BC057       36min   1.50mi  Martins Gap
         --   BC057    -> BC056       10min   0.50mi  Deep Creek
@@ -351,7 +332,7 @@ DAY 16  |  BC060 -> BC064
        A->B  BC057    -> BC058       11min   0.60mi  Deep Creek
        A->B  BC058    -> BC059       10min   0.40mi  Deep Creek
        A->B  BC059    -> BC060       59min   2.50mi  Deep Creek
-  [RP] A->B  BC060    -> TI165       18min   0.80mi  Deep Creek
+       A->B  BC060    -> TI165       18min   0.80mi  Deep Creek
        A->B  TI165    -> TI162       17min   0.90mi  Deep Creek
        B->A  TI162    -> TI156       26min   1.10mi  Deep Creek Horse
        B->A  TI156    -> TI154        2min   0.10mi  Deep Creek Horse
@@ -359,14 +340,14 @@ DAY 16  |  BC060 -> BC064
        B->A  TI155    -> TH153        9min   0.40mi  Deep Creek Horse
        A->B  TH153    -> TI147      211min   7.80mi  Noland Divide
        B->A  TI147    -> BC061       25min   1.10mi  Noland Creek
+
+======================================================================
+DAY 17  |  BC061 -> BC071
+        10h09m total  (new 8h06m, conn 0h22m, repeat 1h40m)  25.8 mi  +5,477 ft
+----------------------------------------------------------------------
        B->A  BC061    -> BC062       31min   1.60mi  Noland Creek
        B->A  BC062    -> BC063       26min   1.20mi  Noland Creek
        B->A  BC063    -> BC064       25min   1.40mi  Noland Creek
-
-======================================================================
-DAY 17  |  BC064 -> BC070
-        10h13m total  (new 7h13m, conn 0h22m, repeat 2h36m)  25.2 mi  +6,092 ft
-----------------------------------------------------------------------
         --   BC064    -> TI118       80min   2.80mi  Springhouse Branch
   [RP] A->B  TI118    -> BC064       63min   2.80mi  Springhouse Branch
        B->A  BC064    -> BC065       58min   2.80mi  Noland Creek
@@ -387,14 +368,12 @@ DAY 17  |  BC064 -> BC070
        A->B  TI102    -> TI099       29min   1.20mi  Lakeshore
         --   TI099    -> TI098       40min   1.80mi  Whiteoak Branch
        B->A  TI098    -> BC071       29min   1.30mi  Forney Creek
-        --   BC071    -> BC070       30min   1.20mi  Forney Creek
-  [RP] A->B  BC070    -> BC071       26min   1.20mi  Forney Creek
-  [RP]  --   BC071    -> BC070       30min   1.20mi  Forney Creek
 
 ======================================================================
-DAY 18  |  BC070 -> BC053
-        10h14m total  (new 9h30m, conn 0h10m, repeat 0h33m)  24.8 mi  +6,893 ft
+DAY 18  |  BC071 -> BC053
+        10h44m total  (new 10h00m, conn 0h10m, repeat 0h33m)  26.0 mi  +7,277 ft
 ----------------------------------------------------------------------
+       B->A  BC071    -> BC070       30min   1.20mi  Forney Creek
   [RP]  --   BC070    -> BC071       26min   1.20mi  Forney Creek
        A->B  BC071    -> TI118      125min   4.20mi  Springhouse Branch
        B->A  TI118    -> TI129      122min   4.50mi  Forney Ridge
@@ -408,8 +387,8 @@ DAY 18  |  BC070 -> BC053
   [CN]  --   TH136    -> TH135        9min   0.50mi  Kuwohi Road
        B->A  TH135    -> TI147       76min   3.70mi  Noland Divide
        A->B  TI147    -> TI168       74min   3.30mi  Pole Road Creek
-       A->B  TI168    -> BC056        5min   0.20mi  Deep Creek
-  [RP]  --   BC056    -> TI168        6min   0.20mi  Deep Creek
+        --   TI168    -> BC056        5min   0.20mi  Deep Creek
+  [RP] B->A  BC056    -> TI168        6min   0.20mi  Deep Creek
        B->A  TI168    -> BC055        1min   0.10mi  Deep Creek
        B->A  BC055    -> BC054       18min   0.80mi  Deep Creek
        B->A  BC054    -> BC053       62min   2.70mi  Deep Creek
@@ -481,9 +460,9 @@ DAY 21  |  BC009 -> BC019
   [CN]  --   TH059    -> RI058        1min   0.20mi  Little River Gorge Road
   [CN]  --   RI058    -> TH072        2min   0.20mi  Townsend Wye
         --   TH072    -> TI078       45min   1.90mi  Little Greenbrier
-       B->A  TI078    -> TH073       28min   1.40mi  Little Brier Gap
-       B->A  TH073    -> TH069       13min   0.70mi  Metcalf Bottoms
-  [RP]  --   TH069    -> TH073       15min   0.70mi  Metcalf Bottoms
+        --   TI078    -> TH073       28min   1.40mi  Little Brier Gap
+        --   TH073    -> TH069       13min   0.70mi  Metcalf Bottoms
+  [RP] A->B  TH069    -> TH073       15min   0.70mi  Metcalf Bottoms
   [RP]  --   TH073    -> TH069       13min   0.70mi  Metcalf Bottoms
   [CN]  --   TH069    -> RI068        1min   0.10mi  Wear Cove Gap Road
   [RP]  --   RI068    -> TH070        4min   0.20mi  Little River Gorge Road
@@ -491,15 +470,15 @@ DAY 21  |  BC009 -> BC019
   [RP]  --   TI076    -> BC019        9min   0.50mi  Meigs Mountain
 
 ======================================================================
-DAY 22  |  BC019 -> BC028
-        11h09m total  (new 8h37m, conn 0h00m, repeat 2h32m)  27.4 mi  +7,462 ft
+DAY 22  |  BC019 -> BC026
+        10h12m total  (new 7h40m, conn 0h00m, repeat 2h32m)  24.6 mi  +7,321 ft
 ----------------------------------------------------------------------
   [RP]  --   BC019    -> TI076        9min   0.50mi  Meigs Mountain
   [RP]  --   TI076    -> TH070       78min   3.30mi  Curry Mountain
   [RP]  --   TH070    -> RI068        4min   0.20mi  Little River Gorge Road
   [RP]  --   RI068    -> TH069        1min   0.10mi  Wear Cove Gap Road
   [RP]  --   TH069    -> TH073       15min   0.70mi  Metcalf Bottoms
-  [RP]  --   TH073    -> TI078       34min   1.40mi  Little Brier Gap
+  [RP] A->B  TH073    -> TI078       34min   1.40mi  Little Brier Gap
         --   TI078    -> TI083       71min   2.40mi  Little Greenbrier
        B->A  TI083    -> TH092       63min   3.10mi  Laurel Falls
        A->B  TH092    -> TI100       87min   3.10mi  Sugarland Mountain
@@ -511,16 +490,16 @@ DAY 22  |  BC019 -> BC028
        A->B  TI089    -> BC027       60min   2.20mi  Jakes Creek
        A->B  BC027    -> TI085       21min   0.70mi  Jakes Creek
         --   TI085    -> BC026       47min   1.90mi  Miry Ridge
-        --   BC026    -> TI088       11min   0.60mi  Miry Ridge
-       B->A  TI088    -> BC028       45min   2.20mi  Lynn Camp Prong
 
 ======================================================================
-DAY 23  |  BC028 -> SH109
-        10h11m total  (new 6h46m, conn 0h00m, repeat 3h24m)  26.3 mi  +6,655 ft
+DAY 23  |  BC026 -> SH109
+        11h08m total  (new 7h43m, conn 0h00m, repeat 3h24m)  29.1 mi  +6,796 ft
 ----------------------------------------------------------------------
+        --   BC026    -> TI088       11min   0.60mi  Miry Ridge
+       B->A  TI088    -> BC028       45min   2.20mi  Lynn Camp Prong
        B->A  BC028    -> TI077       27min   1.50mi  Lynn Camp Prong
-       A->B  TI077    -> TI075      109min   4.20mi  Greenbrier Ridge
-  [RP]  --   TI075    -> TI077       87min   4.20mi  Greenbrier Ridge
+        --   TI077    -> TI075      109min   4.20mi  Greenbrier Ridge
+  [RP] B->A  TI075    -> TI077       87min   4.20mi  Greenbrier Ridge
        B->A  TI077    -> TI074       31min   1.80mi  Middle Prong
         --   TI074    -> TH063       43min   2.30mi  Middle Prong
   [RP] A->B  TH063    -> TI074       57min   2.30mi  Middle Prong
@@ -579,7 +558,7 @@ DAY 25  |  BC018 -> BC021
 
 ======================================================================
 DAY 26  |  BC021 -> BC024
-        11h39m total  (new 3h59m, conn 0h21m, repeat 7h18m)  31.6 mi  +6,503 ft
+        10h28m total  (new 3h18m, conn 0h21m, repeat 6h48m)  28.0 mi  +5,965 ft
 ----------------------------------------------------------------------
   [RP]  --   BC021    -> TI100       48min   1.70mi  Huskey Gap
   [RP]  --   TI100    -> TH115       44min   2.00mi  Huskey Gap
@@ -595,19 +574,19 @@ DAY 26  |  BC021 -> BC024
        B->A  TH132    -> TI131        0min   0.00mi  Old Sugarlands
   [RP] B->A  TI131    -> TI127        8min   0.40mi  Old Sugarlands
        B->A  TI127    -> TI215       45min   2.30mi  Old Sugarlands
-  [RP]  --   TI215    -> TH111       23min   1.20mi  Old Sugarlands
-  [RP] A->B  TH111    -> TI215       26min   1.20mi  Old Sugarlands
+  [RP] B->A  TI215    -> TH111       23min   1.20mi  Old Sugarlands
+  [RP]  --   TH111    -> TI215       26min   1.20mi  Old Sugarlands
   [RP]  --   TI215    -> TH115       23min   1.30mi  Quiet Walkway Connector
   [RP] A->B  TH115    -> TI100       60min   2.00mi  Huskey Gap
        A->B  TI100    -> TI120      105min   4.10mi  Sugarland Mountain
   [RP] B->A  TI120    -> BC024       57min   2.80mi  Rough Creek
-        --   BC024    -> BC030       40min   1.80mi  Little River
-  [RP] B->A  BC030    -> BC024       30min   1.80mi  Little River
 
 ======================================================================
-DAY 27  |  BC024 -> BC082
-        11h52m total  (new 11h20m, conn 0h00m, repeat 0h31m)  30.4 mi  +7,526 ft
+DAY 27  |  BC024 -> BC070
+        8h41m total  (new 7h39m, conn 0h00m, repeat 1h02m)  22.8 mi  +5,152 ft
 ----------------------------------------------------------------------
+        --   BC024    -> BC030       40min   1.80mi  Little River
+  [RP] B->A  BC030    -> BC024       30min   1.80mi  Little River
   [RP] B->A  BC024    -> TI108       13min   0.80mi  Little River
        A->B  TI108    -> BC023       73min   3.30mi  Goshen Prong
        A->B  BC023    -> TI112      129min   4.40mi  Goshen Prong
@@ -617,26 +596,31 @@ DAY 27  |  BC024 -> BC082
        A->B  TI129    -> BC068       48min   2.40mi  Forney Creek
        A->B  BC068    -> BC069       77min   3.60mi  Forney Creek
        A->B  BC069    -> BC070       25min   1.40mi  Forney Creek
+
+======================================================================
+DAY 28  |  BC070 -> BC083
+        10h45m total  (new 8h24m, conn 0h00m, repeat 2h20m)  27.2 mi  +6,716 ft
+----------------------------------------------------------------------
        A->B  BC070    -> TI094      117min   4.10mi  Jonas Creek
         --   TI094    -> TI095       18min   0.70mi  Welch Ridge
        B->A  TI095    -> BC082      125min   6.40mi  Hazel Creek
-
-======================================================================
-DAY 28  |  BC082 -> BC091
-        10h57m total  (new 8h21m, conn 0h00m, repeat 2h36m)  28.5 mi  +5,710 ft
-----------------------------------------------------------------------
        B->A  BC082    -> TI065       39min   1.70mi  Hazel Creek
         --   TI065    -> TI079      100min   3.50mi  Cold Spring Gap
-       B->A  TI079    -> TI081       21min   0.60mi  Welch Ridge
+        --   TI079    -> TI081       21min   0.60mi  Welch Ridge
         --   TI081    -> TI080       10min   0.30mi  High Rocks
   [RP] B->A  TI080    -> TI081        7min   0.30mi  High Rocks
        B->A  TI081    -> TI082        5min   0.30mi  Welch Ridge
   [RP]  --   TI082    -> TI081        6min   0.30mi  Welch Ridge
-  [RP]  --   TI081    -> TI079       15min   0.60mi  Welch Ridge
+  [RP] A->B  TI081    -> TI079       15min   0.60mi  Welch Ridge
   [RP] B->A  TI079    -> TI065       75min   3.50mi  Cold Spring Gap
        B->A  TI065    -> BC083       25min   1.30mi  Hazel Creek
         --   BC083    -> TI062       39min   1.80mi  Bone Valley
   [RP] B->A  TI062    -> BC083       35min   1.80mi  Bone Valley
+
+======================================================================
+DAY 29  |  BC083 -> BC095
+        11h40m total  (new 11h12m, conn 0h00m, repeat 0h28m)  29.8 mi  +6,746 ft
+----------------------------------------------------------------------
        B->A  BC083    -> BC084       15min   0.80mi  Hazel Creek
         --   BC084    -> BC085       27min   1.50mi  Hazel Creek
         --   BC085    -> TI052       55min   3.00mi  Hazel Creek
@@ -649,11 +633,6 @@ DAY 28  |  BC082 -> BC091
         --   TI032    -> BC090       10min   0.50mi  Lakeshore
         --   BC090    -> TI030        8min   0.30mi  Lakeshore
        A->B  TI030    -> BC091       19min   0.60mi  Lost Cove
-
-======================================================================
-DAY 29  |  BC091 -> BC012
-        10h48m total  (new 10h35m, conn 0h00m, repeat 0h13m)  25.8 mi  +7,808 ft
-----------------------------------------------------------------------
        A->B  BC091    -> TI024       72min   2.10mi  Lost Cove
        A->B  TI024    -> BC113       22min   0.90mi  Appalachian
        A->B  BC113    -> TI022       59min   2.20mi  Appalachian
@@ -666,16 +645,16 @@ DAY 29  |  BC091 -> BC012
   [RP]  --   TH010    -> TI011       13min   0.50mi  Twentymile
        A->B  TI011    -> TI012       28min   1.10mi  Wolf Ridge
         --   TI012    -> BC095       21min   0.90mi  Wolf Ridge
+
+======================================================================
+DAY 30  |  BC095 -> SH110
+        11h19m total  (new 6h58m, conn 0h00m, repeat 4h20m)  27.0 mi  +8,892 ft
+----------------------------------------------------------------------
         --   BC095    -> BC013      127min   4.30mi  Wolf Ridge
        A->B  BC013    -> TI013       28min   1.20mi  Gregory Bald
        B->A  TI013    -> BC012       65min   3.00mi  Gregory Ridge
-
-======================================================================
-DAY 30  |  BC012 -> BC090
-        10h52m total  (new 6h21m, conn 0h00m, repeat 4h31m)  27.8 mi  +6,421 ft
-----------------------------------------------------------------------
-       B->A  BC012    -> TH016       41min   2.00mi  Gregory Ridge
-  [RP]  --   TH016    -> BC012       51min   2.00mi  Gregory Ridge
+        --   BC012    -> TH016       41min   2.00mi  Gregory Ridge
+  [RP] A->B  TH016    -> BC012       51min   2.00mi  Gregory Ridge
   [RP]  --   BC012    -> TI013       91min   3.00mi  Gregory Ridge
        A->B  TI013    -> TI014        1min   0.10mi  Gregory Bald
   [RP]  --   TI014    -> TI022       49min   2.00mi  Gregory Bald
@@ -683,16 +662,16 @@ DAY 30  |  BC012 -> BC090
        A->B  SH112    -> SH111       73min   3.10mi  Appalachian
   [RP]  --   SH111    -> TI045       68min   2.90mi  Appalachian
        B->A  TI045    -> SH110        3min   0.10mi  Eagle Creek
+
+======================================================================
+DAY 31  |  SH110 -> BC013
+        11h42m total  (new 8h54m, conn 0h00m, repeat 2h48m)  28.5 mi  +7,689 ft
+----------------------------------------------------------------------
        B->A  SH110    -> BC097       98min   4.10mi  Eagle Creek
        B->A  BC097    -> BC096       37min   2.10mi  Eagle Creek
        B->A  BC096    -> BC089       19min   1.00mi  Eagle Creek
        B->A  BC089    -> TI032       29min   1.60mi  Eagle Creek
   [RP] A->B  TI032    -> BC090       10min   0.50mi  Lakeshore
-
-======================================================================
-DAY 31  |  BC090 -> BC014
-        11h22m total  (new 8h44m, conn 0h00m, repeat 2h37m)  27.7 mi  +7,775 ft
-----------------------------------------------------------------------
   [RP] A->B  BC090    -> TI030        8min   0.30mi  Lakeshore
        A->B  TI030    -> TH025      126min   5.20mi  Lakeshore
        A->B  TH025    -> TI024      114min   3.70mi  Appalachian
@@ -700,13 +679,13 @@ DAY 31  |  BC090 -> BC014
        A->B  TI021    -> TI012       65min   2.90mi  Twentymile Loop
   [RP] A->B  TI012    -> BC095       21min   0.90mi  Wolf Ridge
   [RP] A->B  BC095    -> BC013      127min   4.30mi  Wolf Ridge
-       B->A  BC013    -> TH007       82min   4.10mi  Gregory Bald
-       B->A  TH007    -> BC014       92min   4.40mi  Hannah Mountain
 
 ======================================================================
-DAY 32  |  BC014 -> BC017
-        9h41m total  (new 7h02m, conn 0h09m, repeat 2h29m)  25.5 mi  +5,200 ft
+DAY 32  |  BC013 -> BC001
+        11h08m total  (new 9h53m, conn 0h09m, repeat 1h05m)  30.6 mi  +4,750 ft
 ----------------------------------------------------------------------
+       B->A  BC013    -> TH007       82min   4.10mi  Gregory Bald
+       B->A  TH007    -> BC014       92min   4.40mi  Hannah Mountain
        B->A  BC014    -> BC016       69min   3.20mi  Hannah Mountain
        B->A  BC016    -> TH001       60min   2.70mi  Rabbit Creek
   [CN]  --   TH001    -> CGABR        9min   0.50mi  Abrams Creek Campground
@@ -723,26 +702,22 @@ DAY 32  |  BC014 -> BC017
         --   TI003    -> TH002       20min   0.80mi  Gold Mine
   [RP] B->A  TH002    -> TI003       16min   0.80mi  Gold Mine
        B->A  TI003    -> BC001       31min   1.70mi  Cooper Road
+
+======================================================================
+DAY 33  |  BC001 -> BC003
+        10h49m total  (new 8h04m, conn 0h00m, repeat 2h45m)  28.4 mi  +6,228 ft
+----------------------------------------------------------------------
   [RP] A->B  BC001    -> BC017       40min   1.60mi  Little Bottoms
   [RP] A->B  BC017    -> TI005       19min   0.70mi  Little Bottoms
        A->B  TI005    -> TI004        4min   0.20mi  Little Bottoms
-  [RP]  --   TI004    -> TI005        6min   0.20mi  Little Bottoms
-  [RP]  --   TI005    -> BC017       17min   0.70mi  Little Bottoms
-
-======================================================================
-DAY 33  |  BC017 -> BC003
-        10h09m total  (new 8h00m, conn 0h00m, repeat 2h08m)  26.8 mi  +5,797 ft
-----------------------------------------------------------------------
-  [RP]  --   BC017    -> TI005       19min   0.70mi  Little Bottoms
-  [RP]  --   TI005    -> TI004        4min   0.20mi  Little Bottoms
         --   TI004    -> TH015      101min   4.20mi  Abrams Falls
        B->A  TH015    -> BC015       96min   4.10mi  Rabbit Creek
        B->A  BC015    -> BC016       24min   1.00mi  Rabbit Creek
        B->A  BC016    -> TI004       36min   1.90mi  Hannah Mountain
   [RP] B->A  TI004    -> TH015      101min   4.20mi  Abrams Falls
        B->A  TH015    -> TI017       21min   1.00mi  Wet Bottom
-        --   TI017    -> TH019        3min   0.20mi  Cooper Road
-  [RP] B->A  TH019    -> TI017        3min   0.20mi  Cooper Road
+       A->B  TI017    -> TH019        3min   0.20mi  Cooper Road
+  [RP]  --   TH019    -> TI017        3min   0.20mi  Cooper Road
        B->A  TI017    -> TI008      129min   5.50mi  Cooper Road
        A->B  TI008    -> BC003       66min   3.60mi  Beard Cane
 
@@ -853,7 +828,7 @@ DAY 38  |  SH106 -> BC036
 
 ======================================================================
 DAY 39  |  BC036 -> BC042
-        10h55m total  (new 8h36m, conn 0h40m, repeat 1h37m)  25.8 mi  +8,336 ft
+        9h50m total  (new 8h36m, conn 0h40m, repeat 0h33m)  23.8 mi  +7,493 ft
 ----------------------------------------------------------------------
        B->A  BC036    -> BC037        7min   0.40mi  Big Creek
   [RP]  --   BC037    -> TI251        3min   0.20mi  Big Creek
@@ -867,14 +842,12 @@ DAY 39  |  BC036 -> BC042
        A->B  TI258    -> TH248       94min   3.30mi  Palmer Creek
   [CN]  --   TH248    -> TH243       39min   1.80mi  Balsam Mountain Road
         --   TH243    -> BC042       36min   1.00mi  Spruce Mountain
-  [RP] B->A  BC042    -> TH243       28min   1.00mi  Spruce Mountain
-  [RP]  --   TH243    -> BC042       36min   1.00mi  Spruce Mountain
 
 ======================================================================
 DAY 40  |  BC042 -> CGCAT
         11h23m total  (new 6h49m, conn 0h11m, repeat 4h22m)  29.3 mi  +5,779 ft
 ----------------------------------------------------------------------
-  [RP]  --   BC042    -> TH243       28min   1.00mi  Spruce Mountain
+  [RP] B->A  BC042    -> TH243       28min   1.00mi  Spruce Mountain
   [RP]  --   TH243    -> TH248       34min   1.80mi  Balsam Mountain Road
   [CN]  --   TH248    -> TH246       11min   0.60mi  Balsam Mountain Road
        A->B  TH246    -> TI239       60min   2.30mi  Balsam Mountain
@@ -886,23 +859,24 @@ DAY 40  |  BC042 -> CGCAT
   [RP] B->A  TI256    -> BC039       81min   3.70mi  Pretty Hollow Gap
   [RP] B->A  BC039    -> TI258        4min   0.30mi  Pretty Hollow Gap
        B->A  TI258    -> TI262       13min   0.80mi  Pretty Hollow Gap
-  [RP] B->A  TI262    -> TH263       13min   0.80mi  Pretty Hollow Gap
+  [RP]  --   TI262    -> TH263       13min   0.80mi  Pretty Hollow Gap
   [RP]  --   TH263    -> TH261       16min   0.80mi  Cataloochee Entrance Road
        A->B  TH261    -> TI270       79min   3.20mi  Big Fork Ridge
-       B->A  TI270    -> TI272        8min   0.40mi  Caldwell Fork
+        --   TI270    -> TI272        8min   0.40mi  Caldwell Fork
        B->A  TI272    -> TI275       37min   1.90mi  Caldwell Fork
-        --   TI275    -> CGCAT       15min   0.80mi  Caldwell Fork
+       B->A  TI275    -> CGCAT       15min   0.80mi  Caldwell Fork
 
 ======================================================================
-DAY 41  |  CGCAT -> TH250
-        6h40m total  (new 3h59m, conn 0h00m, repeat 2h41m)  15.8 mi  +5,302 ft
+DAY 41  |  CGCAT -> TH245
+        7h44m total  (new 5h03m, conn 0h00m, repeat 2h41m)  18.4 mi  +6,097 ft
 ----------------------------------------------------------------------
-  [RP] A->B  CGCAT    -> TI275       17min   0.80mi  Caldwell Fork
+  [RP]  --   CGCAT    -> TI275       17min   0.80mi  Caldwell Fork
        A->B  TI275    -> TI272      103min   4.10mi  Boogerman
-  [RP]  --   TI272    -> TI270        9min   0.40mi  Caldwell Fork
+  [RP] A->B  TI272    -> TI270        9min   0.40mi  Caldwell Fork
        A->B  TI270    -> TI269        0min   0.00mi  Caldwell Fork
   [RP] B->A  TI269    -> TI278       77min   2.30mi  McKee Branch
   [RP] A->B  TI278    -> TI271       43min   1.80mi  Cataloochee Divide
        B->A  TI271    -> TH252      135min   5.50mi  Hemphill Bald
   [RP]  --   TH252    -> TH250       14min   0.90mi  Heintooga Ridge Road
+       B->A  TH250    -> TH245       63min   2.60mi  Flat Creek
 
