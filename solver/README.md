@@ -52,12 +52,15 @@ CP-SAT finds an optimal direction assignment in ~2–3 s. Because some campsite 
 
 | Max day | Open circuit | Closed circuit | Shortest non-last day (open) |
 |---------|--------------|----------------|------------------------------|
+| 8 h | 65 days | 66 days | 4h49m |
 | 10 h | 51 days | 49 days | 7h25m |
 | 12 h | 41 days | 43 days | 9h06m |
 | 14 h | 33 days | 34 days | 11h22m |
 | 16 h | 30 days | 29 days | 13h34m |
 
 The remaining gap to the theoretical lower bound is driven by campsite placement, not by the routing itself.
+
+The 8 h case needs one extra trick: Cove Mountain (TH106–TI086, 8.4 mi, no intermediate junction or campsite) costs at least 9.4 h camp-to-camp, so it cannot fit in *any* interior day. The solver detects such arcs and rotates the circuit so the walk starts (closed) or ends (open) with them — day 1 and the final day run terminus-to-camp rather than camp-to-camp, which is the only rescue for an atomic arc. A livelock guard also protects the greedy detour heuristic, which previously could spin forever in campsite-sparse regions at tight budgets.
 
 Resupply windows are nearly free at 12 h. The detour plan touches town-access points with tiny out-and-backs (6 min to Bryson City, 20 min to Cades Cove); the one costly case is the remote southwest corner, which forces an 8.4 h round trip to Fontana on the closed circuit:
 

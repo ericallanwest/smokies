@@ -1206,6 +1206,11 @@ def day_split_greedy_detour(arc_seq, overnight_set, single_night, max_s, min_s,
 
     i = 0
     while i < len(arcs):
+        if det_serial > 5000:
+            # Livelock guard: in campsite-sparse regions with tight budgets the
+            # forced-detour pattern can stop consuming original arcs and insert
+            # return paths forever (observed at 8h: 161M arcs, 35 GB RAM).
+            return None
         accum         = 0
         last_valid    = -1
         last_valid_on = None
@@ -1291,6 +1296,12 @@ def day_split_greedy_detour(arc_seq, overnight_set, single_night, max_s, min_s,
 def fmt_hm(seconds):
     h, r = divmod(int(seconds), 3600)
     return f"{h}h{r // 60:02d}m"
+
+
+def shortest_nonlast(dd):
+    """Length of the shortest non-last day (the last day is exempt)."""
+    pool = dd[:-1] if len(dd) > 1 else dd
+    return min(sum(d['weight'] for *_, d in day) for day in pool)
 
 
 def classify_arcs(days):
@@ -1469,8 +1480,189 @@ def insert_resupply_detours(arc_seq, rs_nodes, max_days, max_day_s, label):
     return out
 
 
-# Run the balanced day split for closed and open circuits; greedy+detour
-# fallback if no floor-0 split exists
+def insert_overnight_detours(arc_seq, max_day_s, label):
+    """When a camp-to-camp gap along the walk exceeds the daily budget, no
+    detour-free day split exists and the greedy fallback can livelock in
+    campsite-sparse regions (see guard in day_split_greedy_detour).  Instead,
+    plan minimum-cost out-and-back campsite detours directly: chain
+    (arc boundary, campsite) candidates so consecutive day-end opportunities
+    are at most one day-budget apart (back_prev + walk + out_next <= budget),
+    minimizing total detour walking -- the same shortest-path structure as
+    insert_resupply_detours, with on-walk campsites as zero-cost candidates.
+    The exact DP then splits days with no greedy floor sweep.
+    Returns the augmented walk, or None if no feasible plan (or none needed).
+    """
+    INF = float('inf')
+
+    on_opts: dict[str, list] = {}
+    def options(node):
+        # Camps ranked by out-leg, back-leg, AND round trip: chain feasibility
+        # can hinge on a short one-way leg (laddering from the same camp) even
+        # when its round trip is not among the cheapest.
+        if node not in on_opts:
+            if node in overnight_set:
+                on_opts[node] = [(0, 0, 0, node)]
+            else:
+                triples = [(D[node].get(c, INF), D[c].get(node, INF), c)
+                           for c in overnight_set]
+                keep = set()
+                for keyfn in (lambda t: t[0], lambda t: t[1],
+                              lambda t: t[0] + t[1]):
+                    keep.update(sorted(triples, key=keyfn)[:4])
+                on_opts[node] = sorted((o + b, o, b, c) for o, b, c in keep
+                                       if o + b < INF)
+        return on_opts[node]
+
+    cands, T = [], 0
+    for idx, (u, _v, _k, d) in enumerate(arc_seq):
+        for cost, out, back, c in options(u):
+            cands.append((T, idx, cost, out, back, c))
+        T += d['weight']
+    S = T
+
+    import bisect as _bisect
+    Ts     = [c[0] for c in cands]
+    best   = [INF] * len(cands)
+    parent = [-1] * len(cands)
+    for i, (T_i, idx_i, c_i, o_i, _b_i, _cn) in enumerate(cands):
+        if T_i + o_i <= max_day_s:
+            best[i] = c_i
+        # only candidates within one day-budget of walking can chain to i
+        for j in range(_bisect.bisect_left(Ts, T_i - max_day_s), i):
+            T_j, idx_j, _c_j, _o_j, b_j, cn_j = cands[j]
+            if (best[j] < INF and idx_j < idx_i
+                    and (T_i - T_j) + b_j + o_i <= max_day_s
+                    and not (cn_j == _cn and _cn in single_night)
+                    and best[j] + c_i < best[i]):
+                best[i], parent[i] = best[j] + c_i, j
+    goal, goal_cost = -1, INF
+    for i, (T_i, _idx_i, _c_i, _o_i, b_i, _cn) in enumerate(cands):
+        if best[i] < goal_cost and (S - T_i) + b_i <= max_day_s:
+            goal, goal_cost = i, best[i]
+    if goal < 0:
+        reach = [(cands[i][0], i) for i in range(len(cands)) if best[i] < INF]
+        if reach:
+            T_max, i_max = max(reach)
+            _T, idx_m, _c, _o, _b, cn_m = cands[i_max]
+            print(f"  {label}: no feasible campsite detour plan -- chain stalls "
+                  f"at t={T_max / 3600:.1f}h of {S / 3600:.1f}h "
+                  f"(arc {idx_m}, node {arc_seq[idx_m][0]}, last camp {cn_m})")
+        else:
+            print(f"  {label}: no feasible campsite detour plan -- "
+                  f"no first-day candidate")
+        return None
+
+    chain = []
+    g = goal
+    while g >= 0:
+        chain.append(g)
+        g = parent[g]
+    chain.reverse()
+    picks = [(cands[g][1], cands[g][5]) for g in chain if cands[g][2] > 0]
+    if not picks:
+        return None            # zero-insertion chain: nothing to add
+
+    by_pos: dict[int, list[str]] = {}
+    for ipos, c in picks:
+        by_pos.setdefault(ipos, []).append(c)
+    out, serial, det_s = [], 0, 0
+    for pos, arc in enumerate(arc_seq):
+        for c in by_pos.get(pos, []):
+            n = arc[0]
+            for leg in (P[n][c], P[c][n]):
+                for au, av, _k, hd in edge_path(G, leg):
+                    serial += 1
+                    det_s  += hd['weight']
+                    out.append((au, av, f"ondet_{serial}", {**hd, 'is_deadhead': True}))
+        out.append(arc)
+
+    print(f"  {label}: planned {len(picks)} campsite detour(s), "
+          f"+{det_s / 3600:.1f}h repeat walking:")
+    for ipos, c in picks:
+        n = arc_seq[ipos][0]
+        print(f"    at {n}: out-and-back to {c}  "
+              f"({(D[n][c] + D[c][n]) / 3600:.1f}h round trip)")
+    return out
+
+
+def retarget_termini_for_budget(circuit, open_circuit):
+    """A tight daily budget can make a required arc impossible inside ANY
+    interior day: nearest-camp access + traversal exceeds the budget (at 8h,
+    Cove Mountain TH106-TI086 needs >=9.4h camp-to-camp).  Such an arc is only
+    coverable on day 1 (or the last day), which start/end at a walk terminus
+    instead of a camp.  Rotate the closed circuit so it starts with that arc,
+    and re-open the open walk by dropping the deadhead arc arriving at the
+    new start.  No day-splitting strategy can substitute for this: the arc is
+    atomic (no interior nodes), so terminus placement is the only rescue.
+    """
+    if circuit is None:
+        return circuit, open_circuit
+    INF = float('inf')
+    _out, _back = {}, {}
+    def out_of(n):
+        if n not in _out:
+            _out[n] = min(D[n].get(c, INF) for c in overnight_set)
+        return _out[n]
+    def back_of(n):
+        if n not in _back:
+            _back[n] = min(D[c].get(n, INF) for c in overnight_set)
+        return _back[n]
+
+    bad = [i for i, (u, v, _k, d) in enumerate(circuit)
+           if not d.get('is_deadhead')
+           and back_of(u) + d['weight'] + out_of(v) > MAX_DAY_SECONDS]
+    if not bad:
+        return circuit, open_circuit
+
+    print(f"\nBudget retarget: {len(bad)} required arc(s) cannot fit an "
+          f"interior day at {MAX_DAY_SECONDS / 3600:.0f}h:")
+    for i in bad:
+        u, v, _k, d = circuit[i]
+        print(f"  {u}->{v}  {d.get('trail', '?')}  "
+              f"(camp-to-camp {(back_of(u) + d['weight'] + out_of(v)) / 3600:.1f}h)")
+    if len(bad) > 1:
+        print("  more than one such arc -- rotation can rescue only one; "
+              "leaving circuits unchanged")
+        return circuit, open_circuit
+
+    k = bad[0]
+    u, v, _k2, d = circuit[k]
+    if d['weight'] + out_of(v) > MAX_DAY_SECONDS:
+        print(f"  even a day-1 start at {u} cannot fit {u}->{v} -- "
+              f"leaving circuits unchanged")
+        return circuit, open_circuit
+
+    rotated = circuit[k:] + circuit[:k]
+    print(f"  rotated closed circuit to start at {u}: {d.get('trail', '?')} "
+          f"is day 1 ({(d['weight'] + out_of(v)) / 3600:.1f}h to first camp)")
+
+    last = rotated[-1]
+    nxt  = rotated[1] if len(rotated) > 1 else None
+    if last[3].get('is_deadhead'):
+        new_open = rotated[:-1]
+        print(f"  open circuit: dropped deadhead {last[0]}->{last[1]} "
+              f"({last[3]['weight']}s) -- walk runs {u} .. {last[0]} "
+              f"with {d.get('trail', '?')} first")
+    elif (nxt is not None and nxt[3].get('is_deadhead')
+          and back_of(u) + d['weight'] <= MAX_DAY_SECONDS):
+        # No deadhead arrives at u, but one leaves v: drop it instead, making
+        # the bad arc the walk's LAST arc (final day: camp -> u -> v -> done).
+        new_open = rotated[2:] + [rotated[0]]
+        print(f"  open circuit: dropped deadhead {nxt[0]}->{nxt[1]} "
+              f"({nxt[3]['weight']}s) -- walk runs {nxt[1]} .. {u} .. {v} "
+              f"with {d.get('trail', '?')} last "
+              f"({(back_of(u) + d['weight']) / 3600:.1f}h final day)")
+    else:
+        new_open = open_circuit
+        print(f"  open circuit: no deadhead arc adjacent to {u}->{v} -- "
+              f"keeping original open termini")
+    return rotated, new_open
+
+
+circuit, open_circuit = retarget_termini_for_budget(circuit, open_circuit)
+
+# Run the balanced day split for closed and open circuits; campsite-detour
+# planning first, greedy+detour sweep as fallback, if no floor-0 split exists
 dp_results: dict[str, list | None] = {}
 for label, arc_seq in [("Closed", circuit), ("Open", open_circuit)]:
     if arc_seq is None:
@@ -1487,10 +1679,20 @@ for label, arc_seq in [("Closed", circuit), ("Open", open_circuit)]:
 
     if days is None:
         # No detour-free split exists: some overnight gap exceeds the daily
-        # budget.  Where the greedy heuristic inserts detours depends heavily
-        # on its floor parameter, so sweep the floor internally, refine each
-        # candidate with the exact floor-0 DP, and keep the fewest-day result
-        # -- trading solve time for optimality instead of asking the user.
+        # budget.  Two remedies, keeping the better result:
+        #   (a) exact campsite-detour plan + DP -- fast, and immune to the
+        #       greedy livelock in campsite-sparse regions at tight budgets;
+        #   (b) greedy floor sweep -- where the greedy heuristic inserts
+        #       detours depends heavily on its floor parameter, so sweep the
+        #       floor internally and refine each candidate with the exact DP.
+        days_plan, floor_plan = None, None
+        planned_seq = insert_overnight_detours(arc_seq, MAX_DAY_SECONDS, label)
+        if planned_seq is not None:
+            days_plan, floor_plan = split_days_balanced(planned_seq)
+            if days_plan is not None:
+                print(f"  {label}: campsite-detour plan -> {len(days_plan)} days "
+                      f"(shortest non-last day {fmt_hm(shortest_nonlast(days_plan))})")
+
         print(f"\n{label}: no detour-free DP split -- sweeping greedy detour floors")
         candidates = []        # (n_days, floor_frac, augmented_seq, greedy_days)
         for frac in (0.0, 0.3, 0.4, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 5/6, 0.85, 0.9):
@@ -1513,27 +1715,20 @@ for label, arc_seq in [("Closed", circuit), ("Open", open_circuit)]:
             print(f"    floor {frac:>5.0%}: {n} days  ({n_det} detour arcs)")
             candidates.append((n, frac, aug, cand))
 
-        if not candidates:
-            print(f"  {label}: no candidate satisfies the resupply constraint -- "
-                  f"resupply-aware detour insertion would be needed")
-            dp_results[label] = None
-            continue
-
         # Tie-break: each tied candidate has a different detour placement, so
         # balance every one and keep the itinerary whose shortest non-last day
         # is longest.  Physically identical sequences are deduplicated first.
-        def shortest_nonlast(dd):
-            pool = dd[:-1] if len(dd) > 1 else dd
-            return min(sum(d['weight'] for *_, d in day) for day in pool)
-
-        n_best = min(c[0] for c in candidates)
-        seen_sigs = set()
         ties = []
-        for c in (c for c in candidates if c[0] == n_best):
-            sig = hash(tuple((u, v) for u, v, _, _ in c[2]))
-            if sig not in seen_sigs:
-                seen_sigs.add(sig)
-                ties.append(c)
+        if not candidates:
+            print(f"  {label}: greedy sweep produced no usable candidate")
+        else:
+            n_best = min(c[0] for c in candidates)
+            seen_sigs = set()
+            for c in (c for c in candidates if c[0] == n_best):
+                sig = hash(tuple((u, v) for u, v, _, _ in c[2]))
+                if sig not in seen_sigs:
+                    seen_sigs.add(sig)
+                    ties.append(c)
 
         days, floor_s, best_frac = None, -1, None
         for n, frac, aug, greedy_days in ties:
@@ -1549,10 +1744,26 @@ for label, arc_seq in [("Closed", circuit), ("Open", open_circuit)]:
             if m > floor_s:
                 days, floor_s, best_frac = cand_days, m, frac
 
-        if days is None:                       # safety net: first tied greedy split
+        if days is None and ties:              # safety net: first tied greedy split
             days, best_frac = ties[0][3], ties[0][1]
-        method = (f"greedy+detour (floor {best_frac:.0%}) -> DP balanced, "
-                  f"best of {len(ties)} tie(s)")
+        if days is not None:
+            method = (f"greedy+detour (floor {best_frac:.0%}) -> DP balanced, "
+                      f"best of {len(ties)} tie(s)")
+
+        # Keep the better remedy: fewer days, then longer shortest non-last
+        # day; ties go to the sweep so published presets stay reproducible.
+        if days_plan is not None and (
+                days is None
+                or len(days_plan) < len(days)
+                or (len(days_plan) == len(days)
+                    and shortest_nonlast(days_plan) > shortest_nonlast(days))):
+            days, floor_s = days_plan, floor_plan
+            method = "campsite-detour plan -> DP (min days, floor maximized)"
+
+        if days is None:
+            print(f"  {label}: no valid split found")
+            dp_results[label] = None
+            continue
 
     dp_results[label] = days
     t  = sum(d['weight'] for day in days for _, _, _, d in day)
