@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GSMNP Itinerary Planner</title>
+  <link rel="icon" type="image/svg+xml"
+        href="https://raw.githubusercontent.com/nationalparkservice/symbol-library/gh-pages/src/standalone/self-guiding-trail-black-22.svg">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- ── Loading overlay ──────────────────────────────────────────────────── -->
+<div id="loading">
+  <div class="spinner"></div>
+  <p>Loading itinerary…</p>
+</div>
+
+<!-- ── Left sidebar: parameter presets ──────────────────────────────────── -->
+<div id="left-sidebar">
+  <div class="param-group">
+    <div class="param-label">Max hiking day</div>
+    <div class="param-options">
+      <label><input type="radio" name="max_day" value="10"> 10 h</label>
+      <label><input type="radio" name="max_day" value="12" checked> 12 h</label>
+      <label><input type="radio" name="max_day" value="14"> 14 h</label>
+    </div>
+  </div>
+  <div class="param-group">
+    <div class="param-label">Min hiking day</div>
+    <div class="param-options">
+      <label><input type="radio" name="min_day" value="8"> 8 h</label>
+      <label><input type="radio" name="min_day" value="10" checked> 10 h</label>
+    </div>
+  </div>
+  <div class="param-group">
+    <div class="param-label">Circuit type</div>
+    <div class="param-options">
+      <label><input type="radio" name="circuit" value="open" checked> Open</label>
+      <label><input type="radio" name="circuit" value="closed"> Closed</label>
+    </div>
+  </div>
+  <div id="presetInfo"></div>
+  <div id="presetError"></div>
+</div>
+<button id="left-toggle" title="Hide/show parameters">◀</button>
+
+<!-- ── Map ───────────────────────────────────────────────────────────────── -->
+<div id="map"></div>
+
+<!-- ── Right sidebar: day stats ─────────────────────────────────────────── -->
+<button id="sidebar-toggle" title="Hide/show day details">▶</button>
+<div id="sidebar">
+  <div class="day-header" id="sbDay">—</div>
+  <div class="day-route"  id="sbRoute">— → —</div>
+  <div class="sec-title">Today</div>
+  <div class="stat-grid">
+    <span class="stat-lbl">Total time</span>  <span class="stat-val" id="sbTime">—</span>
+    <span class="stat-lbl">Required</span>    <span class="stat-val" id="sbReq">—</span>
+    <span class="stat-lbl">Deadhead</span>    <span class="stat-val" id="sbDH">—</span>
+    <span class="stat-lbl">Miles</span>       <span class="stat-val" id="sbMiles">—</span>
+    <span class="stat-lbl">Gain</span>        <span class="stat-val" id="sbGain">—</span>
+    <span class="stat-lbl">Req miles</span>   <span class="stat-val" id="sbReqMi">—</span>
+  </div>
+  <div class="sec-title">Map Completion</div>
+  <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="prog-lbl">
+    <span id="progPct">0%</span>
+    <span id="progMi">0 / — req mi</span>
+  </div>
+  <div class="badge" id="completeBadge">✓ All required trails covered!</div>
+  <div class="sec-title">Legend</div>
+  <div class="legend">
+    <div><span class="leg-line" style="background:#999"></span>Required — not yet covered</div>
+    <div><span class="leg-line" style="background:#333333"></span>Required — covered</div>
+    <div><span class="leg-line" style="background:#f7882f"></span>Today — required</div>
+    <div><span class="leg-line" style="background:#c0392b"></span>Today — deadhead</div>
+  </div>
+  <div class="sec-title">Today's Route</div>
+  <div id="itinerary" style="font-size:11px;line-height:1.7;"></div>
+</div>
+
+<!-- ── Bottom controls ───────────────────────────────────────────────────── -->
+<div id="controls">
+  <div class="slider-row">
+    <button class="btn" id="btnHome">⌂ Home</button>
+    <button class="btn" id="btnPrev">← Day</button>
+    <input  type="range" id="daySlider" min="1" max="1" value="1">
+    <span   class="day-lbl" id="dayLbl">— / —</span>
+    <button class="btn" id="btnNext">Day →</button>
+    <button class="btn" id="btnPlay">▶ Play</button>
+    <button class="btn" id="btnZoom">⊕ Zoom to Day</button>
+  </div>
+  <div class="slider-row">
+    <button class="btn" id="btnStepPrev">← Step</button>
+    <input type="range" id="stepSlider" min="1" max="1" value="1"
+           style="flex:1;accent-color:#f7882f;cursor:pointer">
+    <span class="day-lbl" id="stepLbl" style="min-width:120px;font-size:12px">— / —</span>
+    <button class="btn" id="btnStepNext">Step →</button>
+    <button class="btn" id="btnStepPlay">▶ Play</button>
+    <button class="btn" id="btnZoomStep">⊕ Zoom to Step</button>
+  </div>
+  <div class="toggle-row">
+    <label><input type="checkbox" id="togDH" checked> Backtracking</label>
+    <label><input type="checkbox" id="togOpt">        Optional trails</label>
+    <span style="margin:0 2px;color:#ccc">|</span>
+    <label><input type="checkbox" id="togTrailheads">    Trailheads</label>
+    <label><input type="checkbox" id="togCamping">       Camping</label>
+    <label><input type="checkbox" id="togIntersections"> Intersections</label>
+  </div>
+  <div class="opacity-row">
+    <span>Trail Map</span>
+    <input type="range" id="mapwarpOpacity" min="0" max="100" step="5" value="40">
+    <span id="opacityVal">40%</span>
+    <span style="margin:0 6px;color:#ccc">|</span>
+    <span>Hillshade</span>
+    <input type="range" id="hillshadeOpacity" min="0" max="100" step="5" value="15">
+    <span id="hillshadeOpacityVal">15%</span>
+    <span style="margin:0 6px;color:#ccc">|</span>
+    <span>Basemap</span>
+    <input type="range" id="basemapOpacity" min="0" max="100" step="5" value="15">
+    <span id="basemapOpacityVal">15%</span>
+    <select id="basemapSel" style="font-size:11px;border:1px solid #d0d3da;border-radius:3px;padding:2px 4px;cursor:pointer;margin-left:4px">
+      <option>OSM Grayscale</option>
+      <option>OSM Color</option>
+      <option>CartoDB Light</option>
+      <option>Google Maps</option>
+      <option>Bing Aerial</option>
+      <option>ESRI World Topo</option>
+    </select>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet-polylinedecorator@1.6.0/dist/leaflet.polylineDecorator.js"></script>
+<script src="js/viz.js"></script>
+</body>
+</html>
