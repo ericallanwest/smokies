@@ -24,6 +24,7 @@ The result is a single continuous walk (no driving between segments) that covers
 - Overnights only at legal locations (`BC`/`SH`/`CG` nodes); shelters and BC113 allow 1 consecutive night, other backcountry sites up to 3.
 - Either direction of traversal satisfies coverage of a required edge; any edge may be repeated (deadheaded), but repeat time counts against the daily budget.
 - Optional resupply window (`--max-resupply-days N`): at most N consecutive days without touching one of 10 resupply nodes (town-access trailheads and the two road campgrounds). Pass-through semantics — walking past a resupply point counts, since most are trailheads where overnighting is illegal. The Euler tour can go 100h+ between natural touches, so a per-stretch shortest-path plan splices minimum-cost out-and-back detours into the walk before day-splitting.
+- Optional town nights (`--town-nights`): the 10 resupply nodes also become legal overnight stops — modeling a motel or hostel stay in the gateway town — with no consecutive-night cap (you can zero-day in town). Output files carry a `_town` suffix.
 
 ## Files
 
@@ -42,13 +43,14 @@ Requires Python 3.10+ with `pandas`, `networkx`, and `ortools`:
 pip install pandas networkx ortools
 python smokies_circuit_solver_20260509a.py --max-hours 12
 python smokies_circuit_solver_20260509a.py --max-hours 12 --max-resupply-days 5
+python smokies_circuit_solver_20260509a.py --max-hours 12 --town-nights
 ```
 
-The solver writes a day-by-day itinerary as text and JSON. The JSON presets consumed by the [web app](../docs/) were generated this way for each combination of circuit type (open/closed) and max day (8/10/12/14/16 h); resupply-constrained presets carry an `_rN` suffix (currently 4–8 day windows at 12 h).
+The solver writes a day-by-day itinerary as text and JSON. The JSON presets consumed by the [web app](../docs/) were generated this way for each combination of circuit type (open/closed) and max day (8/10/12/14/16 h); resupply-constrained presets carry an `_rN` suffix (currently 4–8 day windows at 12 h) and town-night presets a `_town` suffix (all five max-day settings).
 
 ## Results so far
 
-CP-SAT finds an optimal direction assignment in ~2–3 s. Because some campsite gaps exceed a single day's budget, day splitting requires detour insertion; the solver sweeps the greedy heuristic's floor parameter internally (each candidate refined by the exact DP) and keeps the fewest-day result. Floors that tie on day count produce different detour placements, so each tied candidate is balanced (largest feasible daily floor at that count) and the itinerary with the longest shortest day wins:
+CP-SAT finds an optimal direction assignment in ~2–3 s. Because some campsite gaps exceed a single day's budget, day splitting may require detour insertion; the solver always evaluates three candidates — the detour-free DP split (when one exists), a campsite chain plan, and a sweep of the greedy detour heuristic's floor parameter (each candidate refined by the exact DP) — and keeps the fewest-day result. Candidates that tie on day count are each balanced (largest feasible daily floor at that count) and the itinerary with the longest shortest day wins:
 
 | Max day | Open circuit | Closed circuit | Shortest non-last day (open) |
 |---------|--------------|----------------|------------------------------|
@@ -72,3 +74,13 @@ Resupply windows are nearly free at 12 h. The detour plan touches town-access po
 | ≤ 6 days | 41 days | 43 days | +1.6h / +7.8h |
 | ≤ 5 days | 41 days | 43 days | +2.5h / +11.3h |
 | ≤ 4 days | 42 days | 43 days | +8.6h / +16.3h |
+
+Allowing town nights (`--town-nights`) turns the 10 resupply points into cap-free overnight options, which mostly helps where legal campsites are sparse near the park boundary — including Cove Mountain, which becomes interior-feasible at 8 h without the terminus rotation:
+
+| Max day | Open (town / standard) | Closed (town / standard) |
+|---------|------------------------|--------------------------|
+| 8 h | **63** / 65 | **65** / 66 |
+| 10 h | **49** / 51 | **47** / 49 |
+| 12 h | **40** / 41 | **41** / 43 |
+| 14 h | 33 / 33 | 34 / 34 |
+| 16 h | 30 / 30 | **28** / 29 |

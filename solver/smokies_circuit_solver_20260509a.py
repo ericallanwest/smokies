@@ -8,6 +8,8 @@ _ap = argparse.ArgumentParser(description='GSMNP circuit solver')
 _ap.add_argument('--max-hours', type=float, default=12.0, help='Max hiking hours per day (default: 12)')
 _ap.add_argument('--max-resupply-days', type=int, default=None,
                  help='Max days between resupply visits (default: disabled)')
+_ap.add_argument('--town-nights', action='store_true',
+                 help='Allow overnights (motel/hostel) at resupply points')
 _args = _ap.parse_args()
 
 # ---------------------------------------------------------------------------
@@ -38,6 +40,11 @@ RESUPPLY_NODES = {
 }
 MAX_DAYS_BETWEEN_RESUPPLY = _args.max_resupply_days  # None = disabled
 
+# Town nights: resupply points double as legal overnights (motel/hostel bed).
+# Town beds have no consecutive-night cap, unlike shelters (1) and BC sites (3).
+TOWN_NIGHTS = _args.town_nights
+town_overnights: set = set(RESUPPLY_NODES) if TOWN_NIGHTS else set()
+
 df = pd.read_csv(CSV_PATH)
 
 # --- Node classification by ID prefix ---
@@ -59,7 +66,8 @@ def node_type(node_id: str) -> str:
     }.get(prefix, 'campground' if node_id.startswith('CG') else 'unknown')
 
 def is_legal_overnight(node_id: str) -> bool:
-    return node_id.startswith(('BC', 'SH', 'CG'))
+    return (node_id.startswith(('BC', 'SH', 'CG'))
+            or (TOWN_NIGHTS and node_id in RESUPPLY_NODES))
 
 # First pass: collect campsite flags and overnight-closure flags with OR logic
 # across all CSV rows.  A node's status can appear in either the node_A or
@@ -181,6 +189,8 @@ if MAX_DAYS_BETWEEN_RESUPPLY is not None:
     print(f"Max days between resupply : {MAX_DAYS_BETWEEN_RESUPPLY}")
 else:
     print("Max days between resupply : disabled")
+print(f"Town nights at resupply points : "
+      f"{'enabled (no consecutive-night cap)' if TOWN_NIGHTS else 'disabled'}")
 
 # --- Strong connectivity -- full graph ---
 print()
@@ -1097,7 +1107,8 @@ def find_nearest_valid_overnight(from_node, D, overnight_nodes,
     for nn in sorted(overnight_nodes, key=lambda v: D[from_node].get(v, float('inf'))):
         if nn == from_node:
             continue
-        if nn == last_on and (last_on in single_night or consec >= 3):
+        if nn == last_on and (last_on in single_night
+                              or (consec >= 3 and last_on not in town_overnights)):
             continue
         dist = D[from_node].get(nn, float('inf'))
         if dist < float('inf'):
@@ -1155,7 +1166,9 @@ def day_split_dp_constrained(arc_seq, overnight_set, single_night, max_s, min_s,
             if not (to_node in overnight_set or is_last):
                 continue
             if not is_last:
-                if to_node == last_on and (last_on in single_night or consec >= 3):
+                if to_node == last_on and (
+                        last_on in single_night
+                        or (consec >= 3 and last_on not in town_overnights)):
                     continue
                 new_on     = to_node
                 new_consec = consec + 1 if to_node == last_on else 1
@@ -1231,7 +1244,9 @@ def day_split_greedy_detour(arc_seq, overnight_set, single_night, max_s, min_s,
                 continue
             if not is_last:
                 if tn == current_last_on and (
-                        current_last_on in single_night or current_consec >= 3):
+                        current_last_on in single_night
+                        or (current_consec >= 3
+                            and current_last_on not in town_overnights)):
                     continue
             last_valid    = j
             last_valid_on = tn
@@ -1674,96 +1689,109 @@ for label, arc_seq in [("Closed", circuit), ("Open", open_circuit)]:
                                           MAX_DAYS_BETWEEN_RESUPPLY,
                                           MAX_DAY_SECONDS, label)
 
-    days, floor_s = split_days_balanced(arc_seq)
-    method = "DP (min days, floor maximized)"
+    days_base, floor_base = split_days_balanced(arc_seq)
+    if days_base is not None:
+        print(f"\n{label}: detour-free DP split -> {len(days_base)} days "
+              f"(shortest non-last day {fmt_hm(shortest_nonlast(days_base))})")
+    else:
+        print(f"\n{label}: no detour-free DP split")
+
+    # Detour insertion can reduce the day count even when a detour-free split
+    # exists (a detour repositions a day end so later days pack fuller), so
+    # always evaluate both remedies and keep the best result:
+    #   (a) exact campsite-detour plan + DP -- fast, and immune to the greedy
+    #       livelock in campsite-sparse regions at tight budgets;
+    #   (b) greedy floor sweep -- where the greedy heuristic inserts detours
+    #       depends heavily on its floor parameter, so sweep the floor
+    #       internally and refine each candidate with the exact DP.
+    days_plan, floor_plan = None, None
+    planned_seq = insert_overnight_detours(arc_seq, MAX_DAY_SECONDS, label)
+    if planned_seq is not None:
+        days_plan, floor_plan = split_days_balanced(planned_seq)
+        if days_plan is not None:
+            print(f"  {label}: campsite-detour plan -> {len(days_plan)} days "
+                  f"(shortest non-last day {fmt_hm(shortest_nonlast(days_plan))})")
+
+    print(f"{label}: sweeping greedy detour floors")
+    candidates = []        # (n_days, floor_frac, augmented_seq, greedy_days)
+    for frac in (0.0, 0.3, 0.4, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 5/6, 0.85, 0.9):
+        cand = day_split_greedy_detour(arc_seq, overnight_set, single_night,
+                                       MAX_DAY_SECONDS, int(frac * MAX_DAY_SECONDS),
+                                       nearest_overnight, P, G, D)
+        if cand is None:
+            continue
+        aug     = [arc for day in cand for arc in day]
+        refined = day_split_dp_constrained(aug, overnight_set, single_night,
+                                           MAX_DAY_SECONDS, 0,
+                                           resupply_set, MAX_DAYS_BETWEEN_RESUPPLY)
+        if refined is None and MAX_DAYS_BETWEEN_RESUPPLY is not None:
+            # The greedy heuristic is resupply-blind; drop candidates whose
+            # detour placement admits no resupply-feasible re-split.
+            print(f"    floor {frac:>5.0%}: no resupply-feasible split -- skipped")
+            continue
+        n = len(refined) if refined is not None else len(cand)
+        n_det = sum(1 for _, _, k, _ in aug if k.startswith("det_"))
+        print(f"    floor {frac:>5.0%}: {n} days  ({n_det} detour arcs)")
+        candidates.append((n, frac, aug, cand))
+
+    # Tie-break: each tied candidate has a different detour placement, so
+    # balance every one and keep the itinerary whose shortest non-last day
+    # is longest.  Physically identical sequences are deduplicated first.
+    ties = []
+    if not candidates:
+        print(f"  {label}: greedy sweep produced no usable candidate")
+    else:
+        n_best = min(c[0] for c in candidates)
+        seen_sigs = set()
+        for c in (c for c in candidates if c[0] == n_best):
+            sig = hash(tuple((u, v) for u, v, _, _ in c[2]))
+            if sig not in seen_sigs:
+                seen_sigs.add(sig)
+                ties.append(c)
+
+    days, floor_s, best_frac, method = None, -1, None, None
+    for n, frac, aug, greedy_days in ties:
+        days_bal, _fs = split_days_balanced(aug)
+        if days_bal is not None and len(days_bal) == n_best:
+            cand_days = days_bal
+        elif len(greedy_days) == n_best:
+            cand_days = greedy_days
+        else:
+            continue
+        m = shortest_nonlast(cand_days)
+        print(f"    tie @ floor {frac:>5.0%}: shortest non-last day {fmt_hm(m)}")
+        if m > floor_s:
+            days, floor_s, best_frac = cand_days, m, frac
+
+    if days is None and ties:              # safety net: first tied greedy split
+        days, best_frac = ties[0][3], ties[0][1]
+    if days is not None:
+        method = (f"greedy+detour (floor {best_frac:.0%}) -> DP balanced, "
+                  f"best of {len(ties)} tie(s)")
+
+    # Keep the best remedy: fewer days, then longer shortest non-last day.
+    # A plan beats the sweep only strictly (published presets came from the
+    # sweep); the detour-free base wins full ties since it adds no walking.
+    if days_plan is not None and (
+            days is None
+            or len(days_plan) < len(days)
+            or (len(days_plan) == len(days)
+                and shortest_nonlast(days_plan) > shortest_nonlast(days))):
+        days, floor_s = days_plan, floor_plan
+        method = "campsite-detour plan -> DP (min days, floor maximized)"
+
+    if days_base is not None and (
+            days is None
+            or len(days_base) < len(days)
+            or (len(days_base) == len(days)
+                and shortest_nonlast(days_base) >= shortest_nonlast(days))):
+        days, floor_s = days_base, floor_base
+        method = "DP (min days, floor maximized)"
 
     if days is None:
-        # No detour-free split exists: some overnight gap exceeds the daily
-        # budget.  Two remedies, keeping the better result:
-        #   (a) exact campsite-detour plan + DP -- fast, and immune to the
-        #       greedy livelock in campsite-sparse regions at tight budgets;
-        #   (b) greedy floor sweep -- where the greedy heuristic inserts
-        #       detours depends heavily on its floor parameter, so sweep the
-        #       floor internally and refine each candidate with the exact DP.
-        days_plan, floor_plan = None, None
-        planned_seq = insert_overnight_detours(arc_seq, MAX_DAY_SECONDS, label)
-        if planned_seq is not None:
-            days_plan, floor_plan = split_days_balanced(planned_seq)
-            if days_plan is not None:
-                print(f"  {label}: campsite-detour plan -> {len(days_plan)} days "
-                      f"(shortest non-last day {fmt_hm(shortest_nonlast(days_plan))})")
-
-        print(f"\n{label}: no detour-free DP split -- sweeping greedy detour floors")
-        candidates = []        # (n_days, floor_frac, augmented_seq, greedy_days)
-        for frac in (0.0, 0.3, 0.4, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 5/6, 0.85, 0.9):
-            cand = day_split_greedy_detour(arc_seq, overnight_set, single_night,
-                                           MAX_DAY_SECONDS, int(frac * MAX_DAY_SECONDS),
-                                           nearest_overnight, P, G, D)
-            if cand is None:
-                continue
-            aug     = [arc for day in cand for arc in day]
-            refined = day_split_dp_constrained(aug, overnight_set, single_night,
-                                               MAX_DAY_SECONDS, 0,
-                                               resupply_set, MAX_DAYS_BETWEEN_RESUPPLY)
-            if refined is None and MAX_DAYS_BETWEEN_RESUPPLY is not None:
-                # The greedy heuristic is resupply-blind; drop candidates whose
-                # detour placement admits no resupply-feasible re-split.
-                print(f"    floor {frac:>5.0%}: no resupply-feasible split -- skipped")
-                continue
-            n = len(refined) if refined is not None else len(cand)
-            n_det = sum(1 for _, _, k, _ in aug if k.startswith("det_"))
-            print(f"    floor {frac:>5.0%}: {n} days  ({n_det} detour arcs)")
-            candidates.append((n, frac, aug, cand))
-
-        # Tie-break: each tied candidate has a different detour placement, so
-        # balance every one and keep the itinerary whose shortest non-last day
-        # is longest.  Physically identical sequences are deduplicated first.
-        ties = []
-        if not candidates:
-            print(f"  {label}: greedy sweep produced no usable candidate")
-        else:
-            n_best = min(c[0] for c in candidates)
-            seen_sigs = set()
-            for c in (c for c in candidates if c[0] == n_best):
-                sig = hash(tuple((u, v) for u, v, _, _ in c[2]))
-                if sig not in seen_sigs:
-                    seen_sigs.add(sig)
-                    ties.append(c)
-
-        days, floor_s, best_frac = None, -1, None
-        for n, frac, aug, greedy_days in ties:
-            days_bal, _fs = split_days_balanced(aug)
-            if days_bal is not None and len(days_bal) == n_best:
-                cand_days = days_bal
-            elif len(greedy_days) == n_best:
-                cand_days = greedy_days
-            else:
-                continue
-            m = shortest_nonlast(cand_days)
-            print(f"    tie @ floor {frac:>5.0%}: shortest non-last day {fmt_hm(m)}")
-            if m > floor_s:
-                days, floor_s, best_frac = cand_days, m, frac
-
-        if days is None and ties:              # safety net: first tied greedy split
-            days, best_frac = ties[0][3], ties[0][1]
-        if days is not None:
-            method = (f"greedy+detour (floor {best_frac:.0%}) -> DP balanced, "
-                      f"best of {len(ties)} tie(s)")
-
-        # Keep the better remedy: fewer days, then longer shortest non-last
-        # day; ties go to the sweep so published presets stay reproducible.
-        if days_plan is not None and (
-                days is None
-                or len(days_plan) < len(days)
-                or (len(days_plan) == len(days)
-                    and shortest_nonlast(days_plan) > shortest_nonlast(days))):
-            days, floor_s = days_plan, floor_plan
-            method = "campsite-detour plan -> DP (min days, floor maximized)"
-
-        if days is None:
-            print(f"  {label}: no valid split found")
-            dp_results[label] = None
-            continue
+        print(f"  {label}: no valid split found")
+        dp_results[label] = None
+        continue
 
     dp_results[label] = days
     t  = sum(d['weight'] for day in days for _, _, _, d in day)
@@ -1897,7 +1925,7 @@ for day_num, day_arcs in enumerate(itinerary_days[:-1], 1):
         if cs in single_night and consec_ct >= 1:
             consec_violations += 1
             print(f"  Day {day_num}: {cs} single-night violation (consec={consec_ct+1})")
-        elif consec_ct >= 3:
+        elif consec_ct >= 3 and cs not in town_overnights:
             consec_violations += 1
             print(f"  Day {day_num}: {cs} 3-night BC violation (consec={consec_ct+1})")
     else:
@@ -1938,6 +1966,7 @@ else:
 # ---------------------------------------------------------------------------
 _max_h = int(_args.max_hours)
 _rs_sfx = f"_r{MAX_DAYS_BETWEEN_RESUPPLY}" if MAX_DAYS_BETWEEN_RESUPPLY is not None else ""
+_rs_sfx += "_town" if TOWN_NIGHTS else ""
 OUT_PATH = f'smokies_itinerary_{_max_h}h{_rs_sfx}.txt'
 with open(OUT_PATH, 'w', encoding='utf-8') as f:
     f.write(f"GSMNP Complete Trail Itinerary -- {itinerary_label} Circuit\n")

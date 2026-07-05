@@ -593,10 +593,11 @@ async function loadPreset(filename) {
 }
 
 function currentPresetFile() {
-  const max = document.querySelector('input[name="max_day"]:checked')?.value  ?? '12';
-  const cir = document.querySelector('input[name="circuit"]:checked')?.value  ?? 'open';
-  const rs  = document.querySelector('input[name="resupply"]:checked')?.value ?? 'none';
-  return `preset_${cir}_${max}h${rs === 'none' ? '' : `_r${rs}`}.json`;
+  const max  = document.querySelector('input[name="max_day"]:checked')?.value  ?? '12';
+  const cir  = document.querySelector('input[name="circuit"]:checked')?.value  ?? 'open';
+  const rs   = document.querySelector('input[name="resupply"]:checked')?.value ?? 'none';
+  const town = document.querySelector('input[name="town"]:checked')?.value     ?? 'no';
+  return `preset_${cir}_${max}h${rs === 'none' ? '' : `_r${rs}`}${town === 'yes' ? '_town' : ''}.json`;
 }
 
 // ── Node layer visibility (zoom-dependent) ─────────────────────────────────
@@ -747,7 +748,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ── Left sidebar preset selectors ────────────────────────────────────────
-  document.querySelectorAll('input[name="max_day"], input[name="circuit"], input[name="resupply"]')
+  document.querySelectorAll('input[name="max_day"], input[name="circuit"], input[name="resupply"], input[name="town"]')
     .forEach(el => el.addEventListener('change', () => loadPreset(currentPresetFile())));
 
   // Load the default preset on startup
