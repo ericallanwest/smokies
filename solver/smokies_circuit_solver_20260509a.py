@@ -1364,7 +1364,7 @@ for label, arc_seq in [("Closed", circuit), ("Open", open_circuit)]:
         # candidate with the exact floor-0 DP, and keep the fewest-day result
         # -- trading solve time for optimality instead of asking the user.
         print(f"\n{label}: no detour-free DP split -- sweeping greedy detour floors")
-        best = None            # (n_days, floor_frac, augmented_seq, greedy_days)
+        candidates = []        # (n_days, floor_frac, augmented_seq, greedy_days)
         for frac in (0.0, 0.3, 0.4, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 5/6, 0.85, 0.9):
             cand = day_split_greedy_detour(arc_seq, overnight_set, single_night,
                                            MAX_DAY_SECONDS, int(frac * MAX_DAY_SECONDS),
@@ -1378,17 +1378,42 @@ for label, arc_seq in [("Closed", circuit), ("Open", open_circuit)]:
             n = len(refined) if refined is not None else len(cand)
             n_det = sum(1 for _, _, k, _ in aug if k.startswith("det_"))
             print(f"    floor {frac:>5.0%}: {n} days  ({n_det} detour arcs)")
-            if best is None or n < best[0]:
-                best = (n, frac, aug, cand)
+            candidates.append((n, frac, aug, cand))
 
-        n_best, frac, augmented, greedy_days = best
-        days_bal, floor_s = split_days_balanced(augmented)
-        if days_bal is not None and len(days_bal) <= len(greedy_days):
-            days   = days_bal
-            method = f"greedy+detour (floor {frac:.0%}) -> DP balanced"
-        else:
-            days, floor_s = greedy_days, None
-            method = f"greedy+detour (floor {frac:.0%})"
+        # Tie-break: each tied candidate has a different detour placement, so
+        # balance every one and keep the itinerary whose shortest non-last day
+        # is longest.  Physically identical sequences are deduplicated first.
+        def shortest_nonlast(dd):
+            pool = dd[:-1] if len(dd) > 1 else dd
+            return min(sum(d['weight'] for *_, d in day) for day in pool)
+
+        n_best = min(c[0] for c in candidates)
+        seen_sigs = set()
+        ties = []
+        for c in (c for c in candidates if c[0] == n_best):
+            sig = hash(tuple((u, v) for u, v, _, _ in c[2]))
+            if sig not in seen_sigs:
+                seen_sigs.add(sig)
+                ties.append(c)
+
+        days, floor_s, best_frac = None, -1, None
+        for n, frac, aug, greedy_days in ties:
+            days_bal, _fs = split_days_balanced(aug)
+            if days_bal is not None and len(days_bal) == n_best:
+                cand_days = days_bal
+            elif len(greedy_days) == n_best:
+                cand_days = greedy_days
+            else:
+                continue
+            m = shortest_nonlast(cand_days)
+            print(f"    tie @ floor {frac:>5.0%}: shortest non-last day {fmt_hm(m)}")
+            if m > floor_s:
+                days, floor_s, best_frac = cand_days, m, frac
+
+        if days is None:                       # safety net: first tied greedy split
+            days, best_frac = ties[0][3], ties[0][1]
+        method = (f"greedy+detour (floor {best_frac:.0%}) -> DP balanced, "
+                  f"best of {len(ties)} tie(s)")
 
     dp_results[label] = days
     t  = sum(d['weight'] for day in days for _, _, _, d in day)

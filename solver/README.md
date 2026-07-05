@@ -47,12 +47,12 @@ The solver writes a day-by-day itinerary as text and JSON. The JSON presets cons
 
 ## Results so far
 
-CP-SAT finds an optimal direction assignment in ~2–3 s. Because some campsite gaps exceed a single day's budget, day splitting requires detour insertion; the solver sweeps the greedy heuristic's floor parameter internally (each candidate refined by the exact DP) and keeps the fewest-day result, then maximizes the shortest day at that count:
+CP-SAT finds an optimal direction assignment in ~2–3 s. Because some campsite gaps exceed a single day's budget, day splitting requires detour insertion; the solver sweeps the greedy heuristic's floor parameter internally (each candidate refined by the exact DP) and keeps the fewest-day result. Floors that tie on day count produce different detour placements, so each tied candidate is balanced (largest feasible daily floor at that count) and the itinerary with the longest shortest day wins:
 
-| Max day | Open circuit | Closed circuit |
-|---------|--------------|----------------|
-| 10 h | 51 days | 49 days |
-| 12 h | 41 days | 43 days |
-| 14 h | 33 days | 34 days |
+| Max day | Open circuit | Closed circuit | Shortest non-last day (open) |
+|---------|--------------|----------------|------------------------------|
+| 10 h | 51 days | 49 days | 7h25m |
+| 12 h | 41 days | 43 days | 9h06m |
+| 14 h | 33 days | 34 days | 11h22m |
 
 The remaining gap to the theoretical lower bound is driven by campsite placement, not by the routing itself.
