@@ -1278,6 +1278,43 @@ def fmt_hm(seconds):
     return f"{h}h{r // 60:02d}m"
 
 
+def classify_arcs(days):
+    """Walk-order traversal categories, matching the web app (docs/js/viz.js).
+
+    The is_deadhead flag marks whichever duplicate copy balances the Euler
+    tour, so a required trail's *first* physical traversal can carry
+    is_deadhead=True.  Reporting instead uses what the hiker experiences:
+      'new'       -- first pass of a required trail (credits map coverage)
+      'connector' -- first pass of a non-required road/path
+      'repeat'    -- any edge already traversed
+    Returns a list of per-day lists of category strings, parallel to days.
+    """
+    required_eids = {d.get('edge_id') for day in days for *_, d in day
+                     if not d['is_deadhead'] and d.get('edge_id') is not None}
+    traversed = set()
+    cats = []
+    for day in days:
+        day_cats = []
+        for u, v, _k, d in day:
+            eid  = d.get('edge_id')
+            tkey = eid if eid is not None else tuple(sorted((u, v)))
+            first = tkey not in traversed
+            traversed.add(tkey)
+            day_cats.append('repeat' if not first
+                            else 'new' if eid in required_eids
+                            else 'connector')
+        cats.append(day_cats)
+    return cats
+
+
+def day_cat_seconds(day_arcs, day_cats):
+    """Per-day seconds broken out by traversal category."""
+    tot = {'new': 0, 'connector': 0, 'repeat': 0}
+    for (_u, _v, _k, d), cat in zip(day_arcs, day_cats):
+        tot[cat] += d['weight']
+    return tot
+
+
 # Run constrained DP for closed and open circuits; greedy+detour fallback if needed
 dp_results: dict[str, list | None] = {}
 for label, arc_seq in [("Closed", circuit), ("Open", open_circuit)]:
@@ -1341,24 +1378,26 @@ n_days = len(itinerary_days)
 print(f"\nUsing {itinerary_label} circuit  ({n_days} days)\n")
 
 # --- Day summary table (all days, one line each) ---
-print(f"  {'Day':>3}  {'Start':<10}  {'End':<10}  {'Time':>8}  "
-      f"{'Req':>8}  {'DH':>8}  {'Miles':>6}  {'+Gain':>7}")
-print(f"  {'-'*3}  {'-'*10}  {'-'*10}  {'-'*8}  "
-      f"{'-'*8}  {'-'*8}  {'-'*6}  {'-'*7}")
+itinerary_cats = classify_arcs(itinerary_days)
 
-grand = {'req_s': 0, 'dh_s': 0, 'miles': 0.0, 'gain': 0}
+print(f"  {'Day':>3}  {'Start':<10}  {'End':<10}  {'Time':>8}  "
+      f"{'New':>8}  {'Conn':>8}  {'Repeat':>8}  {'Miles':>6}  {'+Gain':>7}")
+print(f"  {'-'*3}  {'-'*10}  {'-'*10}  {'-'*8}  "
+      f"{'-'*8}  {'-'*8}  {'-'*8}  {'-'*6}  {'-'*7}")
+
+grand = {'new_s': 0, 'conn_s': 0, 'rep_s': 0, 'miles': 0.0, 'gain': 0}
 campsites_used: list[str] = []
 
-for day_num, day_arcs in enumerate(itinerary_days, 1):
+for day_num, (day_arcs, day_cats) in enumerate(zip(itinerary_days, itinerary_cats), 1):
     start_n  = day_arcs[0][0]
     end_n    = day_arcs[-1][1]
     day_s    = sum(d['weight'] for _, _, _, d in day_arcs)
-    req_s    = sum(d['weight'] for _, _, _, d in day_arcs if not d['is_deadhead'])
-    dh_s     = sum(d['weight'] for _, _, _, d in day_arcs if d['is_deadhead'])
+    cat_s    = day_cat_seconds(day_arcs, day_cats)
     miles    = sum(d['miles']  for _, _, _, d in day_arcs)
     gain_ft  = sum(d.get('gain', 0) for _, _, _, d in day_arcs)
-    grand['req_s']  += req_s
-    grand['dh_s']   += dh_s
+    grand['new_s']  += cat_s['new']
+    grand['conn_s'] += cat_s['connector']
+    grand['rep_s']  += cat_s['repeat']
     grand['miles']  += miles
     grand['gain']   += gain_ft
     is_last = (day_num == n_days)
@@ -1367,13 +1406,14 @@ for day_num, day_arcs in enumerate(itinerary_days, 1):
     # Flag if a non-last day ends somewhere other than a legal overnight
     flag = " (!)" if (not G.nodes[end_n]['is_legal_overnight'] and not is_last) else ""
     print(f"  {day_num:>3}  {start_n:<10}  {end_n:<10}{flag}  "
-          f"{fmt_hm(day_s):>8}  {fmt_hm(req_s):>8}  {fmt_hm(dh_s):>8}  "
-          f"{miles:>6.1f}  {gain_ft:>7,}")
+          f"{fmt_hm(day_s):>8}  {fmt_hm(cat_s['new']):>8}  {fmt_hm(cat_s['connector']):>8}  "
+          f"{fmt_hm(cat_s['repeat']):>8}  {miles:>6.1f}  {gain_ft:>7,}")
 
-grand_total_s = grand['req_s'] + grand['dh_s']
+grand_total_s = grand['new_s'] + grand['conn_s'] + grand['rep_s']
 print(f"\n  {'TOT':>3}  {'':10}  {'':10}  "
-      f"{fmt_hm(grand_total_s):>8}  {fmt_hm(grand['req_s']):>8}  "
-      f"{fmt_hm(grand['dh_s']):>8}  {grand['miles']:>6.1f}  {grand['gain']:>7,}")
+      f"{fmt_hm(grand_total_s):>8}  {fmt_hm(grand['new_s']):>8}  "
+      f"{fmt_hm(grand['conn_s']):>8}  {fmt_hm(grand['rep_s']):>8}  "
+      f"{grand['miles']:>6.1f}  {grand['gain']:>7,}")
 
 # --- Day time statistics ---
 day_times = [sum(d['weight'] for _, _, _, d in day) for day in itinerary_days]
@@ -1393,10 +1433,12 @@ print(f"  Direction method   : {method_4}")
 print(f"  Total days         : {n_days}")
 print(f"  Total miles        : {grand['miles']:.1f} mi")
 print(f"  Total time         : {grand_total_s:,}s  ({grand_total_s / 3600:.1f}h)")
-print(f"  Required hiking    : {grand['req_s']:,}s  "
-      f"({grand['req_s'] / 3600:.1f}h, {100 * grand['req_s'] / grand_total_s:.1f}%)")
-print(f"  Deadhead hiking    : {grand['dh_s']:,}s  "
-      f"({grand['dh_s'] / 3600:.1f}h, {100 * grand['dh_s'] / grand_total_s:.1f}%)")
+print(f"  New trail hiking   : {grand['new_s']:,}s  "
+      f"({grand['new_s'] / 3600:.1f}h, {100 * grand['new_s'] / grand_total_s:.1f}%)")
+print(f"  Connector hiking   : {grand['conn_s']:,}s  "
+      f"({grand['conn_s'] / 3600:.1f}h, {100 * grand['conn_s'] / grand_total_s:.1f}%)")
+print(f"  Repeat hiking      : {grand['rep_s']:,}s  "
+      f"({grand['rep_s'] / 3600:.1f}h, {100 * grand['rep_s'] / grand_total_s:.1f}%)")
 print(f"  Total elev gain    : {grand['gain']:,} ft")
 print(f"  Distinct campsites : {len(set(campsites_used))}")
 
@@ -1407,11 +1449,13 @@ for lbl in ("Closed", "Open"):
     if days is None:
         print(f"  {lbl:8}: no valid partition")
         continue
-    t  = sum(d['weight'] for day in days for _, _, _, d in day)
-    dh = sum(d['weight'] for day in days for _, _, _, d in day if d['is_deadhead'])
+    t    = sum(d['weight'] for day in days for _, _, _, d in day)
+    cats = classify_arcs(days)
+    xtra = sum(day_cat_seconds(da, dc)['connector'] + day_cat_seconds(da, dc)['repeat']
+               for da, dc in zip(days, cats))
     cs = list({day[-1][1] for day in days[:-1]})
     print(f"  {lbl:8}: {len(days)} days  "
-          f"({t / 3600:.1f}h total, {dh / 3600:.1f}h deadhead, "
+          f"({t / 3600:.1f}h total, {xtra / 3600:.1f}h connector+repeat, "
           f"{len(cs)} distinct campsites)")
 
 # --- Constraint verification ---
@@ -1478,33 +1522,40 @@ with open(OUT_PATH, 'w', encoding='utf-8') as f:
     f.write(f"{'=' * 70}\n")
     f.write(f"  Total days : {n_days}\n")
     f.write(f"  Total time : {grand_total_s / 3600:.1f}h  "
-            f"({grand['req_s'] / 3600:.1f}h required + "
-            f"{grand['dh_s'] / 3600:.1f}h deadhead)\n")
+            f"({grand['new_s'] / 3600:.1f}h new trail + "
+            f"{grand['conn_s'] / 3600:.1f}h connector + "
+            f"{grand['rep_s'] / 3600:.1f}h repeat)\n")
     f.write(f"  Total miles: {grand['miles']:.1f} mi\n")
     f.write(f"  Elev gain  : {grand['gain']:,} ft\n\n")
+    f.write("  Arc tags: untagged = new trail (first pass of a required trail)\n")
+    f.write("            [CN] = connector (first pass of a non-required road/path)\n")
+    f.write("            [RP] = repeat (edge already traversed)\n\n")
 
-    for day_num, day_arcs in enumerate(itinerary_days, 1):
+    ARC_TAG = {'new': '    ', 'connector': '[CN]', 'repeat': '[RP]'}
+    for day_num, (day_arcs, day_cats) in enumerate(zip(itinerary_days, itinerary_cats), 1):
         start_n  = day_arcs[0][0]
         end_n    = day_arcs[-1][1]
         day_s    = sum(d['weight'] for _, _, _, d in day_arcs)
-        req_s    = sum(d['weight'] for _, _, _, d in day_arcs if not d['is_deadhead'])
-        dh_s     = sum(d['weight'] for _, _, _, d in day_arcs if d['is_deadhead'])
+        cat_s    = day_cat_seconds(day_arcs, day_cats)
         miles    = sum(d['miles']  for _, _, _, d in day_arcs)
         gain_ft  = sum(d.get('gain', 0) for _, _, _, d in day_arcs)
 
         f.write(f"{'=' * 70}\n")
         f.write(f"DAY {day_num:>2}  |  {start_n} -> {end_n}\n")
         f.write(f"        {fmt_hm(day_s)} total  "
-                f"(req {fmt_hm(req_s)}, dh {fmt_hm(dh_s)})  "
+                f"(new {fmt_hm(cat_s['new'])}, conn {fmt_hm(cat_s['connector'])}, "
+                f"repeat {fmt_hm(cat_s['repeat'])})  "
                 f"{miles:.1f} mi  +{gain_ft:,} ft\n")
         f.write(f"{'-' * 70}\n")
 
-        for u, v, k, d in day_arcs:
-            tag = "[DH]" if d['is_deadhead'] else "    "
-            if not d['is_deadhead']:
-                dir_flag = "A->B" if "_fwd" in k else "B->A"
+        for (u, v, k, d), cat in zip(day_arcs, day_cats):
+            tag = ARC_TAG[cat]
+            if "_fwd" in k:
+                dir_flag = "A->B"
+            elif "_rev" in k:
+                dir_flag = "B->A"
             else:
-                dir_flag = " dh "
+                dir_flag = " -- "
             trail   = d.get('trail', '')
             arc_min = d['weight'] // 60
             arc_mi  = d['miles']
