@@ -23,7 +23,7 @@ The result is a single continuous walk (no driving between segments) that covers
 - Configurable max hiking hours per day. There is no user-facing minimum: the solver minimizes day count first, then maximizes the shortest day (last day exempt) at that count.
 - Overnights only at legal locations (`BC`/`SH`/`CG` nodes); shelters and BC113 allow 1 consecutive night, other backcountry sites up to 3.
 - Either direction of traversal satisfies coverage of a required edge; any edge may be repeated (deadheaded), but repeat time counts against the daily budget.
-- Optional resupply-interval constraint (`MAX_DAYS_BETWEEN_RESUPPLY`).
+- Optional resupply window (`--max-resupply-days N`): at most N consecutive days without touching one of 10 resupply nodes (town-access trailheads and the two road campgrounds). Pass-through semantics — walking past a resupply point counts, since most are trailheads where overnighting is illegal. The Euler tour can go 100h+ between natural touches, so a per-stretch shortest-path plan splices minimum-cost out-and-back detours into the walk before day-splitting.
 
 ## Files
 
@@ -41,9 +41,10 @@ Requires Python 3.10+ with `pandas`, `networkx`, and `ortools`:
 ```
 pip install pandas networkx ortools
 python smokies_circuit_solver_20260509a.py --max-hours 12
+python smokies_circuit_solver_20260509a.py --max-hours 12 --max-resupply-days 5
 ```
 
-The solver writes a day-by-day itinerary as text and JSON. The JSON presets consumed by the [web app](../docs/) were generated this way for each combination of circuit type (open/closed) and max day (10/12/14 h).
+The solver writes a day-by-day itinerary as text and JSON. The JSON presets consumed by the [web app](../docs/) were generated this way for each combination of circuit type (open/closed) and max day (8/10/12/14/16 h); resupply-constrained presets carry an `_rN` suffix (currently 4–8 day windows at 12 h).
 
 ## Results so far
 
@@ -54,5 +55,17 @@ CP-SAT finds an optimal direction assignment in ~2–3 s. Because some campsite 
 | 10 h | 51 days | 49 days | 7h25m |
 | 12 h | 41 days | 43 days | 9h06m |
 | 14 h | 33 days | 34 days | 11h22m |
+| 16 h | 30 days | 29 days | 13h34m |
 
 The remaining gap to the theoretical lower bound is driven by campsite placement, not by the routing itself.
+
+Resupply windows are nearly free at 12 h. The detour plan touches town-access points with tiny out-and-backs (6 min to Bryson City, 20 min to Cades Cove); the one costly case is the remote southwest corner, which forces an 8.4 h round trip to Fontana on the closed circuit:
+
+| Window (12 h days) | Open circuit | Closed circuit | Extra repeat walking (open / closed) |
+|--------------------|--------------|----------------|--------------------------------------|
+| unlimited | 41 days | 43 days | — |
+| ≤ 8 days | 41 days | 43 days | +0.0h / +1.9h |
+| ≤ 7 days | 41 days | 43 days | +0.1h / +6.9h |
+| ≤ 6 days | 41 days | 43 days | +1.6h / +7.8h |
+| ≤ 5 days | 41 days | 43 days | +2.5h / +11.3h |
+| ≤ 4 days | 42 days | 43 days | +8.6h / +16.3h |

@@ -6,6 +6,8 @@ from collections import Counter
 
 _ap = argparse.ArgumentParser(description='GSMNP circuit solver')
 _ap.add_argument('--max-hours', type=float, default=12.0, help='Max hiking hours per day (default: 12)')
+_ap.add_argument('--max-resupply-days', type=int, default=None,
+                 help='Max days between resupply visits (default: disabled)')
 _args = _ap.parse_args()
 
 # ---------------------------------------------------------------------------
@@ -34,7 +36,7 @@ RESUPPLY_NODES = {
     'TH220',   # Cosby
     'CGSMO',   # Smokemont Campground
 }
-MAX_DAYS_BETWEEN_RESUPPLY = None  # Set to e.g. 5 to enforce; None = disabled
+MAX_DAYS_BETWEEN_RESUPPLY = _args.max_resupply_days  # None = disabled
 
 df = pd.read_csv(CSV_PATH)
 
@@ -1109,9 +1111,12 @@ def day_split_dp_constrained(arc_seq, overnight_set, single_night, max_s, min_s,
     DP partition with max_s, min_s (last day exempt), and consecutive overnight
     constraints: single_night nodes cap at 1 consecutive night, other BC nodes at 3.
 
-    Optional resupply constraint: if max_days_resupply is set, every run of
-    consecutive days must include a resupply node within that many days.
-    The hiker is assumed to start already supplied (days_since_resupply=0).
+    Optional resupply constraint: if max_days_resupply is set, at most that
+    many consecutive days may pass without the walk touching a resupply node.
+    Pass-through semantics: most resupply points are trailheads where the
+    hiker cannot legally overnight, so a day is credited when its walk passes
+    through a resupply node, not only when it ends at one.  The hiker starts
+    already supplied (days_since_resupply=0), and the final day is exempt.
 
     Recursion depth ~ number of days (~50-70), well within Python's limit.
     Returns list of day arc-lists, or None if infeasible.
@@ -1121,6 +1126,14 @@ def day_split_dp_constrained(arc_seq, overnight_set, single_night, max_s, min_s,
     memo: dict = {}
     back: dict = {}
     use_resupply = (max_days_resupply is not None and resupply_set is not None)
+    if use_resupply:
+        # Prefix count of resupply touches over arc to-nodes: a day spanning
+        # arcs i..j touches a resupply node iff _rs_pref[j+1] - _rs_pref[i] > 0.
+        # (From-nodes are covered as the previous day's to-node; the walk's
+        # start node needs no credit since the hiker starts supplied.)
+        _rs_pref = [0] * (N + 1)
+        for _k in range(N):
+            _rs_pref[_k + 1] = _rs_pref[_k] + (1 if arc_seq[_k][1] in resupply_set else 0)
 
     def dp(i, last_on, consec, days_since_resupply):
         if i == N:
@@ -1149,9 +1162,10 @@ def day_split_dp_constrained(arc_seq, overnight_set, single_night, max_s, min_s,
             else:
                 new_on, new_consec = to_node, 1
 
-            # Resupply tracking
+            # Resupply tracking (pass-through: any touch during the day counts)
             if use_resupply:
-                new_dsr = 0 if (to_node in resupply_set or is_last) \
+                day_touches = (_rs_pref[j + 1] - _rs_pref[i]) > 0
+                new_dsr = 0 if (day_touches or is_last) \
                             else days_since_resupply + 1
                 if new_dsr > max_days_resupply:
                     continue
@@ -1346,6 +1360,115 @@ def split_days_balanced(arc_seq):
     return best, lo
 
 
+def insert_resupply_detours(arc_seq, rs_nodes, max_days, max_day_s, label):
+    """Pre-process a walk so a resupply window is achievable by day-splitting.
+
+    The Euler tour is built with no knowledge of resupply, so it can go 100h+
+    between resupply touches -- no day re-slicing can fix that.  This inserts
+    out-and-back deadhead detours to the cheapest reachable resupply node
+    wherever the walk would otherwise exceed max_days day-budgets
+    (max_days * max_day_s walking seconds) since its last touch.  Positions
+    are chosen greedily: walk as far as the window allows, then detour from
+    the cheapest round-trip candidate seen since the last touch.
+    """
+    INF    = float('inf')
+    target = max_days * max_day_s
+
+    # Up to 3 cheapest round-trip resupply options per node
+    rt_opts: dict[str, list] = {}
+    def rt_options(node):
+        if node not in rt_opts:
+            opts = sorted(
+                (D[node].get(r, INF) + D[r].get(node, INF),
+                 D[node].get(r, INF), D[r].get(node, INF), r) for r in rs_nodes)
+            rt_opts[node] = [o for o in opts[:3] if o[0] < INF]
+        return rt_opts[node]
+
+    # Split the walk into stretches between natural resupply touches.
+    stretches, cur = [], []
+    for arc in arc_seq:
+        cur.append(arc)
+        if arc[1] in rs_nodes:
+            stretches.append(cur)
+            cur = []
+    if cur:                    # trailing stretch: no touch at its end
+        stretches.append(cur)
+
+    def plan(arcs):
+        """Min-cost insertions for one touch-to-touch stretch: shortest path
+        over (boundary, resupply node) candidates such that no walk-time gap
+        between consecutive touches exceeds target.  Returns [(idx, node)]
+        (detour before arc idx), [] if none needed, or None if infeasible."""
+        S = sum(d['weight'] for *_, d in arcs)
+        if S <= target:
+            return []
+        cands, T = [], 0
+        for idx, (u, _v, _k, d) in enumerate(arcs):
+            for cost, out, back, r in rt_options(u):
+                cands.append((T, idx, cost, out, back, r))
+            T += d['weight']
+        best   = [INF] * len(cands)
+        parent = [-1] * len(cands)
+        for i, (T_i, idx_i, c_i, o_i, _b_i, _r_i) in enumerate(cands):
+            if T_i + o_i <= target:
+                best[i] = c_i
+            for j in range(i):
+                T_j, idx_j, _c_j, _o_j, b_j, _r_j = cands[j]
+                if (best[j] < INF and idx_j < idx_i
+                        and (T_i - T_j) + b_j + o_i <= target
+                        and best[j] + c_i < best[i]):
+                    best[i], parent[i] = best[j] + c_i, j
+        goal, goal_cost = -1, INF
+        for i, (T_i, _idx_i, _c_i, _o_i, b_i, _r_i) in enumerate(cands):
+            if best[i] < goal_cost and (S - T_i) + b_i <= target:
+                goal, goal_cost = i, best[i]
+        if goal < 0:
+            return None
+        chain = []
+        while goal >= 0:
+            chain.append((cands[goal][1], cands[goal][5]))
+            goal = parent[goal]
+        return chain[::-1]
+
+    inserts = []               # (global_pos, rs_node)
+    base = 0
+    for arcs in stretches:
+        planned = plan(arcs)
+        if planned is None:
+            print(f"  {label}: no feasible resupply detour plan for a "
+                  f"{sum(d['weight'] for *_, d in arcs) / 3600:.0f}h stretch "
+                  f"-- giving up")
+            return arc_seq
+        inserts += [(base + idx, r) for idx, r in planned]
+        base += len(arcs)
+
+    if not inserts:
+        return arc_seq
+
+    # Phase 2: splice the round trips into the walk.
+    by_pos: dict[int, list[str]] = {}
+    for ipos, r in inserts:
+        by_pos.setdefault(ipos, []).append(r)
+    out, serial, det_s = [], 0, 0
+    for pos, arc in enumerate(arc_seq):
+        for r in by_pos.get(pos, []):
+            n = arc[0]
+            for leg in (P[n][r], P[r][n]):
+                for au, av, _k, hd in edge_path(G, leg):
+                    serial += 1
+                    det_s  += hd['weight']
+                    out.append((au, av, f"rsdet_{serial}", {**hd, 'is_deadhead': True}))
+        out.append(arc)
+
+    print(f"  {label}: inserted {len(inserts)} resupply detour(s), "
+          f"+{det_s / 3600:.1f}h repeat walking:")
+    for ipos, r in inserts:
+        n = arc_seq[ipos][0]
+        print(f"    at {n}: out-and-back to {r}  "
+              f"({(D[n][r] + D[r][n]) / 3600:.1f}h round trip)")
+    return out
+
+
 # Run the balanced day split for closed and open circuits; greedy+detour
 # fallback if no floor-0 split exists
 dp_results: dict[str, list | None] = {}
@@ -1353,6 +1476,11 @@ for label, arc_seq in [("Closed", circuit), ("Open", open_circuit)]:
     if arc_seq is None:
         dp_results[label] = None
         continue
+
+    if MAX_DAYS_BETWEEN_RESUPPLY is not None:
+        arc_seq = insert_resupply_detours(arc_seq, resupply_set,
+                                          MAX_DAYS_BETWEEN_RESUPPLY,
+                                          MAX_DAY_SECONDS, label)
 
     days, floor_s = split_days_balanced(arc_seq)
     method = "DP (min days, floor maximized)"
@@ -1375,10 +1503,21 @@ for label, arc_seq in [("Closed", circuit), ("Open", open_circuit)]:
             refined = day_split_dp_constrained(aug, overnight_set, single_night,
                                                MAX_DAY_SECONDS, 0,
                                                resupply_set, MAX_DAYS_BETWEEN_RESUPPLY)
+            if refined is None and MAX_DAYS_BETWEEN_RESUPPLY is not None:
+                # The greedy heuristic is resupply-blind; drop candidates whose
+                # detour placement admits no resupply-feasible re-split.
+                print(f"    floor {frac:>5.0%}: no resupply-feasible split -- skipped")
+                continue
             n = len(refined) if refined is not None else len(cand)
             n_det = sum(1 for _, _, k, _ in aug if k.startswith("det_"))
             print(f"    floor {frac:>5.0%}: {n} days  ({n_det} detour arcs)")
             candidates.append((n, frac, aug, cand))
+
+        if not candidates:
+            print(f"  {label}: no candidate satisfies the resupply constraint -- "
+                  f"resupply-aware detour insertion would be needed")
+            dp_results[label] = None
+            continue
 
         # Tie-break: each tied candidate has a different detour placement, so
         # balance every one and keep the itinerary whose shortest non-last day
@@ -1556,20 +1695,20 @@ for day_num, day_arcs in enumerate(itinerary_days[:-1], 1):
 print(f"  Consecutive overnight violations: {consec_violations}"
       + ("  OK" if consec_violations == 0 else ""))
 
-# --- Resupply verification ---
+# --- Resupply verification (pass-through: any touch during the day counts;
+#     hiker starts supplied; final day exempt) ---
 if MAX_DAYS_BETWEEN_RESUPPLY is not None:
     resupply_stops = []
     days_since_last = 0
     resupply_violations = 0
-    # Circuit start counts as resupply (hiker starts supplied)
-    start_node = itinerary_days[0][0][0]
     for day_num, day_arcs in enumerate(itinerary_days, 1):
-        end_n = day_arcs[-1][1]
         days_since_last += 1
-        if end_n in resupply_set:
-            resupply_stops.append((day_num, end_n, days_since_last))
+        touched = {v for _u, v, _k, _d in day_arcs} & resupply_set
+        if touched:
+            resupply_stops.append((day_num, ','.join(sorted(touched)), days_since_last))
             days_since_last = 0
-        elif days_since_last > MAX_DAYS_BETWEEN_RESUPPLY:
+        elif (days_since_last > MAX_DAYS_BETWEEN_RESUPPLY
+              and day_num < len(itinerary_days)):
             resupply_violations += 1
             print(f"  Day {day_num}: resupply violation "
                   f"({days_since_last} days since last resupply)")
@@ -1587,7 +1726,8 @@ else:
 # Write full arc-level itinerary to text file
 # ---------------------------------------------------------------------------
 _max_h = int(_args.max_hours)
-OUT_PATH = f'smokies_itinerary_{_max_h}h.txt'
+_rs_sfx = f"_r{MAX_DAYS_BETWEEN_RESUPPLY}" if MAX_DAYS_BETWEEN_RESUPPLY is not None else ""
+OUT_PATH = f'smokies_itinerary_{_max_h}h{_rs_sfx}.txt'
 with open(OUT_PATH, 'w', encoding='utf-8') as f:
     f.write(f"GSMNP Complete Trail Itinerary -- {itinerary_label} Circuit\n")
     f.write(f"{'=' * 70}\n")
@@ -1685,7 +1825,7 @@ for _lbl in ("Open", "Closed"):
         print(f"  {_lbl}: no valid partition — skipped")
         continue
     _export = _build_preset(_lbl, _days)
-    _fname  = f"preset_{_lbl.lower()}_{_max_h}h.json"
+    _fname  = f"preset_{_lbl.lower()}_{_max_h}h{_rs_sfx}.json"
     _path   = os.path.join(_preset_dir, _fname)
     with open(_path, "w", encoding="utf-8") as _jf:
         _json.dump(_export, _jf, indent=2)

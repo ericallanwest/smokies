@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GSMNP Itinerary Planner</title>
+  <title>Great Smokies Circuit Planner</title>
   <link rel="icon" type="image/svg+xml"
         href="https://raw.githubusercontent.com/nationalparkservice/symbol-library/gh-pages/src/standalone/self-guiding-trail-black-22.svg">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -22,9 +22,11 @@
   <div class="param-group">
     <div class="param-label">Max hiking day</div>
     <div class="param-options">
+      <label><input type="radio" name="max_day" value="8"> 8 h</label>
       <label><input type="radio" name="max_day" value="10"> 10 h</label>
       <label><input type="radio" name="max_day" value="12" checked> 12 h</label>
       <label><input type="radio" name="max_day" value="14"> 14 h</label>
+      <label><input type="radio" name="max_day" value="16"> 16 h</label>
     </div>
   </div>
   <div class="param-group">
@@ -32,6 +34,17 @@
     <div class="param-options">
       <label><input type="radio" name="circuit" value="open" checked> Open</label>
       <label><input type="radio" name="circuit" value="closed"> Closed</label>
+    </div>
+  </div>
+  <div class="param-group">
+    <div class="param-label">Max days between resupply</div>
+    <div class="param-options">
+      <label><input type="radio" name="resupply" value="none" checked> ∞</label>
+      <label><input type="radio" name="resupply" value="4"> 4</label>
+      <label><input type="radio" name="resupply" value="5"> 5</label>
+      <label><input type="radio" name="resupply" value="6"> 6</label>
+      <label><input type="radio" name="resupply" value="7"> 7</label>
+      <label><input type="radio" name="resupply" value="8"> 8</label>
     </div>
   </div>
   <div id="presetInfo"></div>
@@ -49,14 +62,11 @@
   <div class="day-route"  id="sbRoute">— → —</div>
   <div class="sec-title">Today</div>
   <div class="stat-grid">
-    <span class="stat-lbl">Total time</span>  <span class="stat-val" id="sbTime">—</span>
-    <span class="stat-lbl">New trail</span>   <span class="stat-val" id="sbReq">—</span>
-    <span class="stat-lbl">Connector</span>   <span class="stat-val" id="sbConn">—</span>
-    <span class="stat-lbl">Repeat</span>      <span class="stat-val" id="sbDH">—</span>
-    <span class="stat-lbl">Miles</span>       <span class="stat-val" id="sbMiles">—</span>
-    <span class="stat-lbl">Gain</span>        <span class="stat-val" id="sbGain">—</span>
-    <span class="stat-lbl">New miles</span>   <span class="stat-val" id="sbReqMi">—</span>
-    <span class="stat-lbl">Repeat miles</span><span class="stat-val" id="sbRepMi">—</span>
+    <span class="stat-lbl">Total:</span>     <span class="stat-val" id="sbTotal">—</span>
+    <span class="stat-lbl">New:</span>       <span class="stat-val" id="sbNew">—</span>
+    <span class="stat-lbl">Repeat:</span>    <span class="stat-val" id="sbRepeat">—</span>
+    <span class="stat-lbl">Connector:</span> <span class="stat-val" id="sbConn">—</span>
+    <span class="stat-lbl">Elevation:</span> <span class="stat-val" id="sbElev">—</span>
   </div>
   <div class="sec-title">Map Completion</div>
   <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>

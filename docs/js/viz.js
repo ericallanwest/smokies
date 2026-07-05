@@ -64,6 +64,16 @@ function buildNodeCoords(pointsGJ) {
   return coords;
 }
 
+function buildNodeElev(pointsGJ) {
+  const elev = {};
+  for (const feat of pointsGJ.features) {
+    const nid = feat.properties.id || '';
+    if (!nid) continue;
+    elev[nid] = parseFloat(feat.properties.elevation);
+  }
+  return elev;
+}
+
 function buildAllNodes(pointsGJ) {
   return pointsGJ.features
     .filter(f => f.properties.id)
@@ -78,7 +88,7 @@ function buildAllNodes(pointsGJ) {
     });
 }
 
-function buildGeomAndDays(itinerary, directedGeom, namedGeom, nodeCoords) {
+function buildGeomAndDays(itinerary, directedGeom, namedGeom, nodeCoords, nodeElev, edgeGains) {
   const geomDict = {}, geomDirCache = {};
   const globalSeen = new Set();
   let cumReqMiles = 0;
@@ -120,7 +130,8 @@ function buildGeomAndDays(itinerary, directedGeom, namedGeom, nodeCoords) {
   for (const dayInfo of itinerary.days) {
     const steps = [];
     let dayTotalS = 0, dayNewS = 0, dayConnS = 0, dayRepS = 0;
-    let dayMiles = 0, dayGain = 0, dayNewReqMiles = 0, dayRepMiles = 0;
+    let dayMiles = 0, dayGain = 0, dayLoss = 0;
+    let dayNewReqMiles = 0, dayConnMiles = 0, dayRepMiles = 0;
 
     for (const arc of dayInfo.arcs) {
       const { from: u, to: v, edge_id: eid, trail, miles, seconds, gain } = arc;
@@ -132,18 +143,24 @@ function buildGeomAndDays(itinerary, directedGeom, namedGeom, nodeCoords) {
       const cat = !firstPass ? 'repeat' : (isRequired ? 'new' : 'connector');
 
       const { gkey, geomFwd } = resolveCoords(u, v, trail, eid);
-      dayTotalS += seconds; dayMiles += miles; dayGain += gain;
+      // Loss along u→v is the edge list's gain in the opposite direction;
+      // fall back to gain minus net elevation change if the edge is unknown.
+      const eg = eidStr != null ? edgeGains[eidStr] : null;
+      const eu = nodeElev[u], ev = nodeElev[v];
+      const loss = eg ? (u === eg[0] ? eg[2] : eg[1])
+                      : (eu != null && ev != null ? Math.max(0, gain - (ev - eu)) : 0);
+      dayTotalS += seconds; dayMiles += miles; dayGain += gain; dayLoss += loss;
       const tlabel = isRequired ? trailLabel(trail) : trail;
       steps.push({
         key: gkey, eid, geom_fwd: geomFwd, trail: tlabel,
-        from: u, to: v, miles, seconds, gain,
+        from: u, to: v, miles, seconds, gain, loss,
         popup: `<b>${tlabel}</b><br>${u} → ${v}<br>${miles.toFixed(2)} mi &nbsp; ${fmtHM(seconds)}<br>+${gain.toLocaleString()} ft`,
         cat,
       });
       if (cat === 'repeat') {
         dayRepS += seconds; dayRepMiles += miles;
       } else if (cat === 'connector') {
-        dayConnS += seconds;
+        dayConnS += seconds; dayConnMiles += miles;
       } else {
         dayNewS += seconds; dayNewReqMiles += miles;
         globalSeen.add(eid);
@@ -156,7 +173,9 @@ function buildGeomAndDays(itinerary, directedGeom, namedGeom, nodeCoords) {
       total_s: dayTotalS, new_s: dayNewS, conn_s: dayConnS, rep_s: dayRepS,
       miles:         Math.round(dayMiles       * 100) / 100,
       gain:          Math.round(dayGain),
+      loss:          Math.round(dayLoss),
       req_miles:     Math.round(dayNewReqMiles * 100) / 100,
+      conn_miles:    Math.round(dayConnMiles   * 100) / 100,
       rep_miles:     Math.round(dayRepMiles    * 100) / 100,
       cum_req_miles: Math.round(cumReqMiles    * 100) / 100,
       start_coords: nodeCoords[dayInfo.start_node] || null,
@@ -299,7 +318,7 @@ function buildItinerary(d) {
       <b>${s.trail}</b>${extra}<br>
       <span style="color:#666677;padding-left:12px">
         ${nodeName(s.from)} → ${nodeName(s.to)}<br>
-        ${s.miles.toFixed(2)} mi &nbsp; ${fmtHM(s.seconds)} &nbsp; +${s.gain.toLocaleString()} ft
+        ${s.miles.toFixed(2)} mi &nbsp; ${fmtHM(s.seconds)} &nbsp; ${s.gain} ft ↑ / ${s.loss} ft ↓
       </span>
     </div>`;
   }).join('');
@@ -396,14 +415,11 @@ function updateDay(d) {
   // Sidebar stats
   document.getElementById('sbDay').textContent   = `Day ${d} of ${META.n_days}`;
   document.getElementById('sbRoute').textContent = `${nodeName(day.start_node)} → ${nodeName(day.end_node)}`;
-  document.getElementById('sbTime').textContent  = fmtHM(day.total_s);
-  document.getElementById('sbReq').textContent   = fmtHM(day.new_s);
-  document.getElementById('sbConn').textContent  = fmtHM(day.conn_s);
-  document.getElementById('sbDH').textContent    = fmtHM(day.rep_s);
-  document.getElementById('sbMiles').textContent = day.miles.toFixed(1) + ' mi';
-  document.getElementById('sbGain').textContent  = '+' + day.gain.toLocaleString() + ' ft';
-  document.getElementById('sbReqMi').textContent = day.req_miles.toFixed(1) + ' mi';
-  document.getElementById('sbRepMi').textContent = day.rep_miles.toFixed(1) + ' mi';
+  document.getElementById('sbTotal').textContent  = `${day.miles.toFixed(1)} mi / ${fmtHM(day.total_s)}`;
+  document.getElementById('sbNew').textContent    = `${day.req_miles.toFixed(1)} mi / ${fmtHM(day.new_s)}`;
+  document.getElementById('sbRepeat').textContent = `${day.rep_miles.toFixed(1)} mi / ${fmtHM(day.rep_s)}`;
+  document.getElementById('sbConn').textContent   = `${day.conn_miles.toFixed(1)} mi / ${fmtHM(day.conn_s)}`;
+  document.getElementById('sbElev').textContent   = `${day.gain} ft ↑ / ${day.loss} ft ↓`;
   document.getElementById('dayLbl').textContent  = `Day ${d} / ${META.n_days}`;
   document.getElementById('daySlider').value     = d;
 
@@ -526,7 +542,7 @@ function initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, cov) {
 }
 
 // ── Data loading ───────────────────────────────────────────────────────────
-let _linesGJ = null, _pointsGJ = null;
+let _linesGJ = null, _pointsGJ = null, _edgeGains = null;
 
 function showLoading(on) {
   document.getElementById('loading').classList.toggle('visible', on);
@@ -534,9 +550,10 @@ function showLoading(on) {
 
 async function ensureBaseData() {
   if (_linesGJ) return;
-  [_linesGJ, _pointsGJ] = await Promise.all([
+  [_linesGJ, _pointsGJ, _edgeGains] = await Promise.all([
     fetch(LINES_URL).then(r  => { if (!r.ok)  throw new Error('lines GeoJSON failed');  return r.json(); }),
     fetch(POINTS_URL).then(r => { if (!r.ok)  throw new Error('points GeoJSON failed'); return r.json(); }),
+    fetch('data/edge_gains.json').then(r => { if (!r.ok) throw new Error('edge gains failed'); return r.json(); }),
   ]);
 }
 
@@ -555,8 +572,9 @@ async function loadPreset(filename) {
 
     const { geom, named }               = buildDirectedGeom(_linesGJ);
     const nodeCoords                     = buildNodeCoords(_pointsGJ);
+    const nodeElev                       = buildNodeElev(_pointsGJ);
     const allNodes                       = buildAllNodes(_pointsGJ);
-    const { geomDict, daysData, covByDay } = buildGeomAndDays(itinerary, geom, named, nodeCoords);
+    const { geomDict, daysData, covByDay } = buildGeomAndDays(itinerary, geom, named, nodeCoords, nodeElev, _edgeGains);
     const bgLayer                        = buildBgLayer(itinerary);
     const optLayer                       = buildOptionalLayer(_linesGJ, bgLayer, geomDict);
     const meta = {
@@ -577,7 +595,8 @@ async function loadPreset(filename) {
 function currentPresetFile() {
   const max = document.querySelector('input[name="max_day"]:checked')?.value  ?? '12';
   const cir = document.querySelector('input[name="circuit"]:checked')?.value  ?? 'open';
-  return `preset_${cir}_${max}h.json`;
+  const rs  = document.querySelector('input[name="resupply"]:checked')?.value ?? 'none';
+  return `preset_${cir}_${max}h${rs === 'none' ? '' : `_r${rs}`}.json`;
 }
 
 // ── Node layer visibility (zoom-dependent) ─────────────────────────────────
@@ -728,7 +747,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ── Left sidebar preset selectors ────────────────────────────────────────
-  document.querySelectorAll('input[name="max_day"], input[name="circuit"]')
+  document.querySelectorAll('input[name="max_day"], input[name="circuit"], input[name="resupply"]')
     .forEach(el => el.addEventListener('change', () => loadPreset(currentPresetFile())));
 
   // Load the default preset on startup
