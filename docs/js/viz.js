@@ -226,8 +226,8 @@ const trailheadGroup    = L.layerGroup();
 
 const BG_NORMAL  = { color:'#999',     weight:5, opacity:0.75 };
 const BG_SEL     = { color:'#FFD700',  weight:7, opacity:1    };
-const OPT_NORMAL = { color:'#f08080',  weight:5, opacity:0.75 };
-const OPT_SEL    = { color:'#FFD700',  weight:7, opacity:1    };
+const OPT_NORMAL = { color:'#a9cce3',  weight:4, opacity:0.65, dashArray:'4,6' };
+const OPT_SEL    = { color:'#FFD700',  weight:7, opacity:1,    dashArray:null  };
 
 // ── Leaflet helpers ────────────────────────────────────────────────────────
 const _iconCache = {};
@@ -465,6 +465,23 @@ function initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, cov) {
   if (startMarker) { startMarker.remove(); startMarker = null; }
   if (endMarker)   { endMarker.remove();   endMarker   = null; }
 
+  // Available connector network (non-required segments) — added before the
+  // required edges so its paths render beneath them
+  for (const seg of OPT) {
+    const coords = GEOM[seg.key];
+    if (!coords || coords.length < 2) continue;
+    const popup = `<b>${seg.trail}</b><br>${seg.from} ↔ ${seg.to}<br>${seg.miles.toFixed(2)} mi<br>+${seg.gain.toLocaleString()} ft`;
+    const poly = L.polyline(coords, { ...OPT_NORMAL })
+      .bindTooltip(seg.trail, { sticky:true, opacity:0.85 })
+      .bindPopup(popup);
+    poly.on('click', e => {
+      L.DomEvent.stopPropagation(e);
+      if (selectedOptPoly) selectedOptPoly.setStyle(OPT_NORMAL);
+      selectedOptPoly = poly; poly.setStyle(OPT_SEL);
+    });
+    poly.addTo(optGroup);
+  }
+
   // Background required edges (all, gray — coverage highlighted per day)
   for (const seg of BG) {
     const coords = GEOM[seg.key];
@@ -479,22 +496,6 @@ function initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, cov) {
       selectedBgPoly = poly; poly.setStyle(BG_SEL);
     });
     poly.addTo(bgGroup);
-  }
-
-  // Optional (non-required) segments
-  for (const seg of OPT) {
-    const coords = GEOM[seg.key];
-    if (!coords || coords.length < 2) continue;
-    const popup = `<b>${seg.trail}</b><br>${seg.from} ↔ ${seg.to}<br>${seg.miles.toFixed(2)} mi<br>+${seg.gain.toLocaleString()} ft`;
-    const poly = L.polyline(coords, { ...OPT_NORMAL })
-      .bindTooltip(seg.trail, { sticky:true, opacity:0.85 })
-      .bindPopup(popup);
-    poly.on('click', e => {
-      L.DomEvent.stopPropagation(e);
-      if (selectedOptPoly) selectedOptPoly.setStyle(OPT_NORMAL);
-      selectedOptPoly = poly; poly.setStyle(OPT_SEL);
-    });
-    poly.addTo(optGroup);
   }
 
   // NPS icon markers by node type
@@ -607,8 +608,8 @@ document.addEventListener('DOMContentLoaded', () => {
     { attribution:'Hillshade &copy; Esri', maxZoom:16, opacity:0.15, zIndex:2 }
   ).addTo(map);
 
-  // Persistent layer groups
-  [bgGroup, covGroup, connGroup, dhGroup, reqGroup, arrowGroup].forEach(g => g.addTo(map));
+  // Persistent layer groups (optGroup rides the Connectors toggle, on by default)
+  [optGroup, bgGroup, covGroup, connGroup, dhGroup, reqGroup, arrowGroup].forEach(g => g.addTo(map));
 
   map.on('click', () => {
     if (selectedBgPoly)  { selectedBgPoly.setStyle(BG_NORMAL);   selectedBgPoly  = null; }
@@ -692,13 +693,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Toggle controls ──────────────────────────────────────────────────────
   document.getElementById('togDH').addEventListener('change', () => updateDay(currentDay));
-  document.getElementById('togConn').addEventListener('change', () => updateDay(currentDay));
+  document.getElementById('togConn').addEventListener('change', function() {
+    if (this.checked) optGroup.addTo(map);
+    else map.removeLayer(optGroup);
+    updateDay(currentDay);
+  });
   ['togIntersections','togCamping','togTrailheads'].forEach(id =>
     document.getElementById(id).addEventListener('change', updateNodeVisibility));
-  document.getElementById('togOpt').addEventListener('change', function() {
-    if (this.checked) { optGroup.addTo(map); bgGroup.bringToFront(); }
-    else map.removeLayer(optGroup);
-  });
 
   // ── Opacity sliders ──────────────────────────────────────────────────────
   document.getElementById('mapwarpOpacity').addEventListener('input', function() {
