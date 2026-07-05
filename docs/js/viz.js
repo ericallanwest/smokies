@@ -226,7 +226,7 @@ const trailheadGroup    = L.layerGroup();
 
 const BG_NORMAL  = { color:'#999',     weight:5, opacity:0.75 };
 const BG_SEL     = { color:'#FFD700',  weight:7, opacity:1    };
-const OPT_NORMAL = { color:'#a9cce3',  weight:4, opacity:0.65, dashArray:'4,6' };
+const OPT_NORMAL = { color:'#f08080',  weight:4, opacity:0.65, dashArray:'4,6' };
 const OPT_SEL    = { color:'#FFD700',  weight:7, opacity:1,    dashArray:null  };
 
 // ── Leaflet helpers ────────────────────────────────────────────────────────
@@ -282,7 +282,9 @@ function addPoly(group, coords, opts, popup, tooltip) {
 // ── Rendering ──────────────────────────────────────────────────────────────
 const showRep  = () => document.getElementById('togDH').checked;
 const showConn = () => document.getElementById('togConn').checked;
-const CAT_COLOR = { new:'#f7882f', connector:'#2980b9', repeat:'#c0392b' };
+// Connectors and repeats share the red colorway — neither adds new
+// map-completion mileage.  Connectors draw solid, repeats dashed.
+const CAT_COLOR = { new:'#f7882f', connector:'#c0392b', repeat:'#c0392b' };
 function nodeName(id) { return NODE_NAME[id] || id; }
 
 function buildItinerary(d) {
@@ -290,7 +292,7 @@ function buildItinerary(d) {
   document.getElementById('itinerary').innerHTML = day.steps.map((s, i) => {
     const dot   = CAT_COLOR[s.cat];
     const extra = s.cat === 'repeat'    ? ' <span style="color:#c0392b;font-size:10px">(repeat)</span>'
-                : s.cat === 'connector' ? ' <span style="color:#2980b9;font-size:10px">(connector)</span>'
+                : s.cat === 'connector' ? ' <span style="color:#c0392b;font-size:10px">(connector)</span>'
                 : '';
     return `<div class="itin-step" data-step="${i+1}" style="padding:3px 4px 3px 6px;border-radius:3px;cursor:pointer;border-left:3px solid transparent">
       <span style="color:${dot};font-weight:700">${i+1}.</span>
@@ -330,7 +332,7 @@ function stepGroup(cat) {
 
 function stepStyle(cat) {
   if (cat === 'repeat')    return { color:'#c0392b', weight:5, opacity:0.9, dashArray:'6,5' };
-  if (cat === 'connector') return { color:'#2980b9', weight:5, opacity:0.9 };
+  if (cat === 'connector') return { color:'#c0392b', weight:5, opacity:0.9 };
   return { color:'#f7882f', weight:5, opacity:1 };
 }
 
