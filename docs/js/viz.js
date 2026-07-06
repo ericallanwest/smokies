@@ -6,6 +6,20 @@ const NPS_BASE    = 'https://raw.githubusercontent.com/nationalparkservice/symbo
 const LINES_URL   = 'https://raw.githubusercontent.com/ericallanwest/smokies/main/lines_20250211.geojson';
 const POINTS_URL  = 'https://raw.githubusercontent.com/ericallanwest/smokies/main/points_20250211.geojson';
 const ICON_MAP    = { BC:'campsite', SH:'shelter', CG:'trailer-site', TH:'trailhead', TI:'sign', RI:'sign' };
+const RESUPPLY_ICON_URL = 'https://raw.githubusercontent.com/nationalparkservice/symbol-library/master/src/shielded/store-white-22.svg';
+// Mirrors RESUPPLY_NODES in the solver: town-access points + the two road campgrounds.
+const RESUPPLY_NODES = {
+  CGCAD: 'Cades Cove Campground',
+  TH264: 'Standing Bear Hostel (Davenport Gap)',
+  TH210: 'Cherokee',
+  TH158: 'Bryson City',
+  TH025: 'Fontana Village',
+  RI058: 'Townsend',
+  TH117: 'Gatlinburg',
+  TH119: 'Gatlinburg',
+  TH220: 'Cosby',
+  CGSMO: 'Smokemont Campground',
+};
 
 // ── Utilities ──────────────────────────────────────────────────────────────
 function fmtHM(s) {
@@ -242,6 +256,7 @@ const optGroup          = L.layerGroup();
 const intersectionGroup = L.layerGroup();
 const campingGroup      = L.layerGroup();
 const trailheadGroup    = L.layerGroup();
+const resupplyGroup     = L.layerGroup();
 
 const BG_NORMAL  = { color:'#999',     weight:5, opacity:0.75 };
 const BG_SEL     = { color:'#FFD700',  weight:7, opacity:1    };
@@ -257,6 +272,15 @@ function npsIcon(name) {
       iconSize:[22,22], iconAnchor:[11,11], popupAnchor:[0,-12], className:'nps-icon',
     });
   return _iconCache[name];
+}
+
+function resupplyIcon() {
+  if (!_iconCache['__resupply'])
+    _iconCache['__resupply'] = L.icon({
+      iconUrl: RESUPPLY_ICON_URL,
+      iconSize:[22,22], iconAnchor:[11,11], popupAnchor:[0,-12], className:'nps-icon',
+    });
+  return _iconCache['__resupply'];
 }
 
 function triIcon(color, up) {
@@ -479,7 +503,7 @@ function initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, cov) {
 
   // Clear all data layers
   [bgGroup, covGroup, reqGroup, connGroup, dhGroup, arrowGroup, optGroup,
-   intersectionGroup, campingGroup, trailheadGroup].forEach(g => g.clearLayers());
+   intersectionGroup, campingGroup, trailheadGroup, resupplyGroup].forEach(g => g.clearLayers());
   if (startMarker) { startMarker.remove(); startMarker = null; }
   if (endMarker)   { endMarker.remove();   endMarker   = null; }
 
@@ -526,6 +550,10 @@ function initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, cov) {
     L.marker(n.coords, { icon: npsIcon(n.icon) })
       .bindPopup(`<b>${n.name}</b><br>${n.type}<br><small>${n.id}</small>`)
       .addTo(grp);
+    if (n.id in RESUPPLY_NODES)
+      L.marker(n.coords, { icon: resupplyIcon(), zIndexOffset: 500 })
+        .bindPopup(`<b>${n.name}</b><br>Resupply point — ${RESUPPLY_NODES[n.id]}<br><small>${n.id}</small>`)
+        .addTo(resupplyGroup);
   }
 
   // Update controls
@@ -606,7 +634,8 @@ function updateNodeVisibility() {
   document.body.classList.toggle('zoom-small-icons', zoomSm);
   [['togIntersections', intersectionGroup],
    ['togCamping',       campingGroup],
-   ['togTrailheads',    trailheadGroup]].forEach(([id, grp]) => {
+   ['togTrailheads',    trailheadGroup],
+   ['togResupply',      resupplyGroup]].forEach(([id, grp]) => {
     if (document.getElementById(id).checked && (zoomOk || zoomSm)) grp.addTo(map);
     else map.removeLayer(grp);
   });
@@ -724,7 +753,7 @@ document.addEventListener('DOMContentLoaded', () => {
     else map.removeLayer(optGroup);
     updateDay(currentDay);
   });
-  ['togIntersections','togCamping','togTrailheads'].forEach(id =>
+  ['togIntersections','togCamping','togTrailheads','togResupply'].forEach(id =>
     document.getElementById(id).addEventListener('change', updateNodeVisibility));
 
   // ── Opacity sliders ──────────────────────────────────────────────────────
