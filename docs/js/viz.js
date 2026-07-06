@@ -2,11 +2,14 @@
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const HOME_BOUNDS = [[35.24, -84.10], [35.89, -82.97]];
-const NPS_BASE    = 'https://raw.githubusercontent.com/nationalparkservice/symbol-library/gh-pages/src/standalone/';
-const LINES_URL   = 'https://raw.githubusercontent.com/ericallanwest/smokies/main/lines_20250211.geojson';
-const POINTS_URL  = 'https://raw.githubusercontent.com/ericallanwest/smokies/main/points_20250211.geojson';
+// Data and icons are served same-origin from the Pages site itself:
+// raw.githubusercontent.com is blocked by some ad/privacy filters and
+// rate-limits per IP, which broke the map for some visitors.
+const NPS_BASE    = 'icons/';
+const LINES_URL   = 'data/lines_20250211.geojson';
+const POINTS_URL  = 'data/points_20250211.geojson';
 const ICON_MAP    = { BC:'campsite', SH:'shelter', CG:'trailer-site', TH:'trailhead', TI:'sign', RI:'sign' };
-const RESUPPLY_ICON_URL = 'https://raw.githubusercontent.com/nationalparkservice/symbol-library/master/src/shielded/store-white-22.svg';
+const RESUPPLY_ICON_URL = 'icons/store-white-22.svg';
 // Mirrors RESUPPLY_NODES in the solver: town-access points + the two road campgrounds.
 const RESUPPLY_NODES = {
   CGCAD: 'Cades Cove Campground',
