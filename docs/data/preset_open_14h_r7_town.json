@@ -5,9 +5,20 @@
   "days": [
     {
       "day": 1,
-      "start_node": "TH250",
+      "start_node": "TH245",
       "end_node": "BC039",
       "arcs": [
+        {
+          "from": "TH245",
+          "to": "TH250",
+          "edge_id": "119.0",
+          "trail": "Flat Creek",
+          "miles": 2.6,
+          "seconds": 3433,
+          "gain": 367,
+          "is_deadhead": false,
+          "direction": "fwd"
+        },
         {
           "from": "TH250",
           "to": "TH252",
@@ -38,8 +49,8 @@
           "miles": 1.4,
           "seconds": 1858,
           "gain": 35,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "rev"
         },
         {
           "from": "BC041",
@@ -137,8 +148,8 @@
           "miles": 1.4,
           "seconds": 2487,
           "gain": 805,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI255",
@@ -181,8 +192,8 @@
           "miles": 0.8,
           "seconds": 991,
           "gain": 133,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI262",
@@ -408,8 +419,8 @@
           "miles": 0.9,
           "seconds": 1266,
           "gain": 13,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI257",
@@ -481,8 +492,8 @@
           "miles": 0.9,
           "seconds": 1725,
           "gain": 601,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI254",
@@ -514,8 +525,8 @@
           "miles": 0.4,
           "seconds": 510,
           "gain": 27,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "rev"
         },
         {
           "from": "CGCOS",
@@ -525,8 +536,8 @@
           "miles": 0.4,
           "seconds": 627,
           "gain": 153,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI238",
@@ -723,8 +734,8 @@
           "miles": 0.3,
           "seconds": 332,
           "gain": 40,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TH230",
@@ -734,8 +745,8 @@
           "miles": 0.3,
           "seconds": 361,
           "gain": 75,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "rev"
         },
         {
           "from": "TI226",
@@ -1206,8 +1217,8 @@
           "miles": 0.1,
           "seconds": 85,
           "gain": 1,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TH134",
@@ -1217,8 +1228,8 @@
           "miles": 0.1,
           "seconds": 109,
           "gain": 30,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI133",
@@ -1294,8 +1305,8 @@
           "miles": 4.5,
           "seconds": 6130,
           "gain": 215,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI177",
@@ -1356,8 +1367,8 @@
           "miles": 1.0,
           "seconds": 1097,
           "gain": 26,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TH181",
@@ -1367,8 +1378,8 @@
           "miles": 1.0,
           "seconds": 1424,
           "gain": 354,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI177",
@@ -1378,8 +1389,8 @@
           "miles": 4.5,
           "seconds": 8061,
           "gain": 2720,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI159",
@@ -1594,8 +1605,8 @@
           "miles": 1.0,
           "seconds": 1282,
           "gain": 115,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "rev"
         },
         {
           "from": "TI174",
@@ -1689,8 +1700,8 @@
           "miles": 0.5,
           "seconds": 579,
           "gain": 31,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "BC050",
@@ -1700,8 +1711,8 @@
           "miles": 0.5,
           "seconds": 665,
           "gain": 105,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI198",
@@ -1843,8 +1854,8 @@
           "miles": 2.1,
           "seconds": 2550,
           "gain": 57,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TH172",
@@ -1865,8 +1876,8 @@
           "miles": 0.3,
           "seconds": 356,
           "gain": 33,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI171",
@@ -1876,8 +1887,8 @@
           "miles": 0.3,
           "seconds": 314,
           "gain": 4,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "rev"
         },
         {
           "from": "TI169",
@@ -1898,8 +1909,8 @@
           "miles": 0.1,
           "seconds": 212,
           "gain": 45,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "rev"
         },
         {
           "from": "TI162",
@@ -1909,8 +1920,8 @@
           "miles": 0.1,
           "seconds": 204,
           "gain": 33,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI163",
@@ -1931,8 +1942,8 @@
           "miles": 0.1,
           "seconds": 142,
           "gain": 20,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         }
       ]
     },
@@ -1949,8 +1960,8 @@
           "miles": 0.1,
           "seconds": 150,
           "gain": 30,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI160",
@@ -2026,8 +2037,8 @@
           "miles": 2.1,
           "seconds": 3418,
           "gain": 1069,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI178",
@@ -2081,8 +2092,8 @@
           "miles": 0.4,
           "seconds": 458,
           "gain": 5,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI186",
@@ -2092,8 +2103,8 @@
           "miles": 0.4,
           "seconds": 615,
           "gain": 199,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI189",
@@ -2308,8 +2319,8 @@
           "miles": 1.0,
           "seconds": 2075,
           "gain": 784,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI222",
@@ -2385,8 +2396,8 @@
           "miles": 1.0,
           "seconds": 1551,
           "gain": 49,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "BC047",
@@ -2418,8 +2429,8 @@
           "miles": 1.8,
           "seconds": 2521,
           "gain": 520,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "SH104",
@@ -2429,8 +2440,8 @@
           "miles": 0.4,
           "seconds": 674,
           "gain": 233,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI205",
@@ -2440,8 +2451,8 @@
           "miles": 0.4,
           "seconds": 510,
           "gain": 12,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "rev"
         },
         {
           "from": "SH104",
@@ -2451,8 +2462,8 @@
           "miles": 1.8,
           "seconds": 2357,
           "gain": 267,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI209",
@@ -2495,8 +2506,8 @@
           "miles": 1.3,
           "seconds": 1851,
           "gain": 354,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI187",
@@ -2506,8 +2517,8 @@
           "miles": 1.3,
           "seconds": 1717,
           "gain": 246,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI193",
@@ -2568,8 +2579,8 @@
           "miles": 1.8,
           "seconds": 2451,
           "gain": 280,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "rev"
         },
         {
           "from": "TH176",
@@ -2579,8 +2590,8 @@
           "miles": 1.8,
           "seconds": 2692,
           "gain": 606,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI182",
@@ -2634,8 +2645,8 @@
           "miles": 0.4,
           "seconds": 605,
           "gain": 193,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI179",
@@ -2645,8 +2656,8 @@
           "miles": 0.4,
           "seconds": 441,
           "gain": 2,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI175",
@@ -2905,8 +2916,8 @@
           "miles": 2.8,
           "seconds": 4838,
           "gain": 1559,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI118",
@@ -2916,8 +2927,8 @@
           "miles": 2.8,
           "seconds": 3783,
           "gain": 183,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "BC064",
@@ -3132,8 +3143,8 @@
           "miles": 1.2,
           "seconds": 1809,
           "gain": 384,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "BC070",
@@ -3143,8 +3154,8 @@
           "miles": 1.2,
           "seconds": 1566,
           "gain": 147,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "BC071",
@@ -3176,8 +3187,8 @@
           "miles": 0.9,
           "seconds": 1495,
           "gain": 487,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI125",
@@ -3381,8 +3392,8 @@
           "miles": 0.2,
           "seconds": 378,
           "gain": 75,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "rev"
         },
         {
           "from": "TI139",
@@ -3663,8 +3674,8 @@
           "miles": 0.3,
           "seconds": 427,
           "gain": 75,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI055",
@@ -3685,8 +3696,8 @@
           "miles": 0.2,
           "seconds": 324,
           "gain": 88,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TH041",
@@ -3696,8 +3707,8 @@
           "miles": 0.2,
           "seconds": 253,
           "gain": 16,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI042",
@@ -3773,8 +3784,8 @@
           "miles": 0.3,
           "seconds": 370,
           "gain": 20,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI056",
@@ -4011,8 +4022,8 @@
           "miles": 1.4,
           "seconds": 1710,
           "gain": 79,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "rev"
         },
         {
           "from": "TH073",
@@ -4022,8 +4033,8 @@
           "miles": 0.7,
           "seconds": 835,
           "gain": 81,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "rev"
         },
         {
           "from": "TH069",
@@ -4033,8 +4044,8 @@
           "miles": 0.7,
           "seconds": 958,
           "gain": 185,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TH073",
@@ -4044,8 +4055,8 @@
           "miles": 1.4,
           "seconds": 2088,
           "gain": 465,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI078",
@@ -4249,8 +4260,8 @@
           "miles": 2.3,
           "seconds": 2585,
           "gain": 38,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TH063",
@@ -4260,8 +4271,8 @@
           "miles": 2.3,
           "seconds": 3459,
           "gain": 754,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI074",
@@ -4377,8 +4388,8 @@
           "miles": 2.9,
           "seconds": 3567,
           "gain": 333,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "rev"
         },
         {
           "from": "SH111",
@@ -4410,8 +4421,8 @@
           "miles": 1.4,
           "seconds": 1637,
           "gain": 51,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "rev"
         },
         {
           "from": "TI035",
@@ -4853,8 +4864,8 @@
           "miles": 0.9,
           "seconds": 1112,
           "gain": 11,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI129",
@@ -4948,8 +4959,8 @@
           "miles": 3.5,
           "seconds": 6057,
           "gain": 2066,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI079",
@@ -4959,8 +4970,8 @@
           "miles": 0.6,
           "seconds": 1288,
           "gain": 485,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "rev"
         },
         {
           "from": "TI081",
@@ -4992,8 +5003,8 @@
           "miles": 0.3,
           "seconds": 327,
           "gain": 8,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI082",
@@ -5003,8 +5014,8 @@
           "miles": 0.3,
           "seconds": 407,
           "gain": 78,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI081",
@@ -5014,8 +5025,8 @@
           "miles": 0.6,
           "seconds": 926,
           "gain": 6,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI079",
@@ -5025,8 +5036,8 @@
           "miles": 3.5,
           "seconds": 4514,
           "gain": 95,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "rev"
         },
         {
           "from": "TI065",
@@ -5362,8 +5373,8 @@
           "miles": 3.0,
           "seconds": 3945,
           "gain": 21,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "BC012",
@@ -5373,8 +5384,8 @@
           "miles": 2.0,
           "seconds": 2490,
           "gain": 126,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "rev"
         },
         {
           "from": "TH016",
@@ -5384,8 +5395,8 @@
           "miles": 2.0,
           "seconds": 3076,
           "gain": 762,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "BC012",
@@ -5395,8 +5406,8 @@
           "miles": 3.0,
           "seconds": 5491,
           "gain": 2060,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI013",
@@ -5501,8 +5512,8 @@
           "miles": 2.9,
           "seconds": 4087,
           "gain": 898,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI045",
@@ -5988,8 +5999,8 @@
           "miles": 0.2,
           "seconds": 209,
           "gain": 12,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TH019",
@@ -5999,8 +6010,8 @@
           "miles": 0.2,
           "seconds": 218,
           "gain": 25,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI017",
@@ -6237,8 +6248,8 @@
           "miles": 1.4,
           "seconds": 2102,
           "gain": 507,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI036",
@@ -6504,8 +6515,8 @@
           "miles": 0.4,
           "seconds": 460,
           "gain": 66,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI096",
@@ -6515,8 +6526,8 @@
           "miles": 0.4,
           "seconds": 386,
           "gain": 11,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "BC074",
@@ -6625,8 +6636,8 @@
           "miles": 2.8,
           "seconds": 3984,
           "gain": 539,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI087",
@@ -6636,8 +6647,8 @@
           "miles": 2.8,
           "seconds": 4319,
           "gain": 1033,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "SH108",
@@ -6724,8 +6735,8 @@
           "miles": 0.2,
           "seconds": 303,
           "gain": 5,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TH142",
@@ -6885,8 +6896,8 @@
           "miles": 1.0,
           "seconds": 1445,
           "gain": 316,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI180",
@@ -7262,8 +7273,8 @@
           "miles": 0.8,
           "seconds": 833,
           "gain": 11,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TH263",
@@ -7325,7 +7336,7 @@
     {
       "day": 33,
       "start_node": "CGCAT",
-      "end_node": "TH245",
+      "end_node": "TH250",
       "arcs": [
         {
           "from": "CGCAT",
@@ -7436,19 +7447,46 @@
           "gain": 0,
           "is_deadhead": true,
           "direction": "dh"
-        },
-        {
-          "from": "TH250",
-          "to": "TH245",
-          "edge_id": "119.0",
-          "trail": "Flat Creek",
-          "miles": 2.6,
-          "seconds": 3828,
-          "gain": 795,
-          "is_deadhead": false,
-          "direction": "rev"
         }
       ]
+    }
+  ],
+  "max_days_between_resupply": 7,
+  "resupply_plan": [
+    {
+      "day": 4,
+      "node": "TH220",
+      "name": "Cosby",
+      "in_park": false,
+      "days_since_last": 4
+    },
+    {
+      "day": 10,
+      "node": "TH210",
+      "name": "Cherokee",
+      "in_park": false,
+      "days_since_last": 6
+    },
+    {
+      "day": 17,
+      "node": "RI058",
+      "name": "Townsend",
+      "in_park": false,
+      "days_since_last": 7
+    },
+    {
+      "day": 24,
+      "node": "TH025",
+      "name": "Fontana Village",
+      "in_park": false,
+      "days_since_last": 7
+    },
+    {
+      "day": 27,
+      "node": "CGCAD",
+      "name": "Cades Cove Campground",
+      "in_park": true,
+      "days_since_last": 3
     }
   ]
 }
