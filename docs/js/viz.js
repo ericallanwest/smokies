@@ -440,8 +440,13 @@ function updateDay(d) {
       .bindPopup(`<b>Day ${d} Camp</b><br>${day.end_node}`).addTo(map);
 
   // Sidebar stats
+  const rsStop = META.resupply_plan?.find(s => s.day === d);
   document.getElementById('sbDay').textContent   = `Day ${d} of ${META.n_days}`;
-  document.getElementById('sbRoute').textContent = `${nodeName(day.start_node)} → ${nodeName(day.end_node)}`;
+  document.getElementById('sbRoute').textContent =
+    `${nodeName(day.start_node)} → ${nodeName(day.end_node)}` +
+    (rsStop ? ` · resupply: ${rsStop.name}` : '');
+  document.querySelectorAll('.rs-stop').forEach(row =>
+    row.classList.toggle('active', +row.dataset.day === d));
   document.getElementById('sbTotal').textContent  = `${day.miles.toFixed(1)} mi / ${fmtHM(day.total_s)}`;
   document.getElementById('sbNew').textContent    = `${day.req_miles.toFixed(1)} mi / ${fmtHM(day.new_s)}`;
   document.getElementById('sbRepeat').textContent = `${day.rep_miles.toFixed(1)} mi / ${fmtHM(day.rep_s)}`;
@@ -569,7 +574,46 @@ function initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, cov) {
     `<div class="info-row"><span>Days</span>           <span><b>${meta.n_days}</b></span></div>` +
     `<div class="info-row"><span>Required miles</span> <span><b>${meta.total_required_miles.toFixed(1)}</b></span></div>`;
 
+  renderResupplyPlan(meta);
   updateDay(1);
+}
+
+// ── Resupply plan panel + day-slider tick marks ────────────────────────────
+function renderResupplyPlan(meta) {
+  const panel = document.getElementById('resupplyPlan');
+  const ticks = document.getElementById('dayTicks');
+  ticks.innerHTML = '';
+  if (!meta.resupply_plan || !meta.resupply_plan.length) {
+    panel.style.display = 'none';
+    panel.innerHTML = '';
+    return;
+  }
+
+  panel.innerHTML =
+    `<div class="rs-title">Resupply plan · ${meta.resupply_plan.length} stops</div>` +
+    meta.resupply_plan.map(s =>
+      `<div class="rs-stop" data-day="${s.day}"
+            title="After ${s.days_since_last} day(s) since the last resupply — click to view day">
+         <span class="rs-day">Day ${s.day}</span>
+         <span class="rs-name">${s.name}${s.in_park ? ' <span class="rs-park">in park</span>' : ''}</span>
+       </div>`).join('') +
+    `<div class="rs-note">Starts fully supplied; stops are spaced up to
+      ${meta.max_days_between_resupply} days apart. Stops without the
+      <span class="rs-park">in park</span> tag need extra town-access
+      miles not counted in the itinerary.</div>`;
+  panel.style.display = 'block';
+  panel.querySelectorAll('.rs-stop').forEach(row =>
+    row.addEventListener('click', () => updateDay(+row.dataset.day)));
+
+  for (const s of meta.resupply_plan) {
+    const f = meta.n_days > 1 ? (s.day - 1) / (meta.n_days - 1) : 0;
+    const t = document.createElement('div');
+    t.className = 'day-tick' + (s.in_park ? ' in-park' : '');
+    t.style.left = `calc((100% - 14px) * ${f.toFixed(4)} + 7px)`;
+    t.title = `Day ${s.day}: resupply at ${s.name}`;
+    t.addEventListener('click', () => updateDay(s.day));
+    ticks.appendChild(t);
+  }
 }
 
 // ── Data loading ───────────────────────────────────────────────────────────
@@ -612,6 +656,11 @@ async function loadPreset(filename) {
       circuit: itinerary.circuit,
       n_days:  itinerary.n_days,
       total_required_miles: itinerary.total_required_miles,
+      // Present only on resupply presets: minimal stop schedule computed by
+      // the solver (hiker starts fully supplied, stops as late as the window
+      // allows).  [{day, node, name, in_park, days_since_last}]
+      resupply_plan: itinerary.resupply_plan || null,
+      max_days_between_resupply: itinerary.max_days_between_resupply || null,
     };
     initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, covByDay);
   } catch (err) {

@@ -65,6 +65,27 @@ body.sidebar-hidden #sidebar-toggle { right: 0; }
 #presetInfo .info-row { display: flex; justify-content: space-between; border-bottom: 1px solid #f0f0f0; padding: 2px 0; }
 #presetError { margin-top: 8px; font-size: 11px; color: #c0392b; display: none; }
 
+/* ── Left sidebar: resupply plan ─────────────────────────────────────────── */
+#resupplyPlan { margin-top: 14px; display: none; }
+#resupplyPlan .rs-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+  color: #c0392b; margin-bottom: 6px;
+}
+.rs-stop {
+  display: flex; gap: 6px; align-items: baseline;
+  font-size: 11px; line-height: 1.5; padding: 3px 4px;
+  border-radius: 3px; border-left: 3px solid transparent; cursor: pointer;
+}
+.rs-stop:hover  { background: #f4f5f7; }
+.rs-stop.active { background: #fff9e6; border-left: 3px solid #FFD700; }
+.rs-stop .rs-day  { color: #c0392b; font-weight: 700; white-space: nowrap; }
+.rs-stop .rs-name { flex: 1; color: #1a1a2e; }
+.rs-park {
+  color: #1a7a42; background: #d5f5e3; border-radius: 8px;
+  font-size: 9px; padding: 0 6px; white-space: nowrap; vertical-align: middle;
+}
+#resupplyPlan .rs-note { margin-top: 6px; font-size: 10px; color: #666677; line-height: 1.5; }
+
 /* ── Right sidebar: day stats ─────────────────────────────────────────────── */
 .day-header  { font-size: 17px; font-weight: 700; color: #c0392b; margin-bottom: 3px; }
 .day-route   { font-size: 12px; color: #666677; margin-bottom: 12px; }
@@ -82,7 +103,20 @@ body.sidebar-hidden #sidebar-toggle { right: 0; }
 
 /* ── Bottom controls ──────────────────────────────────────────────────────── */
 .slider-row  { display: flex; align-items: center; gap: 7px; width: 100%; max-width: 960px; }
-#daySlider   { flex: 1; accent-color: #c0392b; cursor: pointer; }
+.slider-wrap { position: relative; flex: 1; display: flex; align-items: center; }
+#daySlider   { width: 100%; accent-color: #c0392b; cursor: pointer; }
+
+/* Resupply-day tick marks under the day slider track.  Horizontal position
+   accounts for the ~14px thumb: the track's usable span is (100% - 14px)
+   offset 7px, mirroring how the thumb center travels. */
+#dayTicks    { position: absolute; left: 0; right: 0; top: 50%; height: 0; }
+.day-tick {
+  position: absolute; top: 6px; width: 7px; height: 7px;
+  background: #c0392b; border: 1px solid #fff; border-radius: 1px;
+  transform: translateX(-50%) rotate(45deg); cursor: pointer;
+}
+.day-tick:hover   { background: #FFD700; }
+.day-tick.in-park { background: #1a7a42; }
 .btn {
   background: #e8eaed; border: 1px solid #c0392b; color: #1a1a2e;
   padding: 4px 11px; border-radius: 4px; cursor: pointer; font-size: 12px; white-space: nowrap;
