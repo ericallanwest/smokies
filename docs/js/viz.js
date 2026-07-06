@@ -593,12 +593,14 @@ function renderResupplyPlan(meta) {
     `<div class="rs-title">Resupply plan · ${meta.resupply_plan.length} stops</div>` +
     meta.resupply_plan.map(s =>
       `<div class="rs-stop" data-day="${s.day}"
-            title="After ${s.days_since_last} day(s) since the last resupply — click to view day">
+            title="${s.days_since_last - 1} full day(s) hiked without resupply before this stop — click to view day">
          <span class="rs-day">Day ${s.day}</span>
          <span class="rs-name">${s.name}${s.in_park ? ' <span class="rs-park">in park</span>' : ''}</span>
        </div>`).join('') +
-    `<div class="rs-note">Starts fully supplied; stops are spaced up to
-      ${meta.max_days_between_resupply} days apart. Stops without the
+    `<div class="rs-note">Starts fully supplied; never hikes more than
+      ${meta.max_days_between_resupply} full days without restocking
+      (stops mid-day, so stop day numbers can be
+      ${meta.max_days_between_resupply + 1} apart). Stops without the
       <span class="rs-park">in park</span> tag need extra town-access
       miles not counted in the itinerary.</div>`;
   panel.style.display = 'block';
