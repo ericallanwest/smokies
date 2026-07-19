@@ -1,5 +1,7 @@
 ﻿import argparse
 import os
+import re
+import time
 import pandas as pd
 import networkx as nx
 from collections import Counter
@@ -10,7 +12,70 @@ _ap.add_argument('--max-resupply-days', type=int, default=None,
                  help='Max days between resupply visits (default: disabled)')
 _ap.add_argument('--town-nights', action='store_true',
                  help='Allow overnights (motel/hostel) at resupply points')
+_ap.add_argument('--hiked', type=str, default=None,
+                 help='Comma-separated edge IDs already hiked (900-Miler input); '
+                      'they become non-required but stay usable as connectors')
+_ap.add_argument('--hiked-csv', type=str, default=None,
+                 help='File of already-hiked edge IDs (one per line; commas ok)')
+_ap.add_argument('--time-budget', type=float, default=None,
+                 help='Soft wall-clock budget in seconds: heuristic sweeps stop '
+                      'early and the best solution found so far is returned')
+_ap.add_argument('--progress', action='store_true',
+                 help='Emit machine-readable "PROGRESS <pct> <label>" lines on stdout')
+_ap.add_argument('--json-out', type=str, default=None,
+                 help="Write the solution JSON to PATH, or '-' to print it as a "
+                      "single 'RESULT_JSON {...}' line on stdout")
 _args = _ap.parse_args()
+
+# ---------------------------------------------------------------------------
+# Service plumbing: wall-clock budget, progress stream, JSON result output.
+# These exist so a web backend can run this script as a subprocess, stream
+# PROGRESS lines to a browser progress bar, and parse one RESULT_JSON line.
+# ---------------------------------------------------------------------------
+_T0 = time.time()
+TIME_BUDGET = _args.time_budget
+BUDGET_TRUNCATED = False   # set True wherever the budget cuts a sweep short
+
+
+def time_left() -> float:
+    """Seconds remaining in the wall-clock budget (inf when unlimited)."""
+    if TIME_BUDGET is None:
+        return float('inf')
+    return TIME_BUDGET - (time.time() - _T0)
+
+
+def progress(pct, label: str) -> None:
+    if _args.progress:
+        print(f"PROGRESS {int(round(pct))} {label}", flush=True)
+
+
+def emit_json(payload: dict) -> None:
+    """Write the result per --json-out: pretty JSON to a file path, or a single
+    compact 'RESULT_JSON {...}' stdout line (trivial for a wrapper to parse)."""
+    if not _args.json_out:
+        return
+    import json
+    if _args.json_out == '-':
+        print("RESULT_JSON " + json.dumps(payload, separators=(',', ':')), flush=True)
+    else:
+        with open(_args.json_out, 'w', encoding='utf-8') as _jf:
+            json.dump(payload, _jf, indent=2)
+        print(f"Result JSON written to: {_args.json_out}")
+
+
+def envelope_base() -> dict:
+    """Metadata shared by every JSON result (success, complete-map, no-split)."""
+    return {
+        "params": {
+            "max_hours": _args.max_hours,
+            "max_resupply_days": _args.max_resupply_days,
+            "town_nights": _args.town_nights,
+            "time_budget": TIME_BUDGET,
+        },
+        "hiked_count": len(hiked_ids),
+        "solve_seconds": round(time.time() - _T0, 2),
+        "best_found": BUDGET_TRUNCATED,
+    }
 
 # ---------------------------------------------------------------------------
 # Step 1 -- Graph construction & node classification
@@ -26,18 +91,24 @@ BC_SINGLE_NIGHT_IDS = {'BC113'}  # former shelter -- 1 consecutive night cap lik
 # Resupply configuration
 # Nodes where the hiker can leave the trail network to resupply.
 # The circuit start/end trailheads implicitly count as resupply points.
+# Names mirror RESUPPLY_NODES in docs/js/viz.js -- keep in sync.
 RESUPPLY_NODES = {
-    'CGCAD',   # Cades Cove Campground (only reliable in-park resupply)
-    'TH264',   # Davenport Gap (Standing Bear Hostel)
-    'TH210',   # Cherokee
-    'TH158',   # Bryson City
-    'TH025',   # Fontana Village
-    'RI058',   # Townsend
-    'TH117',   # Gatlinburg
-    'TH119',   # Gatlinburg
-    'TH220',   # Cosby
-    'CGSMO',   # Smokemont Campground
+    'CGCAD': 'Cades Cove Campground',
+    'TH264': 'Standing Bear Hostel (Davenport Gap)',
+    'TH210': 'Cherokee',
+    'TH158': 'Bryson City',
+    'TH025': 'Fontana Village',
+    'RI058': 'Townsend',
+    'TH117': 'Gatlinburg',
+    'TH119': 'Gatlinburg',
+    'TH220': 'Cosby',
+    'CGSMO': 'Smokemont Campground',
 }
+# Only these two resupply points are inside the park boundary; the rest
+# require leaving the park, adding access miles/hours the graph does not
+# capture.  Hence: as few resupply stops as possible (gaps as close to the
+# max-days setting as the walk allows), and in-park points win cost ties.
+IN_PARK_RESUPPLY = {'CGCAD', 'CGSMO'}
 MAX_DAYS_BETWEEN_RESUPPLY = _args.max_resupply_days  # None = disabled
 
 # Town nights: resupply points double as legal overnights (motel/hostel bed).
@@ -45,7 +116,41 @@ MAX_DAYS_BETWEEN_RESUPPLY = _args.max_resupply_days  # None = disabled
 TOWN_NIGHTS = _args.town_nights
 town_overnights: set = set(RESUPPLY_NODES) if TOWN_NIGHTS else set()
 
+progress(2, "Loading edge list")
 df = pd.read_csv(CSV_PATH)
+
+# --- 900-Miler input: already-hiked edges become non-required -------------
+# The edges stay in the graph as connectors (usable for repositioning);
+# they just no longer have to be covered.  Everything downstream keys off
+# is_required, so this one flip is the entire partial-completion feature.
+hiked_ids: set[str] = set()
+if _args.hiked:
+    hiked_ids |= {t.strip() for t in _args.hiked.split(',') if t.strip()}
+if _args.hiked_csv:
+    with open(_args.hiked_csv, encoding='utf-8-sig') as _hf:
+        for _ln in _hf:
+            _ln = _ln.split('#', 1)[0]
+            hiked_ids |= {t for t in re.split(r'[,\s]+', _ln) if t}
+if hiked_ids:
+    # The CSV ID column is float64, so its canonical string form is "2.0" /
+    # "8.1" (the form the preset JSONs also use).  Normalize bare-integer
+    # input ("2") to match.
+    def _canon_id(tok: str) -> str:
+        try:
+            return str(float(tok))
+        except ValueError:
+            return tok
+    hiked_ids = {_canon_id(t) for t in hiked_ids}
+    _all_ids = set(df['ID'].astype(str))
+    _unknown = sorted(hiked_ids - _all_ids)
+    if _unknown:
+        raise SystemExit(f"--hiked: unknown edge ID(s): {', '.join(_unknown)}")
+    _mask = df['ID'].astype(str).isin(hiked_ids) & (df['is_required'] == 1)
+    _hiked_miles = float(df.loc[_mask, 'Miles'].sum())
+    df.loc[_mask, 'is_required'] = 0
+    print(f"Already-hiked input: {len(hiked_ids)} edge ID(s) -> "
+          f"{int(_mask.sum())} required edge(s) marked complete "
+          f"({_hiked_miles:.1f} mi removed from required set)")
 
 # --- Node classification by ID prefix ---
 #   TH  = trailhead        (car-accessible; legal circuit start/end)
@@ -162,6 +267,17 @@ for ntype, count in sorted(type_counts.items()):
     print(f"  {ntype:<24} {count}")
 print(f"\nLegal overnight nodes : {len(overnight_nodes)}")
 print(f"Trailhead nodes       : {len(trailhead_nodes)}")
+progress(5, "Graph built")
+
+# With every required edge already hiked there is nothing to solve.
+if n_required == 0:
+    print("\nAll required trails already hiked -- map complete! Nothing to solve.")
+    _env = envelope_base()
+    _env.update(map_complete=True, remaining_required_miles=0.0,
+                open=None, closed=None)
+    emit_json(_env)
+    progress(100, "Map already complete")
+    raise SystemExit(0)
 
 # --- Trail closures ---
 if trail_closed_ids:
@@ -331,6 +447,7 @@ print()
 print("=" * 60)
 print("STEP 2 -- ALL-PAIRS SHORTEST PATHS")
 print("=" * 60)
+progress(8, "All-pairs shortest paths")
 print(f"Running Dijkstra from each of {G.number_of_nodes()} nodes ...")
 
 D: dict[str, dict[str, float]] = {}
@@ -454,6 +571,7 @@ print()
 print("=" * 60)
 print("STEP 4 -- DIRECTION ASSIGNMENT + EULERIAN TRANSFORMATION")
 print("=" * 60)
+progress(18, "Direction assignment (CP-SAT)")
 
 if 'is_trail_closed' in df.columns:
     required_rows = df[(df['is_required'] == 1) & (df['is_trail_closed'] != 1)]
@@ -617,7 +735,11 @@ def solve_step4_cpsat(G, required_rows, MAX_DH=30, time_limit=120):
 # ---------------------------------------------------------------------------
 # 4A: Direction assignment — CP-SAT exact solver with greedy+LS fallback
 # ---------------------------------------------------------------------------
-cpsat_result = solve_step4_cpsat(G, required_rows, MAX_DH=30, time_limit=120)
+# Under a wall-clock budget, cap CP-SAT well below it (the default 120 s
+# alone would blow a 45-60 s budget); the greedy+LS fallback covers timeouts.
+_cpsat_limit = 120 if TIME_BUDGET is None else max(1, min(10, int(time_left())))
+cpsat_result = solve_step4_cpsat(G, required_rows, MAX_DH=30, time_limit=_cpsat_limit)
+progress(38, "Direction assignment complete")
 
 if cpsat_result is not None:
     chosen, dh_arc_dict, cpsat_obj = cpsat_result
@@ -804,6 +926,7 @@ print()
 print("=" * 60)
 print("STEP 5 -- EULERIAN CIRCUIT CONSTRUCTION")
 print("=" * 60)
+progress(40, "Eulerian circuit construction")
 
 # Remove isolated nodes (degree 0) — they break nx.is_eulerian()'s weak-
 # connectivity check even though they don't affect the circuit itself.
@@ -1080,6 +1203,7 @@ print()
 print("=" * 60)
 print("STEP 6 -- MULTI-DAY SPLITTING")
 print("=" * 60)
+progress(45, "Multi-day splitting")
 
 overnight_set = set(overnight_nodes)
 
@@ -1386,28 +1510,37 @@ def split_days_balanced(arc_seq):
     return best, lo
 
 
-def insert_resupply_detours(arc_seq, rs_nodes, max_days, max_day_s, label):
+def insert_resupply_detours(arc_seq, rs_nodes, max_days, max_day_s, label,
+                            objective='fewest'):
     """Pre-process a walk so a resupply window is achievable by day-splitting.
 
     The Euler tour is built with no knowledge of resupply, so it can go 100h+
     between resupply touches -- no day re-slicing can fix that.  This inserts
-    out-and-back deadhead detours to the cheapest reachable resupply node
-    wherever the walk would otherwise exceed max_days day-budgets
-    (max_days * max_day_s walking seconds) since its last touch.  Positions
-    are chosen greedily: walk as far as the window allows, then detour from
-    the cheapest round-trip candidate seen since the last touch.
+    out-and-back deadhead detours to reachable resupply nodes wherever the
+    walk would otherwise exceed max_days day-budgets (max_days * max_day_s
+    walking seconds) since its last touch.  The hiker starts fully supplied,
+    so the first window is measured from the walk's start.
+
+    objective='fewest'   minimize (number of detours, walking time) -- most
+                         resupply points are outside the park, so each stop
+                         carries town-access overhead the graph can't see.
+    objective='cheapest' minimize (walking time, number of detours) -- the
+                         pre-2026-07-06 behavior, kept as an alternate
+                         candidate since less added walking can save a day.
     """
     INF    = float('inf')
     target = max_days * max_day_s
 
-    # Up to 3 cheapest round-trip resupply options per node
+    # Up to 3 cheapest round-trip resupply options per node (in-park nodes
+    # win exact cost ties -- no town-access overhead)
     rt_opts: dict[str, list] = {}
     def rt_options(node):
         if node not in rt_opts:
             opts = sorted(
-                (D[node].get(r, INF) + D[r].get(node, INF),
-                 D[node].get(r, INF), D[r].get(node, INF), r) for r in rs_nodes)
-            rt_opts[node] = [o for o in opts[:3] if o[0] < INF]
+                ((D[node].get(r, INF) + D[r].get(node, INF),
+                  0 if r in IN_PARK_RESUPPLY else 1,
+                  D[node].get(r, INF), D[r].get(node, INF), r) for r in rs_nodes))
+            rt_opts[node] = [(o[0], o[2], o[3], o[4]) for o in opts[:3] if o[0] < INF]
         return rt_opts[node]
 
     # Split the walk into stretches between natural resupply touches.
@@ -1420,11 +1553,16 @@ def insert_resupply_detours(arc_seq, rs_nodes, max_days, max_day_s, label):
     if cur:                    # trailing stretch: no touch at its end
         stretches.append(cur)
 
+    # Plan score is (n_stops, walking_s); rank() orders it per the objective.
+    NOPLAN = (INF, INF)
+    rank = (lambda s: s) if objective == 'fewest' else (lambda s: (s[1], s[0]))
+
     def plan(arcs):
-        """Min-cost insertions for one touch-to-touch stretch: shortest path
+        """Best insertions for one touch-to-touch stretch: shortest path
         over (boundary, resupply node) candidates such that no walk-time gap
-        between consecutive touches exceeds target.  Returns [(idx, node)]
-        (detour before arc idx), [] if none needed, or None if infeasible."""
+        between consecutive touches exceeds target, minimizing rank(score).
+        Returns [(idx, node)] (detour before arc idx), [] if none needed,
+        or None if infeasible."""
         S = sum(d['weight'] for *_, d in arcs)
         if S <= target:
             return []
@@ -1433,21 +1571,25 @@ def insert_resupply_detours(arc_seq, rs_nodes, max_days, max_day_s, label):
             for cost, out, back, r in rt_options(u):
                 cands.append((T, idx, cost, out, back, r))
             T += d['weight']
-        best   = [INF] * len(cands)
+        best   = [NOPLAN] * len(cands)
         parent = [-1] * len(cands)
         for i, (T_i, idx_i, c_i, o_i, _b_i, _r_i) in enumerate(cands):
             if T_i + o_i <= target:
-                best[i] = c_i
+                best[i] = (1, c_i)
             for j in range(i):
                 T_j, idx_j, _c_j, _o_j, b_j, _r_j = cands[j]
-                if (best[j] < INF and idx_j < idx_i
+                if best[j] == NOPLAN:
+                    continue
+                via = (best[j][0] + 1, best[j][1] + c_i)
+                if (idx_j < idx_i
                         and (T_i - T_j) + b_j + o_i <= target
-                        and best[j] + c_i < best[i]):
-                    best[i], parent[i] = best[j] + c_i, j
-        goal, goal_cost = -1, INF
+                        and rank(via) < rank(best[i])):
+                    best[i], parent[i] = via, j
+        goal, goal_score = -1, NOPLAN
         for i, (T_i, _idx_i, _c_i, _o_i, b_i, _r_i) in enumerate(cands):
-            if best[i] < goal_cost and (S - T_i) + b_i <= target:
-                goal, goal_cost = i, best[i]
+            if (best[i] != NOPLAN and rank(best[i]) < rank(goal_score)
+                    and (S - T_i) + b_i <= target):
+                goal, goal_score = i, best[i]
         if goal < 0:
             return None
         chain = []
@@ -1486,13 +1628,53 @@ def insert_resupply_detours(arc_seq, rs_nodes, max_days, max_day_s, label):
                     out.append((au, av, f"rsdet_{serial}", {**hd, 'is_deadhead': True}))
         out.append(arc)
 
-    print(f"  {label}: inserted {len(inserts)} resupply detour(s), "
-          f"+{det_s / 3600:.1f}h repeat walking:")
+    print(f"  {label}: inserted {len(inserts)} resupply detour(s) "
+          f"[{objective}], +{det_s / 3600:.1f}h repeat walking:")
     for ipos, r in inserts:
         n = arc_seq[ipos][0]
         print(f"    at {n}: out-and-back to {r}  "
               f"({(D[n][r] + D[r][n]) / 3600:.1f}h round trip)")
     return out
+
+
+def planned_resupply_schedule(days, rs_set, max_days):
+    """Minimal actual-resupply schedule over a finished day split.
+
+    Days that touch a resupply node are opportunities, not obligations: the
+    hiker starts fully supplied and only stops when the next max_days window
+    could not otherwise be covered.  Greedy latest-opportunity is optimal for
+    minimizing stop count and spaces stops as close to max_days apart as the
+    walk allows.  When the chosen day touches several resupply nodes, prefer
+    an in-park one (no town-access overhead).  The final day is exempt.
+
+    Returns [(day_num, node, days_since_last_stop)] or None if no schedule
+    exists (only possible if the split itself violates the window).
+
+    days_since_last_stop is the DAY-NUMBER difference (stop day minus the
+    previous stop day, or minus 0 for the first stop).  Because resupplies
+    happen mid-walk, the count of full days hiked WITHOUT resupply between
+    two stops is one less: stops on days 4 and 11 mean 6 dry days (5-10),
+    satisfying max_days=6.  Human-facing output should report the
+    "full days without resupply" figure (value - 1); the raw difference is
+    what gets exported as days_since_last in the preset JSONs.
+    """
+    n = len(days)
+    touches = {}
+    for day_num, day_arcs in enumerate(days, 1):
+        t = {v for _u, v, _k, _d in day_arcs} & rs_set
+        if t:
+            touches[day_num] = t
+    stops, last = [], 0
+    while n - last - 1 > max_days:          # days last+1..n-1 must be covered
+        cand = [d for d in range(last + 1, last + max_days + 2)
+                if d in touches and d < n]
+        if not cand:
+            return None
+        d = max(cand)
+        node = min(touches[d], key=lambda x: (x not in IN_PARK_RESUPPLY, x))
+        stops.append((d, node, d - last))
+        last = d
+    return stops
 
 
 def insert_overnight_detours(arc_seq, max_day_s, label):
@@ -1677,17 +1859,36 @@ def retarget_termini_for_budget(circuit, open_circuit):
 circuit, open_circuit = retarget_termini_for_budget(circuit, open_circuit)
 
 # Run the balanced day split for closed and open circuits; campsite-detour
-# planning first, greedy+detour sweep as fallback, if no floor-0 split exists
+# planning first, greedy+detour sweep as fallback, if no floor-0 split exists.
+# With a resupply window, detour insertion runs under both objectives
+# (fewest stops / cheapest walking) and each result is split independently;
+# the day count decides between them, then fewer planned resupply stops,
+# then the longer shortest non-last day.
 dp_results: dict[str, list | None] = {}
-for label, arc_seq in [("Closed", circuit), ("Open", open_circuit)]:
-    if arc_seq is None:
-        dp_results[label] = None
+_split_jobs: list = []
+for base_label, base_seq in [("Closed", circuit), ("Open", open_circuit)]:
+    if base_seq is None:
+        dp_results[base_label] = None
         continue
-
     if MAX_DAYS_BETWEEN_RESUPPLY is not None:
-        arc_seq = insert_resupply_detours(arc_seq, resupply_set,
+        variants = []
+        for _obj in ('fewest', 'cheapest'):
+            seq = insert_resupply_detours(base_seq, resupply_set,
                                           MAX_DAYS_BETWEEN_RESUPPLY,
-                                          MAX_DAY_SECONDS, label)
+                                          MAX_DAY_SECONDS, base_label,
+                                          objective=_obj)
+            sig = tuple((u, v) for u, v, _k, _d in seq)
+            if all(sig != s for _o, s, _q in variants):
+                variants.append((_obj, sig, seq))
+        _split_jobs += [(base_label, _obj, seq) for _obj, _sig, seq in variants]
+    else:
+        _split_jobs.append((base_label, '', base_seq))
+
+_split_cands: dict[str, list] = {}
+_n_jobs = max(1, len(_split_jobs))
+for _job_i, (base_label, _tag, arc_seq) in enumerate(_split_jobs):
+    label = f"{base_label}[{_tag}]" if _tag else base_label
+    progress(45 + 47 * _job_i / _n_jobs, f"Splitting days ({label})")
 
     days_base, floor_base = split_days_balanced(arc_seq)
     if days_base is not None:
@@ -1714,7 +1915,18 @@ for label, arc_seq in [("Closed", circuit), ("Open", open_circuit)]:
 
     print(f"{label}: sweeping greedy detour floors")
     candidates = []        # (n_days, floor_frac, augmented_seq, greedy_days)
-    for frac in (0.0, 0.3, 0.4, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 5/6, 0.85, 0.9):
+    _floors = (0.0, 0.3, 0.4, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 5/6, 0.85, 0.9)
+    for _fi, frac in enumerate(_floors):
+        # The floor sweep is the slow tail: under a wall-clock budget, stop
+        # early and let the chooser below pick from what we have (the base
+        # DP and campsite-plan candidates are already computed and cheap).
+        if time_left() < 5:
+            BUDGET_TRUNCATED = True
+            print(f"    time budget exhausted -- stopping floor sweep early "
+                  f"({len(candidates)} candidate(s) kept)")
+            break
+        progress(45 + 47 * (_job_i + 0.2 + 0.8 * _fi / len(_floors)) / _n_jobs,
+                 f"Splitting days ({label}, floor {frac:.0%})")
         cand = day_split_greedy_detour(arc_seq, overnight_set, single_night,
                                        MAX_DAY_SECONDS, int(frac * MAX_DAY_SECONDS),
                                        nearest_overnight, P, G, D)
@@ -1790,15 +2002,37 @@ for label, arc_seq in [("Closed", circuit), ("Open", open_circuit)]:
 
     if days is None:
         print(f"  {label}: no valid split found")
-        dp_results[label] = None
         continue
 
-    dp_results[label] = days
     t  = sum(d['weight'] for day in days for _, _, _, d in day)
     shortest = (min(sum(d['weight'] for *_, d in day) for day in days[:-1])
                 if len(days) > 1 else sum(d['weight'] for *_, d in days[-1]))
     print(f"  {label} [{method}]: {len(days)} days  "
           f"({t / 3600:.1f}h total, shortest non-last day {fmt_hm(shortest)})")
+    _split_cands.setdefault(base_label, []).append((days, _tag))
+
+# Pick the winning variant per circuit: fewest days, then fewest planned
+# resupply stops, then longest shortest non-last day.
+def _n_resupply_stops(days):
+    if MAX_DAYS_BETWEEN_RESUPPLY is None:
+        return 0
+    sched = planned_resupply_schedule(days, resupply_set,
+                                      MAX_DAYS_BETWEEN_RESUPPLY)
+    return len(sched) if sched is not None else float('inf')
+
+for base_label in ("Closed", "Open"):
+    if base_label in dp_results:            # circuit itself was absent
+        continue
+    cands = _split_cands.get(base_label, [])
+    if not cands:
+        dp_results[base_label] = None
+        continue
+    days, tag = min(cands, key=lambda c: (len(c[0]), _n_resupply_stops(c[0]),
+                                          -shortest_nonlast(c[0])))
+    dp_results[base_label] = days
+    if len(cands) > 1:
+        print(f"  {base_label}: kept [{tag}] variant -- {len(days)} days, "
+              f"{_n_resupply_stops(days)} planned resupply stop(s)")
 
 # ---------------------------------------------------------------------------
 # Step 7 -- Output & Reporting
@@ -1808,6 +2042,7 @@ print()
 print("=" * 60)
 print("STEP 7 -- OUTPUT & REPORTING")
 print("=" * 60)
+progress(93, "Output & reporting")
 
 # Prefer open circuit; fall back to closed
 itinerary_label = None
@@ -1820,6 +2055,12 @@ for lbl in ("Open", "Closed"):
 
 if itinerary_days is None:
     print("No valid itinerary found -- detour insertion needed before reporting.")
+    _env = envelope_base()
+    _env.update(map_complete=False, error="no_valid_split",
+                remaining_required_miles=round(float(total_req_miles), 1),
+                open=None, closed=None)
+    emit_json(_env)
+    progress(100, "No valid split found")
     raise SystemExit
 
 n_days = len(itinerary_days)
@@ -1937,14 +2178,14 @@ print(f"  Consecutive overnight violations: {consec_violations}"
 # --- Resupply verification (pass-through: any touch during the day counts;
 #     hiker starts supplied; final day exempt) ---
 if MAX_DAYS_BETWEEN_RESUPPLY is not None:
-    resupply_stops = []
+    n_touch_days = 0
     days_since_last = 0
     resupply_violations = 0
     for day_num, day_arcs in enumerate(itinerary_days, 1):
         days_since_last += 1
         touched = {v for _u, v, _k, _d in day_arcs} & resupply_set
         if touched:
-            resupply_stops.append((day_num, ','.join(sorted(touched)), days_since_last))
+            n_touch_days += 1
             days_since_last = 0
         elif (days_since_last > MAX_DAYS_BETWEEN_RESUPPLY
               and day_num < len(itinerary_days)):
@@ -1954,11 +2195,21 @@ if MAX_DAYS_BETWEEN_RESUPPLY is not None:
     print(f"  Resupply violations (max {MAX_DAYS_BETWEEN_RESUPPLY} days): "
           f"{resupply_violations}"
           + ("  OK" if resupply_violations == 0 else "  VIOLATION"))
-    if resupply_stops:
-        print(f"  Resupply stops ({len(resupply_stops)}):")
-        for day_num, node, interval in resupply_stops:
-            print(f"    Day {day_num:>3}: {node} (after {interval} day(s))")
+    itinerary_resupply_plan = planned_resupply_schedule(
+        itinerary_days, resupply_set, MAX_DAYS_BETWEEN_RESUPPLY)
+    if itinerary_resupply_plan is None:
+        print("  Planned resupply schedule: NONE FOUND (window violated)")
+    else:
+        print(f"  Planned resupply schedule: {len(itinerary_resupply_plan)} "
+              f"stop(s) (starts fully supplied; walk passes a resupply "
+              f"point on {n_touch_days} days)")
+        for day_num, node, interval in itinerary_resupply_plan:
+            park = "in park" if node in IN_PARK_RESUPPLY else "out of park"
+            print(f"    Day {day_num:>3}: {RESUPPLY_NODES.get(node, node)} "
+                  f"[{node}, {park}]  "
+                  f"(after {interval - 1} full day(s) without resupply)")
 else:
+    itinerary_resupply_plan = None
     print("  Resupply constraint: disabled")
 
 # ---------------------------------------------------------------------------
@@ -1967,7 +2218,8 @@ else:
 _max_h = int(_args.max_hours)
 _rs_sfx = f"_r{MAX_DAYS_BETWEEN_RESUPPLY}" if MAX_DAYS_BETWEEN_RESUPPLY is not None else ""
 _rs_sfx += "_town" if TOWN_NIGHTS else ""
-OUT_PATH = f'smokies_itinerary_{_max_h}h{_rs_sfx}.txt'
+_hk_sfx = f"_hiked{len(hiked_ids)}" if hiked_ids else ""
+OUT_PATH = f'smokies_itinerary_{_max_h}h{_rs_sfx}{_hk_sfx}.txt'
 with open(OUT_PATH, 'w', encoding='utf-8') as f:
     f.write(f"GSMNP Complete Trail Itinerary -- {itinerary_label} Circuit\n")
     f.write(f"{'=' * 70}\n")
@@ -1978,6 +2230,17 @@ with open(OUT_PATH, 'w', encoding='utf-8') as f:
             f"{grand['rep_s'] / 3600:.1f}h repeat)\n")
     f.write(f"  Total miles: {grand['miles']:.1f} mi\n")
     f.write(f"  Elev gain  : {grand['gain']:,} ft\n\n")
+    if MAX_DAYS_BETWEEN_RESUPPLY is not None and itinerary_resupply_plan:
+        f.write(f"  Resupply plan (start fully supplied; never more than "
+                f"{MAX_DAYS_BETWEEN_RESUPPLY} full days without a stop; "
+                f"{len(itinerary_resupply_plan)} stop(s)):\n")
+        for _d, _node, _iv in itinerary_resupply_plan:
+            _park = "in park" if _node in IN_PARK_RESUPPLY else "out of park"
+            f.write(f"    Day {_d:>3}: {RESUPPLY_NODES.get(_node, _node)} "
+                    f"[{_node}, {_park}]  "
+                    f"(after {_iv - 1} full day(s) without resupply)\n")
+        f.write("    NOTE: out-of-park stops add town-access miles/hours "
+                "not counted above.\n\n")
     f.write("  Arc tags: untagged = new trail (first pass of a required trail)\n")
     f.write("            [CN] = connector (first pass of a non-required road/path)\n")
     f.write("            [RP] = repeat (edge already traversed)\n\n")
@@ -2030,6 +2293,17 @@ def _build_preset(label, days):
         "total_required_miles": total_req_miles,
         "days": [],
     }
+    if MAX_DAYS_BETWEEN_RESUPPLY is not None:
+        _sched = planned_resupply_schedule(days, resupply_set,
+                                           MAX_DAYS_BETWEEN_RESUPPLY)
+        export["max_days_between_resupply"] = MAX_DAYS_BETWEEN_RESUPPLY
+        export["resupply_plan"] = [
+            {"day": _d, "node": _node,
+             "name": RESUPPLY_NODES.get(_node, _node),
+             "in_park": _node in IN_PARK_RESUPPLY,
+             "days_since_last": _iv}
+            for _d, _node, _iv in (_sched or [])
+        ]
     for day_num, day_arcs in enumerate(days, 1):
         day_dict = {
             "day": day_num,
@@ -2059,14 +2333,35 @@ print()
 print("=" * 60)
 print("PRESET JSON EXPORT")
 print("=" * 60)
-for _lbl in ("Open", "Closed"):
-    _days = dp_results.get(_lbl)
-    if _days is None:
-        print(f"  {_lbl}: no valid partition — skipped")
-        continue
-    _export = _build_preset(_lbl, _days)
-    _fname  = f"preset_{_lbl.lower()}_{_max_h}h{_rs_sfx}.json"
-    _path   = os.path.join(_preset_dir, _fname)
-    with open(_path, "w", encoding="utf-8") as _jf:
-        _json.dump(_export, _jf, indent=2)
-    print(f"  {_lbl:6}: {len(_days)} days  -> {_path}")
+if hiked_ids:
+    # Custom partial-completion runs must never overwrite published presets.
+    print("  Skipped: --hiked run (presets cover the full map only)")
+else:
+    for _lbl in ("Open", "Closed"):
+        _days = dp_results.get(_lbl)
+        if _days is None:
+            print(f"  {_lbl}: no valid partition — skipped")
+            continue
+        _export = _build_preset(_lbl, _days)
+        _fname  = f"preset_{_lbl.lower()}_{_max_h}h{_rs_sfx}.json"
+        _path   = os.path.join(_preset_dir, _fname)
+        with open(_path, "w", encoding="utf-8") as _jf:
+            _json.dump(_export, _jf, indent=2)
+        print(f"  {_lbl:6}: {len(_days)} days  -> {_path}")
+
+# ---------------------------------------------------------------------------
+# JSON result envelope (--json-out): same day/arc schema as the presets, so
+# the web app's loadPreset() path can render a custom solution unchanged.
+# ---------------------------------------------------------------------------
+if _args.json_out:
+    _env = envelope_base()
+    _env.update(
+        map_complete=False,
+        remaining_required_miles=round(float(total_req_miles), 1),
+        open=(_build_preset("Open", dp_results["Open"])
+              if dp_results.get("Open") else None),
+        closed=(_build_preset("Closed", dp_results["Closed"])
+                if dp_results.get("Closed") else None),
+    )
+    emit_json(_env)
+progress(100, "Done")
