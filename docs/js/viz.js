@@ -261,7 +261,15 @@ const campingGroup      = L.layerGroup();
 const trailheadGroup    = L.layerGroup();
 const resupplyGroup     = L.layerGroup();
 
-const BG_NORMAL  = { color:'#999',     weight:5, opacity:0.75 };
+// Map-line grays per theme: the dark "hiked" lines vanish on a dark basemap,
+// so both grays flip with the UI theme (see applyTheme).
+const TRAIL_THEMES = {
+  light: { bg:'#999',    cov:'#333333' },
+  dark:  { bg:'#6b6b78', cov:'#d5d5dc' },
+};
+let trailTheme = TRAIL_THEMES.light;
+
+const BG_NORMAL  = { color:trailTheme.bg, weight:5, opacity:0.75 };
 const BG_SEL     = { color:'#FFD700',  weight:7, opacity:1    };
 const OPT_NORMAL = { color:'#f08080',  weight:4, opacity:0.65, dashArray:'4,6' };
 const OPT_SEL    = { color:'#FFD700',  weight:7, opacity:1,    dashArray:null  };
@@ -337,13 +345,13 @@ function buildItinerary(d) {
   const day = DAYS[d - 1];
   document.getElementById('itinerary').innerHTML = day.steps.map((s, i) => {
     const dot   = CAT_COLOR[s.cat];
-    const extra = s.cat === 'repeat'    ? ' <span style="color:#c0392b;font-size:10px">(repeat)</span>'
-                : s.cat === 'connector' ? ' <span style="color:#c0392b;font-size:10px">(connector)</span>'
+    const extra = s.cat === 'repeat'    ? ' <span style="color:var(--accent);font-size:10px">(repeat)</span>'
+                : s.cat === 'connector' ? ' <span style="color:var(--accent);font-size:10px">(connector)</span>'
                 : '';
     return `<div class="itin-step" data-step="${i+1}" style="padding:3px 4px 3px 6px;border-radius:3px;cursor:pointer;border-left:3px solid transparent">
       <span style="color:${dot};font-weight:700">${i+1}.</span>
       <b>${s.trail}</b>${extra}<br>
-      <span style="color:#666677;padding-left:12px">
+      <span style="color:var(--muted);padding-left:12px">
         ${nodeName(s.from)} → ${nodeName(s.to)}<br>
         ${s.miles.toFixed(2)} mi &nbsp; ${fmtHM(s.seconds)} &nbsp; ${s.gain} ft ↑ / ${s.loss} ft ↓
       </span>
@@ -363,7 +371,7 @@ function highlightItineraryStep(step) {
   const isFull = step >= n;
   document.querySelectorAll('.itin-step').forEach((row, i) => {
     const active = !isFull && (i + 1 === step);
-    row.style.background = active ? '#fff9e6' : '';
+    row.style.background = active ? 'var(--active-bg)' : '';
     row.style.borderLeft = active ? '3px solid #FFD700' : '3px solid transparent';
   });
   if (!isFull && step > 0) {
@@ -394,7 +402,7 @@ function renderForStep(d, step) {
 
   for (const seg of BG) {
     if (!cumCov[d - 1].has(seg.eid)) continue;
-    addPoly(covGroup, GEOM[seg.key], { color:'#333333', weight:5, opacity:0.85 },
+    addPoly(covGroup, GEOM[seg.key], { color:trailTheme.cov, weight:5, opacity:0.85 },
       `<b>${seg.trail}</b><br>${seg.from} ↔ ${seg.to}<br>${seg.miles.toFixed(2)} mi &nbsp; ${fmtHM(seg.seconds)}<br>+${seg.gain.toLocaleString()} ft`,
       seg.trail);
   }
@@ -424,7 +432,7 @@ function updateDay(d) {
 
   for (const seg of BG) {
     if (!cumCov[d - 1].has(seg.eid)) continue;
-    addPoly(covGroup, GEOM[seg.key], { color:'#333333', weight:5, opacity:0.85 },
+    addPoly(covGroup, GEOM[seg.key], { color:trailTheme.cov, weight:5, opacity:0.85 },
       `<b>${seg.trail}</b><br>${seg.from} ↔ ${seg.to}<br>${seg.miles.toFixed(2)} mi &nbsp; ${fmtHM(seg.seconds)}<br>+${seg.gain.toLocaleString()} ft`,
       seg.trail);
   }
@@ -492,6 +500,8 @@ const BASEMAPS = {
   'OSM Color': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     { attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', maxZoom:19, zIndex:1 }),
   'CartoDB Light': L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    { attribution:'&copy; OpenStreetMap contributors &copy; CARTO', maxZoom:19, zIndex:1 }),
+  'CartoDB Dark': L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
     { attribution:'&copy; OpenStreetMap contributors &copy; CARTO', maxZoom:19, zIndex:1 }),
   'Google Maps': L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
     { attribution:'&copy; Google', maxZoom:20, zIndex:1 }),
@@ -823,12 +833,39 @@ document.addEventListener('DOMContentLoaded', () => {
     activeBasemap.setOpacity(+this.value / 100);
     document.getElementById('basemapOpacityVal').textContent = this.value + '%';
   });
-  document.getElementById('basemapSel').addEventListener('change', function() {
+  function setBasemap(name) {
     const opacity = +document.getElementById('basemapOpacity').value / 100;
     map.removeLayer(activeBasemap);
-    activeBasemap = BASEMAPS[this.value];
+    activeBasemap = BASEMAPS[name];
     activeBasemap.addTo(map); activeBasemap.setOpacity(opacity); activeBasemap.bringToBack();
+    document.getElementById('basemapSel').value = name;
+  }
+  document.getElementById('basemapSel').addEventListener('change', function() {
+    setBasemap(this.value);
   });
+
+  // ── Dark mode ────────────────────────────────────────────────────────────
+  function applyTheme(dark) {
+    document.body.classList.toggle('dark', dark);
+    trailTheme = dark ? TRAIL_THEMES.dark : TRAIL_THEMES.light;
+    BG_NORMAL.color = trailTheme.bg;
+    bgGroup.eachLayer(l => {
+      if (l.setStyle && l !== selectedBgPoly) l.setStyle({ color: trailTheme.bg });
+    });
+    covGroup.eachLayer(l => { if (l.setStyle) l.setStyle({ color: trailTheme.cov }); });
+    document.getElementById('legBg').style.background  = trailTheme.bg;
+    document.getElementById('legCov').style.background = trailTheme.cov;
+    document.getElementById('btnDark').textContent = dark ? '☀️' : '🌙';
+    // Swap default light basemaps for the dark one (and back), but leave
+    // deliberate picks like aerial/topo alone.
+    const cur = document.getElementById('basemapSel').value;
+    if (dark && (cur === 'OSM Grayscale' || cur === 'CartoDB Light')) setBasemap('CartoDB Dark');
+    else if (!dark && cur === 'CartoDB Dark') setBasemap('OSM Grayscale');
+    localStorage.setItem('smokiesTheme', dark ? 'dark' : 'light');
+  }
+  document.getElementById('btnDark').addEventListener('click', () =>
+    applyTheme(!document.body.classList.contains('dark')));
+  if (localStorage.getItem('smokiesTheme') === 'dark') applyTheme(true);
 
   // ── Left sidebar preset selectors ────────────────────────────────────────
   document.querySelectorAll('input[name="max_day"], input[name="circuit"], input[name="resupply"], input[name="town"]')

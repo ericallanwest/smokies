@@ -84,8 +84,8 @@
   <div class="badge" id="completeBadge">✓ All required trails covered!</div>
   <div class="sec-title">Legend</div>
   <div class="legend">
-    <div><span class="leg-line" style="background:#999"></span>Required — not yet hiked</div>
-    <div><span class="leg-line" style="background:#333333"></span>Required — hiked</div>
+    <div><span class="leg-line" id="legBg" style="background:#999"></span>Required — not yet hiked</div>
+    <div><span class="leg-line" id="legCov" style="background:#333333"></span>Required — hiked</div>
     <div><span class="leg-line" style="background:repeating-linear-gradient(90deg,#f08080 0 4px,transparent 4px 8px)"></span>Connector — available</div>
     <div><span class="leg-line" style="background:#f7882f"></span>Today — new trail</div>
     <div><span class="leg-line" style="background:#c0392b"></span>Today — connector</div>
@@ -98,7 +98,6 @@
 <!-- ── Bottom controls ───────────────────────────────────────────────────── -->
 <div id="controls">
   <div class="slider-row">
-    <button class="btn" id="btnHome">⌂ Home</button>
     <button class="btn" id="btnPrev">← Day</button>
     <div class="slider-wrap">
       <input type="range" id="daySlider" min="1" max="1" value="1">
@@ -121,32 +120,35 @@
   <div class="toggle-row">
     <label><input type="checkbox" id="togDH" checked>   Repeats</label>
     <label><input type="checkbox" id="togConn" checked> Connectors</label>
-    <span style="margin:0 2px;color:#ccc">|</span>
+    <span style="margin:0 2px;color:var(--divider)">|</span>
     <label><input type="checkbox" id="togTrailheads">    Trailheads</label>
     <label><input type="checkbox" id="togCamping">       Camping</label>
     <label><input type="checkbox" id="togIntersections"> Intersections</label>
     <label><input type="checkbox" id="togResupply">      Resupply</label>
   </div>
   <div class="opacity-row">
+    <button class="btn" id="btnHome" title="Zoom to full map" style="margin-right:4px;padding:2px 8px">🏠</button>
     <span>Trail Map</span>
     <input type="range" id="mapwarpOpacity" min="0" max="100" step="5" value="40">
     <span id="opacityVal">40%</span>
-    <span style="margin:0 6px;color:#ccc">|</span>
+    <span style="margin:0 6px;color:var(--divider)">|</span>
     <span>Hillshade</span>
     <input type="range" id="hillshadeOpacity" min="0" max="100" step="5" value="15">
     <span id="hillshadeOpacityVal">15%</span>
-    <span style="margin:0 6px;color:#ccc">|</span>
+    <span style="margin:0 6px;color:var(--divider)">|</span>
     <span>Basemap</span>
     <input type="range" id="basemapOpacity" min="0" max="100" step="5" value="15">
     <span id="basemapOpacityVal">15%</span>
-    <select id="basemapSel" style="font-size:11px;border:1px solid #d0d3da;border-radius:3px;padding:2px 4px;cursor:pointer;margin-left:4px">
+    <select id="basemapSel" style="font-size:11px;border:1px solid var(--border);border-radius:3px;padding:2px 4px;cursor:pointer;margin-left:4px">
       <option>OSM Grayscale</option>
       <option>OSM Color</option>
       <option>CartoDB Light</option>
+      <option>CartoDB Dark</option>
       <option>Google Maps</option>
       <option>Bing Aerial</option>
       <option>ESRI World Topo</option>
     </select>
+    <button class="btn" id="btnDark" title="Toggle dark mode" style="margin-left:4px;padding:2px 8px">🌙</button>
   </div>
 </div>
 
