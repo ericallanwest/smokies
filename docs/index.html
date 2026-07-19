@@ -14,6 +14,10 @@
 <div id="loading">
   <div class="spinner"></div>
   <p>Loading itinerary…</p>
+  <div id="solveProg" style="display:none;width:280px">
+    <div class="prog-bg"><div class="prog-fill" id="solveProgFill" style="width:0%"></div></div>
+    <p id="solveProgLabel" style="margin-top:6px;text-align:center"></p>
+  </div>
 </div>
 
 <!-- ── Left sidebar: parameter presets ──────────────────────────────────── -->
@@ -56,6 +60,13 @@
   <div id="presetInfo"></div>
   <div id="resupplyPlan"></div>
   <div id="presetError"></div>
+  <!-- Custom on-demand solving; hidden unless ?backend=<url> is configured -->
+  <div id="customSolve" class="param-group" style="display:none">
+    <div class="param-label">Custom Solve (beta)</div>
+    <textarea id="hikedInput" rows="4" placeholder="Already-hiked edge IDs (optional), comma or newline separated"
+              style="width:100%;font-size:11px;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:3px;padding:4px;resize:vertical"></textarea>
+    <button class="btn" id="btnSolve" style="margin-top:6px;width:100%">⚙ Solve now</button>
+  </div>
 </div>
 <button id="left-toggle" title="Hide/show parameters">◀</button>
 

@@ -1,0 +1,8 @@
+# Build + push the solve-service image with Cloud Build (run from repo root):
+#   gcloud builds submit --config backend/cloudbuild.yaml .
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '-f', 'backend/Dockerfile',
+           '-t', 'us-east1-docker.pkg.dev/$PROJECT_ID/smokies/solver:latest', '.']
+images:
+  - 'us-east1-docker.pkg.dev/$PROJECT_ID/smokies/solver:latest'

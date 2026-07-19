@@ -646,6 +646,30 @@ async function ensureBaseData() {
 
 let _loadSeq = 0;   // last-click-wins: stale loads abandon before rendering
 
+// Render an itinerary object (a preset file's contents, or the identical
+// schema returned by the solve backend's open/closed results).
+async function renderItinerary(itinerary) {
+  await ensureBaseData();
+  const { geom, named }               = buildDirectedGeom(_linesGJ);
+  const nodeCoords                     = buildNodeCoords(_pointsGJ);
+  const nodeElev                       = buildNodeElev(_pointsGJ);
+  const allNodes                       = buildAllNodes(_pointsGJ);
+  const { geomDict, daysData, covByDay } = buildGeomAndDays(itinerary, geom, named, nodeCoords, nodeElev, _edgeGains);
+  const bgLayer                        = buildBgLayer(itinerary);
+  const optLayer                       = buildOptionalLayer(_linesGJ, bgLayer, geomDict);
+  const meta = {
+    circuit: itinerary.circuit,
+    n_days:  itinerary.n_days,
+    total_required_miles: itinerary.total_required_miles,
+    // Present only on resupply presets: minimal stop schedule computed by
+    // the solver (hiker starts fully supplied, stops as late as the window
+    // allows).  [{day, node, name, in_park, days_since_last}]
+    resupply_plan: itinerary.resupply_plan || null,
+    max_days_between_resupply: itinerary.max_days_between_resupply || null,
+  };
+  initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, covByDay);
+}
+
 async function loadPreset(filename) {
   const seq = ++_loadSeq;
   showLoading(true);
@@ -656,25 +680,7 @@ async function loadPreset(filename) {
     const itinerary = await fetch(`data/${filename}`)
       .then(r => { if (!r.ok) throw new Error(`${filename} not found — has it been pre-computed?`); return r.json(); });
     if (seq !== _loadSeq) return;   // superseded by a newer selection
-
-    const { geom, named }               = buildDirectedGeom(_linesGJ);
-    const nodeCoords                     = buildNodeCoords(_pointsGJ);
-    const nodeElev                       = buildNodeElev(_pointsGJ);
-    const allNodes                       = buildAllNodes(_pointsGJ);
-    const { geomDict, daysData, covByDay } = buildGeomAndDays(itinerary, geom, named, nodeCoords, nodeElev, _edgeGains);
-    const bgLayer                        = buildBgLayer(itinerary);
-    const optLayer                       = buildOptionalLayer(_linesGJ, bgLayer, geomDict);
-    const meta = {
-      circuit: itinerary.circuit,
-      n_days:  itinerary.n_days,
-      total_required_miles: itinerary.total_required_miles,
-      // Present only on resupply presets: minimal stop schedule computed by
-      // the solver (hiker starts fully supplied, stops as late as the window
-      // allows).  [{day, node, name, in_park, days_since_last}]
-      resupply_plan: itinerary.resupply_plan || null,
-      max_days_between_resupply: itinerary.max_days_between_resupply || null,
-    };
-    initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, covByDay);
+    await renderItinerary(itinerary);
   } catch (err) {
     if (seq !== _loadSeq) return;
     errEl.textContent    = err.message;
@@ -690,6 +696,82 @@ function currentPresetFile() {
   const rs   = document.querySelector('input[name="resupply"]:checked')?.value ?? 'none';
   const town = document.querySelector('input[name="town"]:checked')?.value     ?? 'no';
   return `preset_${cir}_${max}h${rs === 'none' ? '' : `_r${rs}`}${town === 'yes' ? '_town' : ''}.json`;
+}
+
+// ── Custom solve (beta): on-demand solving via the backend service ─────────
+// Hidden unless a backend URL is configured: open the site once with
+// ?backend=http://localhost:8080 (persisted in localStorage; ?backend=off
+// forgets it).  See backend/README.md.
+function backendUrl() {
+  return localStorage.getItem('smokiesBackend');
+}
+
+function setSolveProgress(pct, label) {
+  const box = document.getElementById('solveProg');
+  box.style.display = pct === null ? 'none' : 'block';
+  if (pct !== null) {
+    document.getElementById('solveProgFill').style.width = pct + '%';
+    document.getElementById('solveProgLabel').textContent = label || '';
+  }
+}
+
+async function solveCustom() {
+  const seq = ++_loadSeq;
+  const errEl = document.getElementById('presetError');
+  errEl.style.display = 'none';
+  showLoading(true);
+  setSolveProgress(0, 'Contacting solver…');
+  try {
+    const hiked = document.getElementById('hikedInput').value
+      .split(/[\s,]+/).filter(Boolean);
+    const rsVal = document.querySelector('input[name="resupply"]:checked')?.value;
+    const body = {
+      max_hours: +(document.querySelector('input[name="max_day"]:checked')?.value ?? 12),
+      max_resupply_days: rsVal && rsVal !== 'none' ? +rsVal : null,
+      town_nights: document.querySelector('input[name="town"]:checked')?.value === 'yes',
+      hiked,
+      time_budget: 45,
+    };
+    const resp = await fetch(backendUrl().replace(/\/+$/, '') + '/solve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!resp.ok) throw new Error(`solver backend HTTP ${resp.status}`);
+
+    // The body is streamed NDJSON: progress lines, then one result/error.
+    const reader = resp.body.getReader();
+    const dec = new TextDecoder();
+    let buf = '', result = null;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      const lines = buf.split('\n');
+      buf = lines.pop();
+      for (const ln of lines) {
+        if (!ln.trim()) continue;
+        const ev = JSON.parse(ln);
+        if (ev.type === 'progress')     setSolveProgress(ev.pct, ev.label);
+        else if (ev.type === 'result')  result = ev;
+        else if (ev.type === 'error')   throw new Error(ev.message);
+      }
+    }
+    if (seq !== _loadSeq) return;   // superseded by a preset click meanwhile
+    if (!result) throw new Error('solver stream ended without a result');
+    if (result.map_complete) throw new Error('Map already complete — nothing left to hike!');
+    const cir = document.querySelector('input[name="circuit"]:checked')?.value ?? 'open';
+    const itinerary = result[cir] || result.open || result.closed;
+    if (!itinerary) throw new Error('solver found no valid itinerary for these settings');
+    await renderItinerary(itinerary);
+  } catch (err) {
+    if (seq === _loadSeq) {
+      errEl.textContent   = err.message;
+      errEl.style.display = 'block';
+    }
+  } finally {
+    if (seq === _loadSeq) { setSolveProgress(null); showLoading(false); }
+  }
 }
 
 // ── Node layer visibility (zoom-dependent) ─────────────────────────────────
@@ -870,6 +952,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Left sidebar preset selectors ────────────────────────────────────────
   document.querySelectorAll('input[name="max_day"], input[name="circuit"], input[name="resupply"], input[name="town"]')
     .forEach(el => el.addEventListener('change', () => loadPreset(currentPresetFile())));
+
+  // ── Custom solve panel (only with a configured backend) ──────────────────
+  const bkParam = new URLSearchParams(location.search).get('backend');
+  if (bkParam === 'off')  localStorage.removeItem('smokiesBackend');
+  else if (bkParam)       localStorage.setItem('smokiesBackend', bkParam);
+  if (backendUrl()) {
+    document.getElementById('customSolve').style.display = 'block';
+    document.getElementById('btnSolve').addEventListener('click', solveCustom);
+  }
 
   // Load the default preset on startup
   loadPreset('preset_open_12h.json');
