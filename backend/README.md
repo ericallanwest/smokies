@@ -15,9 +15,32 @@ pre-solved presets in `docs/data/`.
   "max_resupply_days": null,
   "town_nights": false,
   "hiked": ["2.0", "8.1"],
-  "time_budget": 45
+  "time_budget": 45,
+  "tobler_v0": null,
+  "tobler_k": null,
+  "tobler_peak": null
 }
 ```
+
+### Hiking pace
+
+`tobler_v0` (3000-9000 m/h), `tobler_k` (2.0-6.0) and `tobler_peak` (-0.20 to
+0.05) override Tobler's hiking function, `W = v0 * exp(-k * |slope - peak|)`.
+Leave all three null for the published pace; the presets in `docs/data/` are
+exactly that solve.
+
+Setting any of them re-times every edge from the slope histograms in
+`segment_profiles.json` and **re-optimises the circuit around the new costs**.
+This is deliberate. Changing the shape of the speed curve changes which
+traversal directions are cheap, which changes the optimal circuit -- so a
+different pace is a genuinely different itinerary, not the same one with
+different numbers written on it. Expect the day count to move: at 12h/day, a
+loaded backpacker (`k` 4.2) needs 46 days where the default needs 42, and a
+fit hiker (`v0` 6600, `k` 3.0) needs 33.
+
+The service refuses the request if `segment_profiles.json` is missing rather
+than falling back to the baked costs, which would silently mix two pace models
+in one solve. Regenerate it with `python -m elevation.build`.
 
 `hiked` is the 900-Miler input: edge IDs (from the edge list / preset
 `edge_id` values) already traversed; they become non-required.

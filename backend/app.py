@@ -31,11 +31,19 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SOLVER_DIR = os.environ.get('SOLVER_DIR', os.path.join(HERE, '..', 'solver'))
 SOLVER_PY = os.path.join(SOLVER_DIR, 'smokies_circuit_solver_20260509a.py')
 EDGE_CSV = os.path.join(SOLVER_DIR, 'smokies_edge_list_20260509a.csv')
+# Slope histograms, needed only when a request overrides the Tobler parameters.
+# Looked for beside the solver first, then in the published data directory.
+PROFILES = next(
+    (c for c in (os.path.join(SOLVER_DIR, 'segment_profiles.json'),
+                 os.path.join(HERE, '..', 'docs', 'data', 'segment_profiles.json'))
+     if os.path.exists(c)), None)
 
 # Scratch working directory: the solver reads its edge list from cwd and
 # writes itinerary/preset files there, so give it a private sandbox.
 WORKDIR = tempfile.mkdtemp(prefix='smokies_solver_')
 shutil.copy(EDGE_CSV, WORKDIR)
+if PROFILES:
+    shutil.copy(PROFILES, WORKDIR)
 
 # One solve at a time: the solver is CPU-bound and a Cloud Run instance has
 # one core by default. Concurrent requests queue here (each solve is ~5-15 s).
@@ -61,6 +69,14 @@ class SolveRequest(BaseModel):
     town_nights: bool = False
     hiked: list[str] = Field(default_factory=list, max_length=1000)
     time_budget: float = Field(45.0, ge=5, le=120)
+    # Tobler's hiking function, W = v0 * exp(-k * |slope - peak|).  Omit all
+    # three for the published pace; set any of them and every edge is re-timed
+    # from its slope histogram and the circuit is re-optimised around the new
+    # costs -- a different pace really is a different itinerary, not the same
+    # one with different numbers on it.
+    tobler_v0: float | None = Field(None, ge=3000, le=9000)
+    tobler_k: float | None = Field(None, ge=2.0, le=6.0)
+    tobler_peak: float | None = Field(None, ge=-0.20, le=0.05)
 
 
 def _cache_key(req: SolveRequest) -> str:
@@ -70,6 +86,7 @@ def _cache_key(req: SolveRequest) -> str:
         'town_nights': req.town_nights,
         'hiked': sorted(req.hiked),
         'time_budget': req.time_budget,
+        'tobler': [req.tobler_v0, req.tobler_k, req.tobler_peak],
     }, sort_keys=True)
     return hashlib.sha256(canon.encode()).hexdigest()
 
@@ -87,6 +104,16 @@ async def _run_solver(req: SolveRequest, key: str):
         cmd += ['--max-resupply-days', str(req.max_resupply_days)]
     if req.town_nights:
         cmd += ['--town-nights']
+    for flag, val in (('--tobler-v0', req.tobler_v0),
+                      ('--tobler-k', req.tobler_k),
+                      ('--tobler-peak', req.tobler_peak)):
+        if val is not None:
+            if PROFILES is None:
+                yield _ndjson({'type': 'error', 'message':
+                               'custom Tobler parameters need segment_profiles.json; '
+                               'generate it with python -m elevation.build'})
+                return
+            cmd += [flag, str(val)]
     hiked_file = None
     if req.hiked:
         hiked_file = os.path.join(WORKDIR, f'hiked_{key[:12]}.txt')
