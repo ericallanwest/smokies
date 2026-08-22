@@ -193,3 +193,32 @@ body.dark .leaflet-bar a { background: #1e2129; color: #e6e7ee; border-bottom-co
 }
 #loading p { font-size: 13px; color: var(--muted); }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Hiking pace controls (Custom Solve) ──────────────────────────────────
+   A pace is not a display preference: changing it changes which traversal
+   directions are cheap, so the circuit is re-solved around it.  The controls
+   say "Build itinerary", never "apply", and every value snaps to a grid so a
+   pace is reproducible and shareable rather than a point in a continuum. */
+.pace-tiers {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: 6px 0 10px;
+}
+.pace-tiers button {
+  font: inherit; font-size: 11px; padding: 4px 6px; cursor: pointer;
+  background: var(--control); color: var(--text);
+  border: 1px solid var(--border); border-radius: 3px;
+}
+.pace-tiers button:hover { border-color: var(--accent); }
+.pace-tiers button.on {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+}
+.pace-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 11px; color: var(--muted); margin-top: 8px;
+}
+.pace-row output { color: var(--text); font-variant-numeric: tabular-nums; }
+#customSolve input[type="range"] { width: 100%; margin: 2px 0 0; accent-color: var(--accent); }
+.pace-note {
+  font-size: 10.5px; line-height: 1.45; color: var(--muted);
+  margin: 10px 0 8px; min-height: 2.6em;
+}
+.pace-note.dirty { color: var(--accent); }

@@ -63,9 +63,34 @@
   <!-- Custom on-demand solving; hidden unless ?backend=<url> is configured -->
   <div id="customSolve" class="param-group" style="display:none">
     <div class="param-label">Custom Solve (beta)</div>
-    <textarea id="hikedInput" rows="4" placeholder="Already-hiked edge IDs (optional), comma or newline separated"
+
+    <div class="pace-tiers" id="paceTiers">
+      <button type="button" data-v0="5400" data-k="4.2" data-peak="-0.05">Heavy pack</button>
+      <button type="button" data-v0="6000" data-k="3.5" data-peak="-0.05" class="on">Standard</button>
+      <button type="button" data-v0="6300" data-k="3.2" data-peak="-0.05">Strong</button>
+      <button type="button" data-v0="6600" data-k="3.0" data-peak="-0.04">Fast</button>
+    </div>
+
+    <div class="pace-row">
+      <label for="paceV0">Pace on the flat</label><output id="paceV0Out">3.7 mph</output>
+    </div>
+    <input type="range" id="paceV0" min="3000" max="9000" step="100" value="6000">
+
+    <div class="pace-row">
+      <label for="paceK">Cost of grade</label><output id="paceKOut">3.5</output>
+    </div>
+    <input type="range" id="paceK" min="2" max="6" step="0.1" value="3.5">
+
+    <div class="pace-row">
+      <label for="pacePeak">Fastest gradient</label><output id="pacePeakOut">-5%</output>
+    </div>
+    <input type="range" id="pacePeak" min="-0.20" max="0.05" step="0.01" value="-0.05">
+
+    <p class="pace-note" id="paceNote">Published pace — the itineraries below are pre-solved at these settings.</p>
+
+    <textarea id="hikedInput" rows="3" placeholder="Already-hiked edge IDs (optional), comma or newline separated"
               style="width:100%;font-size:11px;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:3px;padding:4px;resize:vertical"></textarea>
-    <button class="btn" id="btnSolve" style="margin-top:6px;width:100%">⚙ Solve now</button>
+    <button class="btn" id="btnSolve" style="margin-top:6px;width:100%">⚙ Build itinerary</button>
   </div>
 </div>
 <button id="left-toggle" title="Hide/show parameters">◀</button>

@@ -681,6 +681,8 @@ async function loadPreset(filename) {
       .then(r => { if (!r.ok) throw new Error(`${filename} not found — has it been pre-computed?`); return r.json(); });
     if (seq !== _loadSeq) return;   // superseded by a newer selection
     await renderItinerary(itinerary);
+    _shownPace = { ...PACE_DEFAULT };   // presets are the published pace
+    renderPace();
   } catch (err) {
     if (seq !== _loadSeq) return;
     errEl.textContent    = err.message;
@@ -702,6 +704,80 @@ function currentPresetFile() {
 // Hidden unless a backend URL is configured: open the site once with
 // ?backend=http://localhost:8080 (persisted in localStorage; ?backend=off
 // forgets it).  See backend/README.md.
+// ── Hiking pace ───────────────────────────────────────────────────────────
+// Tobler's hiking function, W = v0 * exp(-k * |slope - peak|).  These three
+// numbers are solver input, not display settings: k decides how much a grade
+// costs, which decides which direction of each trail is cheap, which decides
+// the whole circuit.  So the panel builds a new itinerary rather than
+// re-labelling the current one, and says so.
+//
+// Every control snaps to a grid.  That is what makes a pace reproducible --
+// the solver is deterministic, so "k = 3.5" is the same itinerary for everyone
+// -- and it keeps the backend's result cache useful, which a continuous slider
+// would defeat.
+const PACE_DEFAULT = { v0: 6000, k: 3.5, peak: -0.05 };
+
+// The pace the itinerary on screen was actually built at, which is not always
+// the pace the sliders show.  Keeping them distinct is the whole point: it
+// lets the panel say "this is what you are looking at" instead of leaving a
+// stale slider implying an itinerary that was never solved.
+let _shownPace = { ...PACE_DEFAULT };
+const paceEq = (a, b) => a.v0 === b.v0 && a.k === b.k && a.peak === b.peak;
+
+function paceFromUI() {
+  return {
+    v0:   +document.getElementById('paceV0').value,
+    k:   +(+document.getElementById('paceK').value).toFixed(1),
+    peak: +(+document.getElementById('pacePeak').value).toFixed(2),
+  };
+}
+
+function paceIsDefault(p) {
+  return p.v0 === PACE_DEFAULT.v0 && p.k === PACE_DEFAULT.k
+      && p.peak === PACE_DEFAULT.peak;
+}
+
+function setPaceUI(p) {
+  document.getElementById('paceV0').value   = p.v0;
+  document.getElementById('paceK').value    = p.k;
+  document.getElementById('pacePeak').value = p.peak;
+  renderPace();
+}
+
+// Speed on level ground, which is what v0 means to a hiker -- v0 itself is the
+// peak of the curve and sits slightly downhill, so quoting it would overstate.
+function levelSpeedMph(p) {
+  return p.v0 * Math.exp(-p.k * Math.abs(0 - p.peak)) / 1609.344;
+}
+
+function renderPace() {
+  const p = paceFromUI();
+  document.getElementById('paceV0Out').textContent   = levelSpeedMph(p).toFixed(1) + ' mph';
+  document.getElementById('paceKOut').textContent    = p.k.toFixed(1);
+  document.getElementById('pacePeakOut').textContent = (p.peak * 100).toFixed(0) + '%';
+
+  document.querySelectorAll('#paceTiers button').forEach(b => b.classList.toggle('on',
+    +b.dataset.v0 === p.v0 && +b.dataset.k === p.k && +b.dataset.peak === p.peak));
+
+  const note = document.getElementById('paceNote');
+  const stale = !paceEq(p, _shownPace);
+  note.classList.toggle('dirty', stale);
+  note.textContent = stale
+    ? 'A different pace makes a different itinerary, not the same one re-timed. '
+      + 'Build to re-solve the circuit at this pace (about 10–25 s).'
+    : paceIsDefault(p)
+      ? 'Published pace — this itinerary is pre-solved at these settings.'
+      : 'This itinerary was built at this pace.';
+  return p;
+}
+
+// A pace belongs in the URL: it is reproducible, so a link to one is a link to
+// exactly one itinerary.
+function paceToQuery(p) {
+  return paceIsDefault(p) ? '' :
+    `&v0=${p.v0}&k=${p.k}&peak=${p.peak}`;
+}
+
 function backendUrl() {
   return localStorage.getItem('smokiesBackend');
 }
@@ -732,6 +808,12 @@ async function solveCustom() {
       hiked,
       time_budget: 45,
     };
+    const pace = paceFromUI();
+    if (!paceIsDefault(pace)) {
+      body.tobler_v0 = pace.v0;
+      body.tobler_k = pace.k;
+      body.tobler_peak = pace.peak;
+    }
     const resp = await fetch(backendUrl().replace(/\/+$/, '') + '/solve', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -764,6 +846,8 @@ async function solveCustom() {
     const itinerary = result[cir] || result.open || result.closed;
     if (!itinerary) throw new Error('solver found no valid itinerary for these settings');
     await renderItinerary(itinerary);
+    _shownPace = pace;
+    renderPace();
   } catch (err) {
     if (seq === _loadSeq) {
       errEl.textContent   = err.message;
@@ -950,13 +1034,34 @@ document.addEventListener('DOMContentLoaded', () => {
   if (localStorage.getItem('smokiesTheme') === 'dark') applyTheme(true);
 
   // ── Left sidebar preset selectors ────────────────────────────────────────
+  // Presets exist only at the published pace.  Loading one while the sliders
+  // show something else would put an itinerary on screen that nobody asked
+  // for, under a pace label that never produced it -- so when a custom pace is
+  // set and a backend is available, a parameter change re-solves instead.
   document.querySelectorAll('input[name="max_day"], input[name="circuit"], input[name="resupply"], input[name="town"]')
-    .forEach(el => el.addEventListener('change', () => loadPreset(currentPresetFile())));
+    .forEach(el => el.addEventListener('change', () => {
+      if (!paceIsDefault(paceFromUI()) && backendUrl()) solveCustom();
+      else loadPreset(currentPresetFile());
+    }));
 
   // ── Custom solve panel (only with a configured backend) ──────────────────
   const bkParam = new URLSearchParams(location.search).get('backend');
   if (bkParam === 'off')  localStorage.removeItem('smokiesBackend');
   else if (bkParam)       localStorage.setItem('smokiesBackend', bkParam);
+  ['paceV0', 'paceK', 'pacePeak'].forEach(id =>
+    document.getElementById(id).addEventListener('input', renderPace));
+  document.querySelectorAll('#paceTiers button').forEach(b =>
+    b.addEventListener('click', () => setPaceUI(
+      { v0: +b.dataset.v0, k: +b.dataset.k, peak: +b.dataset.peak })));
+  const qp = new URLSearchParams(location.search);
+  if (qp.has('v0') || qp.has('k') || qp.has('peak')) {
+    setPaceUI({ v0: +(qp.get('v0') ?? PACE_DEFAULT.v0),
+                k:  +(qp.get('k')  ?? PACE_DEFAULT.k),
+                peak: +(qp.get('peak') ?? PACE_DEFAULT.peak) });
+  } else {
+    renderPace();
+  }
+
   if (backendUrl()) {
     document.getElementById('customSolve').style.display = 'block';
     document.getElementById('btnSolve').addEventListener('click', solveCustom);
