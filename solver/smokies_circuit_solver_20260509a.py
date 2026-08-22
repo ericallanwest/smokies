@@ -578,13 +578,74 @@ if 'is_trail_closed' in df.columns:
 else:
     required_rows = df[df['is_required'] == 1]
 
+
+def budget_forced_directions() -> dict[str, str]:
+    """Pin required edges that only one direction can cover inside a day.
+
+    An interior day runs camp -> ... -> camp, so covering an arc costs at least
+    (nearest camp in) + (traversal) + (nearest camp out).  Past the daily budget
+    the arc is coverable only on day 1 or the last day, and
+    retarget_termini_for_budget can rotate the walk to rescue exactly one such
+    arc -- a second one leaves the circuit with no legal split at all.
+
+    Direction is often the whole difference.  At 8h, Roundtop needs 8.01h
+    camp-to-camp as TH059->TH071 but 7.81h as TH071->TH059: it fails the budget
+    by 36 seconds, and only because the cost objective preferred the traversal
+    that is 478s cheaper in isolation.  Deciding that on total tour cost alone
+    is what cost the 8h tier its itineraries.  So pin those edges before the
+    objective sees them; edges that fit either way, or neither, stay free and
+    the objective still chooses.
+    """
+    INF = float('inf')
+    _out, _back = {}, {}
+    def out_of(n):
+        if n not in _out:
+            _out[n] = min(D[n].get(c, INF) for c in overnight_nodes)
+        return _out[n]
+    def back_of(n):
+        if n not in _back:
+            _back[n] = min(D[c].get(n, INF) for c in overnight_nodes)
+        return _back[n]
+
+    forced: dict[str, str] = {}
+    notes: list[str] = []
+    for _, row in required_rows.iterrows():
+        rid  = str(row['ID'])
+        A, B = row['node_A'], row['node_B']
+        fwd  = back_of(A) + int(row['cost_A_to_B']) + out_of(B)
+        rev  = back_of(B) + int(row['cost_B_to_A']) + out_of(A)
+        if fwd > MAX_DAY_SECONDS >= rev:
+            forced[rid] = 'rev'
+            notes.append(f"  {B}->{A}  {row['Trail']}  "
+                         f"({rev / 3600:.2f}h camp-to-camp, vs {fwd / 3600:.2f}h reversed)")
+        elif rev > MAX_DAY_SECONDS >= fwd:
+            forced[rid] = 'fwd'
+            notes.append(f"  {A}->{B}  {row['Trail']}  "
+                         f"({fwd / 3600:.2f}h camp-to-camp, vs {rev / 3600:.2f}h reversed)")
+    print()
+    if forced:
+        print(f"Budget-aware directions: {len(forced)} required edge(s) pinned to the "
+              f"only direction that fits an interior day at "
+              f"{MAX_DAY_SECONDS / 3600:.0f}h:")
+        for n in notes:
+            print(n)
+    else:
+        print(f"Budget-aware directions: every required edge fits an interior day at "
+              f"{MAX_DAY_SECONDS / 3600:.0f}h in both directions -- nothing pinned")
+    return forced
+
+
+budget_forced = budget_forced_directions()
+
 # chosen[row_id] = (from_node, to_node, arc_key)
 # Each row's forward key is  "{row_id}_fwd", reverse is "{row_id}_rev".
 chosen: dict[str, tuple[str, str, str]] = {}
 for _, row in required_rows.iterrows():
     row_id = str(row['ID'])
     u, v = row['node_A'], row['node_B']
-    if int(row['cost_A_to_B']) <= int(row['cost_B_to_A']):
+    _pin = budget_forced.get(row_id)
+    if _pin == 'fwd' or (_pin is None
+                         and int(row['cost_A_to_B']) <= int(row['cost_B_to_A'])):
         chosen[row_id] = (u, v, f"{row_id}_fwd")
     else:
         chosen[row_id] = (v, u, f"{row_id}_rev")
@@ -631,7 +692,8 @@ def solve_min_cost_flow(imbalance: dict) -> tuple[dict, int]:
     return flow_dict, total_cost
 
 
-def solve_step4_cpsat(G, required_rows, MAX_DH=30, time_limit=120):
+def solve_step4_cpsat(G, required_rows, MAX_DH=30, time_limit=120,
+                      forced_dirs=None):
     """
     Exact direction assignment via OR-Tools CP-SAT.
 
@@ -659,6 +721,12 @@ def solve_step4_cpsat(G, required_rows, MAX_DH=30, time_limit=120):
 
     # dir_vars[row_id] = 0 → A→B,  1 → B→A
     dir_vars = {rid: model.NewBoolVar(f'd{rid}') for rid in required_endpoints}
+
+    # Edges only one direction can cover inside a day are decided by the
+    # budget, not by the cost objective (see budget_forced_directions).
+    for rid, want in (forced_dirs or {}).items():
+        if rid in dir_vars:
+            model.Add(dir_vars[rid] == (0 if want == 'fwd' else 1))
 
     all_arcs = list(G.edges(keys=True))
     dh_vars  = {(u, v, k): model.NewIntVar(0, MAX_DH, f'dh_{i}')
@@ -738,7 +806,9 @@ def solve_step4_cpsat(G, required_rows, MAX_DH=30, time_limit=120):
 # Under a wall-clock budget, cap CP-SAT well below it (the default 120 s
 # alone would blow a 45-60 s budget); the greedy+LS fallback covers timeouts.
 _cpsat_limit = 120 if TIME_BUDGET is None else max(1, min(10, int(time_left())))
-cpsat_result = solve_step4_cpsat(G, required_rows, MAX_DH=30, time_limit=_cpsat_limit)
+cpsat_result = solve_step4_cpsat(G, required_rows, MAX_DH=30,
+                                 time_limit=_cpsat_limit,
+                                 forced_dirs=budget_forced)
 progress(38, "Direction assignment complete")
 
 if cpsat_result is not None:
@@ -788,6 +858,8 @@ else:
     for pass_num in range(10):
         improved = False
         for row_id in list(chosen.keys()):
+            if row_id in budget_forced:
+                continue          # direction is fixed by the daily budget
             u_cur, v_cur, k_cur = chosen[row_id]
             k_new = f"{row_id}_rev" if k_cur.endswith('_fwd') else f"{row_id}_fwd"
             u_new, v_new = v_cur, u_cur
@@ -1510,6 +1582,60 @@ def split_days_balanced(arc_seq):
     return best, lo
 
 
+def strip_redundant_deadhead_loops(days):
+    """Delete closed all-deadhead loops stranded inside a day.
+
+    Both detour remedies size their out-and-backs for the day boundaries they
+    assume: day_split_greedy_detour appends "walk to camp" to the day it is
+    building and pushes "camp back to the walk" into the next one, and
+    insert_overnight_detours plans out-and-backs meant to be cut in half by a
+    day end at the camp.  The exact DP then re-splits the augmented walk from
+    scratch and is free to put the boundary somewhere else entirely -- when it
+    does, the detour survives whole, in the middle of a day, as a loop that
+    leaves a node and returns to it having covered no required edge.  Nothing
+    downstream removed those, so they shipped as real repeat walking (Day 29 of
+    16h Open climbed Spruce Mountain to campsite 42 and back down for nothing).
+
+    Removal is safe by construction: every dropped arc is a deadhead (required
+    coverage cannot change), the loop's anchor node stays in the sequence (the
+    day's start and end nodes, hence the overnight sequence and its
+    consecutive-night bookkeeping, are untouched), and a day only gets shorter,
+    so no daily budget can be broken.  The one thing a removal can cost is a
+    resupply touch -- resupply is credited pass-through, anywhere in the day --
+    so a loop is kept whenever dropping it would change the day's set of
+    resupply nodes.  Returns (days, n_removed, seconds_removed).
+    """
+    out, n_removed, s_removed = [], 0, 0
+    for day in days:
+        arcs = list(day)
+        while len(arcs) > 1:
+            seq = [arcs[0][0]] + [a[1] for a in arcs]
+            rs_before = {n for n in seq[1:] if n in resupply_set}
+            cut = None
+            for i in range(len(arcs)):
+                # Longest loop first: one deletion instead of several nested.
+                for j in range(len(arcs), i, -1):
+                    if seq[j] != seq[i] or j - i == len(arcs):
+                        continue
+                    if not all(a[3].get('is_deadhead') for a in arcs[i:j]):
+                        continue
+                    kept = seq[:i] + seq[j:]
+                    if {n for n in kept[1:] if n in resupply_set} != rs_before:
+                        continue
+                    cut = (i, j)
+                    break
+                if cut:
+                    break
+            if not cut:
+                break
+            i, j = cut
+            n_removed += 1
+            s_removed += sum(a[3]['weight'] for a in arcs[i:j])
+            del arcs[i:j]
+        out.append(arcs)
+    return out, n_removed, s_removed
+
+
 def insert_resupply_detours(arc_seq, rs_nodes, max_days, max_day_s, label,
                             objective='fewest'):
     """Pre-process a walk so a resupply window is achievable by day-splitting.
@@ -1890,7 +2016,19 @@ for _job_i, (base_label, _tag, arc_seq) in enumerate(_split_jobs):
     label = f"{base_label}[{_tag}]" if _tag else base_label
     progress(45 + 47 * _job_i / _n_jobs, f"Splitting days ({label})")
 
+    def _clean(cand_days, why):
+        """Strip stranded detour loops before this candidate is scored, so the
+        day-count / shortest-day comparison below ranks real itineraries."""
+        if cand_days is None:
+            return None
+        cleaned, n_cut, s_cut = strip_redundant_deadhead_loops(cand_days)
+        if n_cut:
+            print(f"  {label}: {why}: dropped {n_cut} stranded deadhead "
+                  f"loop(s), -{s_cut / 3600:.1f}h repeat walking")
+        return cleaned
+
     days_base, floor_base = split_days_balanced(arc_seq)
+    days_base = _clean(days_base, "detour-free split")
     if days_base is not None:
         print(f"\n{label}: detour-free DP split -> {len(days_base)} days "
               f"(shortest non-last day {fmt_hm(shortest_nonlast(days_base))})")
@@ -1909,6 +2047,7 @@ for _job_i, (base_label, _tag, arc_seq) in enumerate(_split_jobs):
     planned_seq = insert_overnight_detours(arc_seq, MAX_DAY_SECONDS, label)
     if planned_seq is not None:
         days_plan, floor_plan = split_days_balanced(planned_seq)
+        days_plan = _clean(days_plan, "campsite-detour plan")
         if days_plan is not None:
             print(f"  {label}: campsite-detour plan -> {len(days_plan)} days "
                   f"(shortest non-last day {fmt_hm(shortest_nonlast(days_plan))})")
@@ -1970,13 +2109,14 @@ for _job_i, (base_label, _tag, arc_seq) in enumerate(_split_jobs):
             cand_days = greedy_days
         else:
             continue
+        cand_days = _clean(cand_days, f"greedy floor {frac:.0%}")
         m = shortest_nonlast(cand_days)
         print(f"    tie @ floor {frac:>5.0%}: shortest non-last day {fmt_hm(m)}")
         if m > floor_s:
             days, floor_s, best_frac = cand_days, m, frac
 
     if days is None and ties:              # safety net: first tied greedy split
-        days, best_frac = ties[0][3], ties[0][1]
+        days, best_frac = _clean(ties[0][3], "greedy fallback"), ties[0][1]
     if days is not None:
         method = (f"greedy+detour (floor {best_frac:.0%}) -> DP balanced, "
                   f"best of {len(ties)} tie(s)")
