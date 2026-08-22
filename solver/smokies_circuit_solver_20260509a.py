@@ -20,6 +20,18 @@ _ap.add_argument('--hiked-csv', type=str, default=None,
 _ap.add_argument('--time-budget', type=float, default=None,
                  help='Soft wall-clock budget in seconds: heuristic sweeps stop '
                       'early and the best solution found so far is returned')
+_ap.add_argument('--tobler-v0', type=float, default=None,
+                 help='Tobler peak speed in metres/hour (default: 6000). Setting '
+                      'any --tobler-* option recomputes every edge cost from the '
+                      'slope histograms in segment_profiles.json instead of using '
+                      'the baked cost columns')
+_ap.add_argument('--tobler-k', type=float, default=None,
+                 help='Tobler slope decay (default: 3.5). Higher punishes grade more')
+_ap.add_argument('--tobler-peak', type=float, default=None,
+                 help='Slope of peak speed as rise/run (default: -0.05, slightly downhill)')
+_ap.add_argument('--profiles', type=str, default=None,
+                 help='Path to segment_profiles.json (default: searched next to the '
+                      'edge list, then under docs/data/)')
 _ap.add_argument('--progress', action='store_true',
                  help='Emit machine-readable "PROGRESS <pct> <label>" lines on stdout')
 _ap.add_argument('--json-out', type=str, default=None,
@@ -68,6 +80,8 @@ def envelope_base() -> dict:
     return {
         "params": {
             "max_hours": _args.max_hours,
+            "tobler": {"v0_m_per_h": TOBLER_PARAMS[0], "k": TOBLER_PARAMS[1],
+                       "peak_slope": TOBLER_PARAMS[2], "custom": TOBLER_CUSTOM},
             "max_resupply_days": _args.max_resupply_days,
             "town_nights": _args.town_nights,
             "time_budget": TIME_BUDGET,
@@ -86,6 +100,7 @@ MAX_DAY_SECONDS = int(_args.max_hours * 3600)
 # There is no user-facing minimum-day parameter.  The day split first finds
 # the minimum possible day count with no floor, then maximizes the shortest
 # day at that count (see split_days_balanced).
+CPSAT_SEED = 20260509        # any fixed value; changing it reshuffles ties
 BC_SINGLE_NIGHT_IDS = {'BC113'}  # former shelter -- 1 consecutive night cap like SH nodes
 
 # Resupply configuration
@@ -118,6 +133,74 @@ town_overnights: set = set(RESUPPLY_NODES) if TOWN_NIGHTS else set()
 
 progress(2, "Loading edge list")
 df = pd.read_csv(CSV_PATH)
+
+# --- Custom hiking pace: re-time every edge from its slope histogram ------
+# The cost columns in the CSV are Tobler at the default parameters.  A hiker
+# with a different pace needs different numbers, and re-timing is not enough
+# on its own: changing the shape of the speed curve changes which traversal
+# directions are cheap, which changes the optimal circuit.  So the parameters
+# enter here, before the graph exists, and the whole solve proceeds on them.
+#
+# segment_profiles.json carries, per segment, the distance and rise falling in
+# each 1% slope bin.  Time is the sum over bins of distance / speed(slope), and
+# the reverse direction is the same histogram with every slope negated -- so
+# one histogram re-times both directions and they cannot disagree.
+TOBLER_DEFAULTS = (6000.0, 3.5, -0.05)
+_tob = (_args.tobler_v0, _args.tobler_k, _args.tobler_peak)
+TOBLER_PARAMS = tuple(d if v is None else v for v, d in zip(_tob, TOBLER_DEFAULTS))
+TOBLER_CUSTOM = any(v is not None for v in _tob)
+
+def _find_profiles() -> str | None:
+    if _args.profiles:
+        return _args.profiles if os.path.exists(_args.profiles) else None
+    here = os.path.dirname(os.path.abspath(__file__))
+    for cand in (os.path.join(os.getcwd(), 'segment_profiles.json'),
+                 os.path.join(here, 'segment_profiles.json'),
+                 os.path.join(here, 'docs', 'data', 'segment_profiles.json'),
+                 os.path.join(here, '..', 'docs', 'data', 'segment_profiles.json')):
+        if os.path.exists(cand):
+            return cand
+    return None
+
+if TOBLER_CUSTOM:
+    import json as _json
+    import math as _math
+    _pp = _find_profiles()
+    if _pp is None:
+        raise SystemExit("--tobler-* needs segment_profiles.json; pass --profiles PATH "
+                         "(generate it with: python -m elevation.build)")
+    _prof = _json.load(open(_pp, encoding='utf-8'))['segments']
+    _v0, _k, _peak = TOBLER_PARAMS
+
+    def _speed(s: float) -> float:
+        return _v0 * _math.exp(-_k * abs(s - _peak))
+
+    def _time(bins: dict, reverse: bool) -> float:
+        t = 0.0
+        for _b, (dist_m, rise_m) in bins.items():
+            if dist_m <= 0:
+                continue
+            s = rise_m / dist_m
+            t += dist_m / _speed(-s if reverse else s) * 3600.0
+        return t
+
+    _n_retimed, _missing = 0, []
+    for _i, _row in df.iterrows():
+        _rec = _prof.get(str(float(_row['ID'])))
+        if _rec is None:
+            _missing.append(str(_row['ID']))
+            continue
+        df.at[_i, 'cost_A_to_B'] = int(round(_time(_rec['bins'], False)))
+        df.at[_i, 'cost_B_to_A'] = int(round(_time(_rec['bins'], True)))
+        _n_retimed += 1
+    print(f"Tobler parameters: v0={_v0:.0f} m/h, k={_k:.2f}, peak={_peak:+.3f} "
+          f"(default {TOBLER_DEFAULTS[0]:.0f}/{TOBLER_DEFAULTS[1]}/{TOBLER_DEFAULTS[2]})")
+    print(f"  re-timed {_n_retimed} edge(s) from {os.path.relpath(_pp)}")
+    if _missing:
+        # Keeping the baked cost for an edge with no histogram would silently
+        # mix two pace models in one solve; refuse instead.
+        raise SystemExit(f"segment_profiles.json is missing {len(_missing)} edge(s): "
+                         f"{', '.join(_missing[:5])}")
 
 # --- 900-Miler input: already-hiked edges become non-required -------------
 # The edges stay in the graph as connectors (usable for repositioning);
@@ -775,6 +858,14 @@ def solve_step4_cpsat(G, required_rows, MAX_DH=30, time_limit=120,
 
     solver = cp_model.CpSolver()
     solver.parameters.max_time_in_seconds = time_limit
+    # Reproducibility over speed.  CP-SAT's portfolio search races several
+    # strategies across threads and returns whichever finishes first, so an
+    # unchanged model can yield a different optimum on every run -- which
+    # would mean a user nudging a Tobler slider to 3.6 and back to 3.5 gets a
+    # different trip.  One worker and a fixed seed make the solve a function
+    # of its inputs.  Both are needed: the seed alone does not tame the race.
+    solver.parameters.num_search_workers = 1
+    solver.parameters.random_seed = CPSAT_SEED
     status = solver.Solve(model)
 
     elapsed = time.time() - t0
@@ -1826,11 +1917,17 @@ def insert_overnight_detours(arc_seq, max_day_s, label):
             if node in overnight_set:
                 on_opts[node] = [(0, 0, 0, node)]
             else:
+                # Iterate the sorted node list, not the set: Python
+                # randomises string hashing per process, so set order -- and
+                # therefore which four camps survive each [:4] below -- would
+                # otherwise change between runs of the same input.  The sort
+                # keys carry the node id as a final tiebreaker for the same
+                # reason.
                 triples = [(D[node].get(c, INF), D[c].get(node, INF), c)
-                           for c in overnight_set]
+                           for c in sorted(overnight_set)]
                 keep = set()
-                for keyfn in (lambda t: t[0], lambda t: t[1],
-                              lambda t: t[0] + t[1]):
+                for keyfn in (lambda t: (t[0], t[2]), lambda t: (t[1], t[2]),
+                              lambda t: (t[0] + t[1], t[2])):
                     keep.update(sorted(triples, key=keyfn)[:4])
                 on_opts[node] = sorted((o + b, o, b, c) for o, b, c in keep
                                        if o + b < INF)
