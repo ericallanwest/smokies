@@ -214,8 +214,10 @@ def main() -> int:
                 continue
             r["gain_A_to_B"] = str(rec["gain_ft"])
             r["gain_B_to_A"] = str(rec["loss_ft"])
-            r["cost_A_to_B"] = str(rec["seconds_fwd"])
-            r["cost_B_to_A"] = str(rec["seconds_rev"])
+            # The solver parses these with int(); the extra decimal the JSON
+            # carries for display precision must not reach the CSV.
+            r["cost_A_to_B"] = str(round(rec["seconds_fwd"]))
+            r["cost_B_to_A"] = str(round(rec["seconds_rev"]))
             n += 1
         with open(EDGES, "w", encoding="utf-8-sig", newline="") as f:
             w = csv.DictWriter(f, fieldnames=fields, lineterminator="\n")

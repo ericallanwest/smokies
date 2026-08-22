@@ -1,485 +1,485 @@
 ﻿ID,Trail,Endpoints,Miles,node_A,node_B,cost_A_to_B,cost_B_to_A,is_required,node_A_is_campsite,node_B_is_campsite,elev_A,elev_B,gain_A_to_B,gain_B_to_A,is_trail_closed,node_A_overnight_closed,node_B_overnight_closed
-2,Abrams Falls,Cades Cove - Hannah Mountain,4.2,TH015,TI004,5787,6091,1,0,0,1706,1269,734,1170,0,0,0
-3,Ace Gap,Rich Mountain Road - Beard Cane,5.6,TH026,TI020,7284,7458,1,0,0,1949,1749,1089,1289,0,0,0
-4,Albright Grove Loop,Maddron Bald N - Maddron Bald S,0.7,TI217,TI218,1064,918,1,0,0,3111,3299,295,107,0,0,0
-5,Alum Cave,Newfound Gap Road - Rainbow Falls,5,TH148,TI151,10424,8466,1,0,0,3877,6359,3035,552,0,0,0
-6,Anthony Creek,Cades Cove Picnic Area - Crib Gap,0.2,TH033,TI035,315,246,1,0,0,1961,2024,68,4,0,0,0
-7,Anthony Creek,Crib Gap - Russell Field,1.4,TI035,TI036,2102,1637,1,0,0,2024,2480,507,51,0,0,0
-8.1,Anthony Creek,Russell Field - Campsite 9,1.2,TI036,BC009,2260,1634,1,0,1,2480,3285,820,15,0,0,0
-8.2,Anthony Creek,Campsite 9 - Bote Mountain,0.7,BC009,TI044,1338,997,1,1,0,3285,3758,497,24,0,0,0
-9,Appalachian,Fontana/Lakeview Drive West - Lost Cove,3.7,TH025,TI024,6874,5638,1,0,0,1887,3671,2269,485,0,0,0
-10.1,Appalachian,Lost Cove - Campsite 113,0.9,TI024,BC113,1367,1287,1,0,1,3671,3740,270,202,0,0,0
-10.2,Appalachian,Campsite 113 - Gregory Bald (Doe Knob),2.2,BC113,TI022,3542,3022,1,1,0,3740,4446,980,273,0,0,0
-11.1,Appalachian,Gregory Bald (Doe Knob) - Mollies Ridge,3.3,TI022,SH112,4620,4453,1,0,1,4446,4583,910,773,0,0,0
-11.2,Appalachian,Mollies Ridge - Russell Field,3.1,SH112,SH111,4389,4546,1,1,1,4583,4348,657,893,0,0,0
-12,Appalachian,Russell Field - Eagle Creek,2.9,SH111,TI045,4087,3567,1,1,0,4348,4912,898,333,0,0,0
+2,Abrams Falls,Cades Cove - Hannah Mountain,4.2,TH015,TI004,5702,6016,1,0,0,1706,1269,713,1150,0,0,0
+3,Ace Gap,Rich Mountain Road - Beard Cane,5.6,TH026,TI020,7260,7430,1,0,0,1949,1749,1094,1295,0,0,0
+4,Albright Grove Loop,Maddron Bald N - Maddron Bald S,0.7,TI217,TI218,1060,914,1,0,0,3111,3299,293,106,0,0,0
+5,Alum Cave,Newfound Gap Road - Rainbow Falls,5,TH148,TI151,9309,7485,1,0,0,3877,6359,3033,551,0,0,0
+6,Anthony Creek,Cades Cove Picnic Area - Crib Gap,0.2,TH033,TI035,311,243,1,0,0,1961,2024,66,3,0,0,0
+7,Anthony Creek,Crib Gap - Russell Field,1.4,TI035,TI036,2098,1633,1,0,0,2024,2480,505,49,0,0,0
+8.1,Anthony Creek,Russell Field - Campsite 9,1.2,TI036,BC009,2249,1625,1,0,1,2480,3285,821,17,0,0,0
+8.2,Anthony Creek,Campsite 9 - Bote Mountain,0.7,BC009,TI044,1344,1001,1,1,0,3285,3758,497,23,0,0,0
+9,Appalachian,Fontana/Lakeview Drive West - Lost Cove,3.7,TH025,TI024,6766,5535,1,0,0,1887,3671,2241,457,0,0,0
+10.1,Appalachian,Lost Cove - Campsite 113,0.9,TI024,BC113,1346,1266,1,0,1,3671,3740,263,195,0,0,0
+10.2,Appalachian,Campsite 113 - Gregory Bald (Doe Knob),2.2,BC113,TI022,3515,2996,1,1,0,3740,4446,972,265,0,0,0
+11.1,Appalachian,Gregory Bald (Doe Knob) - Mollies Ridge,3.3,TI022,SH112,4591,4423,1,0,1,4446,4583,909,772,0,0,0
+11.2,Appalachian,Mollies Ridge - Russell Field,3.1,SH112,SH111,4375,4530,1,1,1,4583,4348,658,893,0,0,0
+12,Appalachian,Russell Field - Eagle Creek,2.9,SH111,TI045,4076,3566,1,1,0,4348,4912,898,334,0,0,0
 13,Appalachian,Eagle Creek - Bote Mountain,0.1,TI045,TI047,66,94,1,0,0,4912,4885,0,27,0,0,0
-14,Appalachian,Bote Mountain - Jenkins Ridge,0.3,TI047,TI049,472,407,1,0,0,4885,4947,103,42,0,0,0
-15.1,Appalachian,Jenkins Ridge - Derrick Knob,5.9,TI049,SH109,10117,10158,1,0,1,4947,4882,2242,2306,0,0,0
-15.2,Appalachian,Derrick Knob - Greenbrier Ridge,0.3,SH109,TI075,437,497,1,1,0,4882,4773,30,138,0,0,0
-16,Appalachian,Greenbrier Ridge - Miry Ridge,2.4,TI075,TI087,3683,3519,1,0,0,4773,4957,800,617,0,0,0
-17.1,Appalachian,Miry Ridge - Silers Bald Shelter,2.8,TI087,SH108,4319,3984,1,0,1,4957,5451,1033,539,0,0,0
-17.2,Appalachian,Silers Bald Shelter - Welch Ridge,0.5,SH108,TI097,704,699,1,1,0,5451,5424,154,181,0,0,0
-18.1,Appalachian,Welch Ridge - Double Spring Gap Shelter,1.3,TI097,SH107,1938,1892,1,0,1,5424,5507,399,316,0,0,0
-18.2,Appalachian,Double Spring Gap Shelter - Goshen Prong,0.6,SH107,TI112,907,699,1,1,0,5507,5767,280,21,0,0,0
-19,Appalachian,Goshen Prong - Kuwohi Bypass,1.9,TI112,TI121,3200,2641,1,0,0,5767,6518,942,193,0,0,0
-20,Appalachian,Kuwohi Bypass - Kuwohi Tower,0.3,TI121,TI123,522,427,1,0,0,6518,6621,120,16,0,0,0
-21.1,Appalachian,Kuwohi Tower - Collins Gap,1.8,TI123,TH136,2233,2846,1,0,0,6621,5791,90,919,0,0,0
-21.2,Appalachian,Collins Gap - Sugarland Mountain,1.7,TH136,TI139,2492,2386,1,0,0,5791,5958,555,387,0,0,0
-22.1,Appalachian,Sugarland Mountain - Fork Ridge,0.2,TI139,TH142,303,378,1,0,0,5958,5888,5,75,0,0,0
-22.2,Appalachian,Fork Ridge - Road Prong,2.5,TH142,TH150,3231,3722,1,0,0,5888,5272,313,929,0,0,0
-23,Appalachian,Road Prong - Newfound Gap Parking Lot,1.7,TH150,TH164,2499,2638,1,0,0,5272,5045,394,621,0,0,0
-24,Appalachian,Newfound Gap Parking Lot - Sweat Heifer,1.7,TH164,TI174,2822,2190,1,0,0,5045,5834,873,85,0,0,0
-25,Appalachian,Sweat Heifer - Boulevard,1,TI174,TI180,1445,1282,1,0,0,5834,6034,316,115,0,0,0
-26.1,Appalachian,Boulevard - Icewater Spring Shelter,0.3,TI180,SH105,345,451,1,0,1,6034,5926,4,112,0,0,0
-26.2,Appalachian,Icewater Spring Shelter - Dry Sluice Gap,1.4,SH105,TI187,1910,2296,1,1,0,5926,5402,136,659,0,0,0
-27,Appalachian,Dry Sluice - Hughes Ridge,6,TI187,TI205,8872,8762,1,0,0,5402,5546,1739,1595,0,0,0
-28,Appalachian,Hughes Ridge - Balsam Mountain,5.3,TI205,SH103,7813,7528,1,0,1,5546,5962,1663,1247,0,0,0
-29,Appalachian,Balsam Mountain - Snake Den Ridge,3.7,SH103,TI223,4865,5010,1,1,0,5962,5789,667,840,0,0,0
-30,Appalachian,Snake Den Ridge - Camel Gap,2.3,TI223,TI236,2899,3793,1,0,0,5789,4677,80,1191,0,0,0
-31.1,Appalachian,Camel Gap - Cosby Knob Shelter,1.6,TI236,SH102,2327,2219,1,0,1,4677,4803,468,341,0,0,0
-31.2,Appalachian,Cosby Knob Shelter - Low Gap,0.8,SH102,TI244,1059,1484,1,1,0,4803,4238,4,569,0,0,0
-32,Appalachian,Low Gap - Mt. Cammerer,2.1,TI244,TI249,3279,2715,1,0,0,4238,4948,902,193,0,0,0
-33,Appalachian,Mt. Cammerer - Lower Mt. Cammerer,2.3,TI249,TI254,3058,4195,1,0,0,4948,3464,42,1526,0,0,0
-34,Appalachian,Lower Mt. Cammerer - Chestnut Branch,0.9,TI254,TI257,1266,1725,1,0,0,3464,2877,13,601,0,0,0
-35.1,Appalachian,Chestnut Branch - Davenport Gap Shelter,1,TI257,SH101,1802,1978,1,0,1,2877,2601,266,541,0,0,0
-35.2,Appalachian,Davenport Gap Shelter - Davenport Gap,0.9,SH101,TH264,1404,1838,1,1,0,2601,1996,62,667,0,0,0
-36,Balsam Mountain,Balsam Mountain Road - Beech Gap I,2.3,TH246,TI239,3609,3092,1,0,0,4424,5069,917,273,0,0,0
-37.1,Balsam Mountain,Beech Gap I - Laurel Gap Shelter,1.8,TI239,SH116,2674,2341,1,0,1,5069,5438,616,248,0,0,0
-37.2,Balsam Mountain,Laurel Gap Shelter - Mt. Sterling Ridge,0.2,SH116,TI242,301,212,1,1,0,5438,5545,107,0,0,0,0
-38,Balsam Mountain,Mt. Sterling Ridge - Gunter Fork,0.9,TI242,TI241,1049,1104,1,0,0,5545,5522,63,86,0,0,0
-39,Balsam Mountain,Gunter Fork - AT,4.9,TI241,SH103,6445,6021,1,0,1,5522,5962,1022,582,0,0,0
-40,Baskins Creek,Trillium Gap - Roaring Fork Motor,2.7,TH137,TH143,4153,4371,1,0,0,2740,2435,708,1013,0,0,0
-41,Baxter Creek,Big Creek Campground - Campsite 38,6.1,CGBIG,BC038,11555,8505,1,1,1,1710,5839,4272,143,0,0,0
-42.1,Bear Creek,Forney Creek - Campsite 75,2.8,TI096,BC075,4149,3159,1,0,1,1805,2807,1067,65,0,0,0
-42.2,Bear Creek,Campsite 75 - Welch Ridge,3.1,BC075,TI082,5728,4140,1,1,0,2807,4881,2099,25,0,0,0
-43.1,Beard Cane,Cooper Road - Campsite 3,3.6,TI008,BC003,4003,4640,1,0,1,1939,1333,107,713,0,0,0
-43.2,Beard Cane,Campsite 3 - Ace Gap,0.6,BC003,TI020,1174,851,1,1,0,1333,1749,420,3,0,0,0
-44,Beech Gap I,Balsam Mountain Road - Balsam Mountain,2.5,TH227,TI239,4993,3613,1,0,0,3149,5069,1956,36,0,0,0
-45,Beech Gap II,Balsam Mountain Road - Hyatt Ridge,2.8,TH228,TI224,5355,3992,1,0,0,3102,4948,1932,87,0,0,0
-46,Benton MacKaye Connector,Bradley Fork - Smokemont Baptist Church Parking,0.8,TI206,TH204,1375,1463,1,0,0,2320,2204,184,301,0,0,0
-47,Big Creek,Big Creek Park Road - Swallow Fork,5.1,TH265,TI251,7078,5553,1,0,0,1732,2972,1354,114,0,0,0
+14,Appalachian,Bote Mountain - Jenkins Ridge,0.3,TI047,TI049,471,406,1,0,0,4885,4947,103,42,0,0,0
+15.1,Appalachian,Jenkins Ridge - Derrick Knob,5.9,TI049,SH109,10076,10121,1,0,1,4947,4882,2241,2306,0,0,0
+15.2,Appalachian,Derrick Knob - Greenbrier Ridge,0.3,SH109,TI075,436,495,1,1,0,4882,4773,29,137,0,0,0
+16,Appalachian,Greenbrier Ridge - Miry Ridge,2.4,TI075,TI087,3673,3508,1,0,0,4773,4957,802,618,0,0,0
+17.1,Appalachian,Miry Ridge - Silers Bald Shelter,2.8,TI087,SH108,4297,3969,1,0,1,4957,5451,1032,538,0,0,0
+17.2,Appalachian,Silers Bald Shelter - Welch Ridge,0.5,SH108,TI097,701,696,1,1,0,5451,5424,154,181,0,0,0
+18.1,Appalachian,Welch Ridge - Double Spring Gap Shelter,1.3,TI097,SH107,1937,1891,1,0,1,5424,5507,400,317,0,0,0
+18.2,Appalachian,Double Spring Gap Shelter - Goshen Prong,0.6,SH107,TI112,903,696,1,1,0,5507,5767,280,21,0,0,0
+19,Appalachian,Goshen Prong - Kuwohi Bypass,1.9,TI112,TI121,3186,2623,1,0,0,5767,6518,941,189,0,0,0
+20,Appalachian,Kuwohi Bypass - Kuwohi Tower,0.3,TI121,TI123,517,423,1,0,0,6518,6621,117,15,0,0,0
+21.1,Appalachian,Kuwohi Tower - Collins Gap,1.8,TI123,TH136,2230,2836,1,0,0,6621,5791,90,920,0,0,0
+21.2,Appalachian,Collins Gap - Sugarland Mountain,1.7,TH136,TI139,2483,2376,1,0,0,5791,5958,554,387,0,0,0
+22.1,Appalachian,Sugarland Mountain - Fork Ridge,0.2,TI139,TH142,300,377,1,0,0,5958,5888,4,73,0,0,0
+22.2,Appalachian,Fork Ridge - Road Prong,2.5,TH142,TH150,3217,3705,1,0,0,5888,5272,310,926,0,0,0
+23,Appalachian,Road Prong - Newfound Gap Parking Lot,1.7,TH150,TH164,2503,2640,1,0,0,5272,5045,400,627,0,0,0
+24,Appalachian,Newfound Gap Parking Lot - Sweat Heifer,1.7,TH164,TI174,2810,2184,1,0,0,5045,5834,875,87,0,0,0
+25,Appalachian,Sweat Heifer - Boulevard,1,TI174,TI180,1442,1278,1,0,0,5834,6034,316,115,0,0,0
+26.1,Appalachian,Boulevard - Icewater Spring Shelter,0.3,TI180,SH105,348,451,1,0,1,6034,5926,4,112,0,0,0
+26.2,Appalachian,Icewater Spring Shelter - Dry Sluice Gap,1.4,SH105,TI187,1896,2281,1,1,0,5926,5402,134,658,0,0,0
+27,Appalachian,Dry Sluice - Hughes Ridge,6,TI187,TI205,8855,8738,1,0,0,5402,5546,1734,1590,0,0,0
+28,Appalachian,Hughes Ridge - Balsam Mountain,5.3,TI205,SH103,7819,7538,1,0,1,5546,5962,1672,1256,0,0,0
+29,Appalachian,Balsam Mountain - Snake Den Ridge,3.7,SH103,TI223,4888,5041,1,1,0,5962,5789,685,858,0,0,0
+30,Appalachian,Snake Den Ridge - Camel Gap,2.3,TI223,TI236,2916,3802,1,0,0,5789,4677,86,1198,0,0,0
+31.1,Appalachian,Camel Gap - Cosby Knob Shelter,1.6,TI236,SH102,2328,2218,1,0,1,4677,4803,471,345,0,0,0
+31.2,Appalachian,Cosby Knob Shelter - Low Gap,0.8,SH102,TI244,1060,1480,1,1,0,4803,4238,4,569,0,0,0
+32,Appalachian,Low Gap - Mt. Cammerer,2.1,TI244,TI249,3280,2721,1,0,0,4238,4948,909,200,0,0,0
+33,Appalachian,Mt. Cammerer - Lower Mt. Cammerer,2.3,TI249,TI254,3065,4192,1,0,0,4948,3464,43,1527,0,0,0
+34,Appalachian,Lower Mt. Cammerer - Chestnut Branch,0.9,TI254,TI257,1264,1720,1,0,0,3464,2877,14,601,0,0,0
+35.1,Appalachian,Chestnut Branch - Davenport Gap Shelter,1,TI257,SH101,1797,1974,1,0,1,2877,2601,260,536,0,0,0
+35.2,Appalachian,Davenport Gap Shelter - Davenport Gap,0.9,SH101,TH264,1389,1821,1,1,0,2601,1996,58,663,0,0,0
+36,Balsam Mountain,Balsam Mountain Road - Beech Gap I,2.3,TH246,TI239,3598,3083,1,0,0,4424,5069,920,275,0,0,0
+37.1,Balsam Mountain,Beech Gap I - Laurel Gap Shelter,1.8,TI239,SH116,2665,2332,1,0,1,5069,5438,616,248,0,0,0
+37.2,Balsam Mountain,Laurel Gap Shelter - Mt. Sterling Ridge,0.2,SH116,TI242,300,211,1,1,0,5438,5545,107,0,0,0,0
+38,Balsam Mountain,Mt. Sterling Ridge - Gunter Fork,0.9,TI242,TI241,1052,1105,1,0,0,5545,5522,65,87,0,0,0
+39,Balsam Mountain,Gunter Fork - AT,4.9,TI241,SH103,6446,6018,1,0,1,5522,5962,1026,586,0,0,0
+40,Baskins Creek,Trillium Gap - Roaring Fork Motor,2.7,TH137,TH143,4135,4354,1,0,0,2740,2435,706,1012,0,0,0
+41,Baxter Creek,Big Creek Campground - Campsite 38,6.1,CGBIG,BC038,11511,8473,1,1,1,1710,5839,4279,150,0,0,0
+42.1,Bear Creek,Forney Creek - Campsite 75,2.8,TI096,BC075,4129,3126,1,0,1,1805,2807,1059,57,0,0,0
+42.2,Bear Creek,Campsite 75 - Welch Ridge,3.1,BC075,TI082,5691,4097,1,1,0,2807,4881,2093,19,0,0,0
+43.1,Beard Cane,Cooper Road - Campsite 3,3.6,TI008,BC003,3990,4621,1,0,1,1939,1333,97,702,0,0,0
+43.2,Beard Cane,Campsite 3 - Ace Gap,0.6,BC003,TI020,1166,844,1,1,0,1333,1749,420,4,0,0,0
+44,Beech Gap I,Balsam Mountain Road - Balsam Mountain,2.5,TH227,TI239,4972,3601,1,0,0,3149,5069,1959,38,0,0,0
+45,Beech Gap II,Balsam Mountain Road - Hyatt Ridge,2.8,TH228,TI224,5340,3985,1,0,0,3102,4948,1932,86,0,0,0
+46,Benton MacKaye Connector,Bradley Fork - Smokemont Baptist Church Parking,0.8,TI206,TH204,1370,1462,1,0,0,2320,2204,183,300,0,0,0
+47,Big Creek,Big Creek Park Road - Swallow Fork,5.1,TH265,TI251,7094,5584,1,0,0,1732,2972,1361,121,0,0,0
 48,Big Creek,Swallow Fork - Low Gap I,0.2,TI251,BC037,232,185,1,0,1,2972,3006,34,0,0,0,0
-49,Big Creek,Low Gap I - Camel Gap/CS #36,0.4,BC037,BC036,570,466,1,1,1,3006,3078,75,2,0,0,0
-50,Big Fork Ridge,Rough Fork Road - Caldwell Fork,3.2,TH261,TI270,4799,4573,1,0,0,2817,3058,998,756,0,0,0
-51,Bone Valley,Hazel Creek - Hall Cabin,1.8,BC083,TI062,2384,2141,1,1,0,2281,2478,329,130,0,0,0
-52,Boogerman,Caldwell Fork N - Caldwell Fork S,4.1,TI275,TI272,6183,5944,1,0,0,2718,3046,1316,988,0,0,0
-53,Bote Mountain,Laurel Creek Road - West Prong,1.2,TH050,TI056,1738,1345,1,0,0,1593,1963,396,26,0,0,0
-54,Bote Mountain,West Prong - Finley Cane,0.3,TI056,TI055,427,370,1,0,0,1963,2018,75,20,0,0,0
-55,Bote Mountain,Finley Cane - Lead Cove,2.5,TI055,TI046,3964,3190,1,0,0,2018,3018,1150,150,0,0,0
-56,Bote Mountain,Lead Cove - Anthony Creek,1.2,TI046,TI044,2227,1651,1,0,0,3018,3758,779,39,0,0,0
-57,Bote Mountain,Anthony Creek - AT,1.7,TI044,TI047,3129,2261,1,0,0,3758,4885,1136,8,0,0,0
-58.1,Boulevard,AT - Mount LeConte Shelter,5.2,TI180,SH114,8080,7719,1,0,1,6034,6452,1730,1312,0,0,0
-58.2,Boulevard,Mount LeConte Shelter - Mount LeConte Lodge,0.2,SH114,TI152,146,201,1,1,0,6452,6395,0,57,0,0,0
-59.1,Bradley Fork,Smokemont Campground - Tow String,0.3,TH199,TI202,379,349,1,0,0,2247,2292,77,33,0,0,0
-59.2,Bradley Fork,Tow String - Chasteen Creek,0.9,TI202,BC050,1134,1029,1,0,1,2292,2371,116,37,0,0,0
-60,Bradley Fork,Chasteen Creek - Smokemont Loop,0.5,BC050,TI198,665,579,1,1,0,2371,2446,105,31,0,0,0
-61,Bradley Fork,Smokemont Loop - Cabin Flats,2.3,TI198,TI197,3046,2410,1,0,0,2446,2921,523,47,0,0,0
-62,Bradley Fork,Cabin Flats - Hughes Ridge,3.3,TI197,TI209,5974,4243,1,0,0,2921,5071,2156,7,0,0,0
-63,Brushy Mountain,Porter's Creek - Trillium Gap,4.5,TI177,TI159,8061,6130,1,0,0,2212,4717,2720,215,0,0,0
-64,Brushy Mountain,Trillium Gap - Summit of Brushy Mountain,0.4,TI159,TI161,624,481,1,0,0,4717,4904,200,13,0,0,0
-65,Bull Head,Rainbow Falls - Old Sugarlands,5.9,TI149,TI127,8332,10861,1,0,0,5979,2579,325,3726,0,0,0
-66,Cabin Flats,Bradley Fork - Dry Sluice Gap,0.3,TI197,TI196,438,340,1,0,0,2921,3047,145,19,0,0,0
-67,Cabin Flats,Dry Sluice Gap - CS #49,0.6,TI196,BC049,815,779,1,0,1,3047,3066,110,92,0,0,0
-68,Caldwell Fork,Cataloochee Road - Boogerman N,0.8,CGCAT,TI275,1061,947,1,1,0,2636,2718,130,48,0,0,0
-69,Caldwell Fork,Boogerman N - Boogerman S,1.9,TI275,TI272,2602,2233,1,0,0,2718,3046,453,124,0,0,0
-70,Caldwell Fork,Boogerman S - Big Fork,0.4,TI272,TI270,544,530,1,0,0,3046,3058,75,63,0,0,0
-71,Caldwell Fork,Big Fork - McKee Branch,0,TI270,TI269,50,40,1,0,0,3058,3064,6,0,0,0,0
-72,Caldwell Fork,McKee Branch - Hemphill Bald,1.4,TI269,TI260,1926,1691,1,0,0,3064,3304,339,99,0,0,0
-73.1,Caldwell Fork,Hemphill Bald - Campsite 41,0.3,TI260,BC041,201,233,1,0,1,3304,3269,14,49,0,0,0
-73.2,Caldwell Fork,Campsite 41 - Rough Fork,1.4,BC041,TI255,2487,1858,1,1,0,3269,4040,805,35,0,0,0
-74,Camel Gap,Big Creek/CS #36 - Gunter Fork,0.6,BC036,TI247,814,678,1,1,0,3078,3196,150,32,0,0,0
-75,Camel Gap,Gunter Fork - AT,4.1,TI247,TI236,6433,5028,1,0,0,3196,4677,1682,201,0,0,0
-76.1,Cane Creek,Cooper Road - Campsite 2,0.6,TI006,BC002,688,866,1,0,1,1548,1335,23,237,0,0,0
-76.2,Cane Creek,Campsite 2 - Cane Gap (Park Boundary),1.5,BC002,TI009,1929,2055,1,1,0,1335,1231,178,282,0,0,0
-77,Cataloochee Divide,Cove Creek Mountain Road - McKee Branch,4.6,TH279,TI278,6723,6099,1,0,0,4064,4811,1475,729,0,0,0
-78,Cataloochee Divide,McKee Branch - Hemphill Bald,1.8,TI278,TI271,2585,2372,1,0,0,4811,5071,507,247,0,0,0
-79.1,Chasteen Creek,Bradley Fork - Campsite 48,2.4,BC050,BC048,3637,2652,1,1,1,2371,3355,997,13,0,0,0
-79.2,Chasteen Creek,Campsite 48 - Hughes Ridge,1.6,BC048,TI216,3251,2306,1,1,0,3355,4662,1310,3,0,0,0
-80,Chestnut Branch,Big Creek Road - AT,2.1,TH266,TI257,3746,2767,1,0,0,1626,2877,1290,39,0,0,0
-81,Chestnut Top,Townsend Wye - Schoolhouse Gap,4.3,TH057,TI039,6699,5970,1,0,0,1137,2091,1637,684,0,0,0
-82,Chimney Tops,Newfound Gap Road - Road Prong,0.9,TH141,TI140,1634,1347,1,0,0,3439,3840,517,115,0,0,0
-83,Chimney Tops,Road Prong - Chimneys Summit Viewpoint,0.8,TI140,TI138,2200,1637,1,0,0,3840,4656,882,64,0,0,0
-84.1,Kuwohi,Parking Lot - Tower Base,0.5,TH126,TI122,970,695,1,0,0,6307,6641,340,6,0,0,0
+49,Big Creek,Low Gap I - Camel Gap/CS #36,0.4,BC037,BC036,569,465,1,1,1,3006,3078,74,1,0,0,0
+50,Big Fork Ridge,Rough Fork Road - Caldwell Fork,3.2,TH261,TI270,4806,4588,1,0,0,2817,3058,1009,768,0,0,0
+51,Bone Valley,Hazel Creek - Hall Cabin,1.8,BC083,TI062,2374,2136,1,1,0,2281,2478,320,123,0,0,0
+52,Boogerman,Caldwell Fork N - Caldwell Fork S,4.1,TI275,TI272,6157,5915,1,0,0,2718,3046,1313,985,0,0,0
+53,Bote Mountain,Laurel Creek Road - West Prong,1.2,TH050,TI056,1732,1334,1,0,0,1593,1963,396,26,0,0,0
+54,Bote Mountain,West Prong - Finley Cane,0.3,TI056,TI055,422,368,1,0,0,1963,2018,72,17,0,0,0
+55,Bote Mountain,Finley Cane - Lead Cove,2.5,TI055,TI046,3969,3208,1,0,0,2018,3018,1156,156,0,0,0
+56,Bote Mountain,Lead Cove - Anthony Creek,1.2,TI046,TI044,2220,1638,1,0,0,3018,3758,774,34,0,0,0
+57,Bote Mountain,Anthony Creek - AT,1.7,TI044,TI047,3116,2249,1,0,0,3758,4885,1135,8,0,0,0
+58.1,Boulevard,AT - Mount LeConte Shelter,5.2,TI180,SH114,8052,7702,1,0,1,6034,6452,1733,1315,0,0,0
+58.2,Boulevard,Mount LeConte Shelter - Mount LeConte Lodge,0.2,SH114,TI152,145,201,1,1,0,6452,6395,0,57,0,0,0
+59.1,Bradley Fork,Smokemont Campground - Tow String,0.3,TH199,TI202,377,346,1,0,0,2247,2292,77,33,0,0,0
+59.2,Bradley Fork,Tow String - Chasteen Creek,0.9,TI202,BC050,1134,1029,1,0,1,2292,2371,117,37,0,0,0
+60,Bradley Fork,Chasteen Creek - Smokemont Loop,0.5,BC050,TI198,671,584,1,1,0,2371,2446,109,34,0,0,0
+61,Bradley Fork,Smokemont Loop - Cabin Flats,2.3,TI198,TI197,3037,2401,1,0,0,2446,2921,520,44,0,0,0
+62,Bradley Fork,Cabin Flats - Hughes Ridge,3.3,TI197,TI209,5957,4232,1,0,0,2921,5071,2158,9,0,0,0
+63,Brushy Mountain,Porter's Creek - Trillium Gap,4.5,TI177,TI159,8055,6124,1,0,0,2212,4717,2723,218,0,0,0
+64,Brushy Mountain,Trillium Gap - Summit of Brushy Mountain,0.4,TI159,TI161,622,482,1,0,0,4717,4904,201,14,0,0,0
+65,Bull Head,Rainbow Falls - Old Sugarlands,5.9,TI149,TI127,8349,10856,1,0,0,5979,2579,339,3740,0,0,0
+66,Cabin Flats,Bradley Fork - Dry Sluice Gap,0.3,TI197,TI196,442,343,1,0,0,2921,3047,145,20,0,0,0
+67,Cabin Flats,Dry Sluice Gap - CS #49,0.6,TI196,BC049,809,771,1,0,1,3047,3066,107,89,0,0,0
+68,Caldwell Fork,Cataloochee Road - Boogerman N,0.8,CGCAT,TI275,1058,944,1,1,0,2636,2718,130,48,0,0,0
+69,Caldwell Fork,Boogerman N - Boogerman S,1.9,TI275,TI272,2599,2236,1,0,0,2718,3046,454,126,0,0,0
+70,Caldwell Fork,Boogerman S - Big Fork,0.4,TI272,TI270,541,525,1,0,0,3046,3058,74,62,0,0,0
+71,Caldwell Fork,Big Fork - McKee Branch,0,TI270,TI269,50,40,1,0,0,3058,3064,7,0,0,0,0
+72,Caldwell Fork,McKee Branch - Hemphill Bald,1.4,TI269,TI260,1921,1685,1,0,0,3064,3304,339,99,0,0,0
+73.1,Caldwell Fork,Hemphill Bald - Campsite 41,0.3,TI260,BC041,198,230,1,0,1,3304,3269,12,47,0,0,0
+73.2,Caldwell Fork,Campsite 41 - Rough Fork,1.4,BC041,TI255,2472,1842,1,1,0,3269,4040,803,32,0,0,0
+74,Camel Gap,Big Creek/CS #36 - Gunter Fork,0.6,BC036,TI247,814,676,1,1,0,3078,3196,151,32,0,0,0
+75,Camel Gap,Gunter Fork - AT,4.1,TI247,TI236,6407,4998,1,0,0,3196,4677,1671,190,0,0,0
+76.1,Cane Creek,Cooper Road - Campsite 2,0.6,TI006,BC002,684,861,1,0,1,1548,1335,21,234,0,0,0
+76.2,Cane Creek,Campsite 2 - Cane Gap (Park Boundary),1.5,BC002,TI009,1922,2049,1,1,0,1335,1231,177,281,0,0,0
+77,Cataloochee Divide,Cove Creek Mountain Road - McKee Branch,4.6,TH279,TI278,6703,6080,1,0,0,4064,4811,1473,726,0,0,0
+78,Cataloochee Divide,McKee Branch - Hemphill Bald,1.8,TI278,TI271,2575,2360,1,0,0,4811,5071,505,245,0,0,0
+79.1,Chasteen Creek,Bradley Fork - Campsite 48,2.4,BC050,BC048,3638,2665,1,1,1,2371,3355,1002,18,0,0,0
+79.2,Chasteen Creek,Campsite 48 - Hughes Ridge,1.6,BC048,TI216,3259,2321,1,1,0,3355,4662,1316,9,0,0,0
+80,Chestnut Branch,Big Creek Road - AT,2.1,TH266,TI257,3732,2755,1,0,0,1626,2877,1286,35,0,0,0
+81,Chestnut Top,Townsend Wye - Schoolhouse Gap,4.3,TH057,TI039,6666,5936,1,0,0,1137,2091,1625,671,0,0,0
+82,Chimney Tops,Newfound Gap Road - Road Prong,0.9,TH141,TI140,1639,1352,1,0,0,3439,3840,518,117,0,0,0
+83,Chimney Tops,Road Prong - Chimneys Summit Viewpoint,0.8,TI140,TI138,2210,1643,1,0,0,3840,4656,882,66,0,0,0
+84.1,Kuwohi,Parking Lot - Tower Base,0.5,TH126,TI122,966,692,1,0,0,6307,6641,340,6,0,0,0
 84.2,Kuwohi,Tower Base - Tower Lookout,0,TI122,TI124,90,86,1,0,0,6641,6644,5,2,0,0,0
-85,Kuwohi Bypass,Forney Ridge - AT,0.5,TI125,TI121,923,668,1,0,0,6194,6518,330,7,0,0,0
-86,Cold Spring Gap,Hazel Creek - Welch Ridge,3.5,TI065,TI079,6057,4514,1,0,0,2500,4468,2066,95,0,0,0
-87,Cooper Road,Abrams Creek Campground - Little Bottoms,0.9,CGABR,BC001,1160,1058,1,1,1,1112,1190,154,76,0,0,0
-88,Cooper Road,Little Bottoms - Gold Mine,1.7,BC001,TI003,2390,1889,1,1,0,1190,1676,531,45,0,0,0
-89,Cooper Road,Gold Mine - Cane Creek,0.6,TI003,TI006,683,789,1,0,0,1676,1548,40,167,0,0,0
-90,Cooper Road,Cane Creek - Beard Cane,1.8,TI006,TI008,2551,2227,1,0,0,1548,1939,568,177,0,0,0
-91,Cooper Road,Beard Cane - Wet Bottoms,5.5,TI008,TI017,7659,7778,1,0,0,1939,1833,1292,1398,0,0,0
-92,Cooper Road,Wet Bottoms - Cades Cove Loop Road,0.2,TI017,TH019,209,218,1,0,0,1833,1820,12,25,0,0,0
-93.1,Cosby Campground,Lower Mount Cammerer - Cosby Entrance Road,1,TI238,TH231,893,1171,1,0,0,2345,2070,24,299,0,0,0
-93.2,Cosby Campground,Gabes Mountain - Cosby Campground A,0.3,TI226,TH230,332,361,1,0,0,2333,2299,40,75,0,0,0
-93.3,Cosby Campground,Cosby Campground B - Cosby Horse,0.3,TH234,TI237,424,301,1,0,0,2356,2496,140,0,0,0,0
-93.4,Cosby Campground,Snake Den Ridge - Cosby Campground B,0.4,TI233,TI237,529,528,1,0,0,2497,2496,81,83,0,0,0
-93.5,Cosby Campground,Cosby Campground B - Low Gap II,0.1,TI237,TI240,323,253,1,0,0,2496,2573,86,9,0,0,0
-94.1,Cove Mountain,Park Headquarters - Laurel Falls,8.4,TH106,TI086,12882,10635,1,0,0,1455,4028,3271,698,0,0,0
-94.2,Cove Mountain,Laurel Falls - Cove Mountain Summit,0.1,TI086,TI084,167,123,1,0,0,4028,4077,49,0,0,0,0
-95.1,Crib Gap,Anthony Creek - Laurel Creek Road,0.9,TI035,TH037,1407,1352,1,0,0,2024,2055,276,245,0,0,0
-95.2,Crib Gap,Laurel Creek Road - Turkeypen Ridge,0.7,TH037,TI040,810,1108,1,0,0,2055,1754,2,302,0,0,0
-96,Crib Gap,Turkeypen Ridge - Finley Cane (through tunnel),0.1,TI040,TI042,226,224,1,0,0,1754,1756,33,31,0,0,0
-97,Crooked Arm Ridge,Rich Mountain Loop - Indian Grave Gap,2.2,TI029,TI034,4042,2985,1,0,0,1906,3321,1475,60,0,0,0
-98,Cucumber Gap,Little River - Jakes Creek,2.4,TI101,TI090,3686,3648,1,0,0,2554,2514,670,710,0,0,0
-99,Curry Mountain,Little River Road - Meigs Mountain,3.3,TH070,TI076,5551,4680,1,0,0,1694,2837,1531,387,0,0,0
-100.1,Deep Creek Horse,Noland Divide - Juney Whank Falls,0.4,TH153,TI155,597,548,1,0,0,1830,1877,101,56,0,0,0
-100.2,Deep Creek Horse,Falls Bypass W-E,0.1,TI154,TI156,184,179,1,0,0,1974,1981,40,33,0,0,0
-100.3,Deep Creek Horse,Juney Whank Falls - Deep Creek,1.1,TI156,TI162,1565,1607,1,0,0,1981,1899,254,337,0,0,0
-101,Deep Creek,Newfound Gap Road - Fork Ridge,3.9,TH166,BC053,4985,6407,1,0,1,4774,3065,228,1937,0,0,0
-102.1,Deep Creek,Fork Ridge - Campsite 54,2.7,BC053,BC054,3192,3723,1,1,1,3065,2580,226,711,0,0,0
-102.2,Deep Creek,Campsite 54 - Campsite 55,0.8,BC054,BC055,945,1105,1,1,1,2580,2465,12,126,0,0,0
-102.3,Deep Creek,Campsite 55 - Pole Road Creek,0.1,BC055,TI168,63,73,1,1,0,2465,2458,0,6,0,0,0
-103.1,Deep Creek,Pole Road Creek - Campsite 56,0.2,TI168,BC056,348,369,1,0,1,2458,2437,65,86,0,0,0
-103.2,Deep Creek,Campsite 56 - Martins Gap,0.5,BC056,BC057,581,620,1,1,1,2437,2422,36,51,0,0,0
-104.1,Deep Creek,Martins Gap - Campsite 58,0.6,BC057,BC058,685,759,1,1,1,2422,2345,59,136,0,0,0
-104.2,Deep Creek,Campsite 58 - Campsite 59,0.4,BC058,BC059,619,640,1,1,1,2345,2316,97,125,0,0,0
-104.3,Deep Creek,Campsite 59 - Campsite 60,2.5,BC059,BC060,3588,3852,1,1,1,2316,2019,543,840,0,0,0
-104.4,Deep Creek,Campsite 60 - Loop,0.8,BC060,TI165,1104,1189,1,1,0,2019,1953,152,218,0,0,0
-105,Deep Creek,Loop - Deep Creek Horse,0.9,TI165,TI162,1040,1107,1,0,0,1953,1899,57,111,0,0,0
-106,Deep Creek,Deep Creek Horse - Indian Creek,0.1,TI162,TI163,204,212,1,0,0,1899,1887,33,45,0,0,0
-107,Deep Creek,Indian Creek - Juney Whank,0.7,TI163,TI160,803,857,1,0,0,1887,1833,62,116,0,0,0
-108,Deep Creek,Juney Whank - West Deep Creek Road,0.1,TI160,TH158,142,150,1,0,0,1833,1823,20,30,0,0,0
-109,Deeplow Gap,Indian Creek - Indian Creek Motor,0.4,TI175,TI179,605,441,1,0,0,2421,2611,193,2,0,0,0
-110.1,Deeplow Gap,Indian Creek Motor - Campsite 51,0.2,TI179,BC051,181,128,1,0,1,2611,2682,70,0,0,0,0
-110.2,Deeplow Gap,Campsite 51 - Thomas Divide,1.6,BC051,TI185,3105,2307,1,1,0,2682,3722,1091,51,0,0,0
-111,Deeplow Gap,Thomas Divide - Cooper Creek,1.5,TI185,TI188,2103,2890,1,0,0,3722,2668,18,1072,0,0,0
-112,Deeplow Gap,Cooper Creek - Mingus Creek,2.4,TI188,TI195,3721,2901,1,0,0,2668,3594,1006,79,0,0,0
-113,Dry Sluice Gap,Cabin Flats - Grassy Branch,2.9,TI196,TI193,5742,4138,1,0,0,3047,5295,2289,41,0,0,0
-114,Dry Sluice Gap,Grassy Branch - AT,1.3,TI193,TI187,1851,1717,1,0,0,5295,5402,354,246,0,0,0
-115.1,Eagle Creek,Lakeshore - Campsite 89,1.6,TI032,BC089,1972,1753,1,0,1,1734,1880,193,47,0,0,0
-115.2,Eagle Creek,Campsite 89 - Campsite 96,1,BC089,BC096,1327,1161,1,1,1,1880,2003,169,46,0,0,0
-115.3,Eagle Creek,Campsite 96 - Campsite 97,2.1,BC096,BC097,2678,2240,1,1,1,2003,2384,513,132,0,0,0
-115.4,Eagle Creek,Campsite 97 - Spence Field Shelter,4.1,BC097,SH110,7803,5939,1,1,1,2384,4876,2696,204,0,0,0
-115.5,Eagle Creek,Spence Field Shelter - AT,0.1,SH110,TI045,237,212,1,1,0,4876,4912,56,19,0,0,0
-116.1,Enloe Creek,Hyatt Ridge - Campsite 47,1,TI222,BC047,1551,2075,1,0,1,4393,3658,49,784,0,0,0
-116.2,Enloe Creek,Campsite 47 - Hughes Ridge,2.6,BC047,TI214,4295,3356,1,1,0,3658,4836,1326,149,0,0,0
-117,Finley Cane,Bote Mountain - Crib Gap,2.6,TI055,TI042,3399,3616,1,0,0,2018,1756,430,692,0,0,0
-118,Finley Cane,Crib Gap - Lead Cove,0.2,TI042,TH041,324,253,1,0,0,1756,1828,88,16,0,0,0
-119,Flat Creek,Heintooga Overlook - Heintooga Ridge Road,2.6,TH245,TH250,3433,3828,1,0,0,5328,4900,367,795,0,0,0
-120,Fork Ridge,Kuwohi Road - Deep Creek,5.1,TH142,BC053,7248,9330,1,0,1,5888,3065,301,3125,0,0,0
-121.1,Forney Creek,Forney Ridge - Campsite 68,2.4,TI129,BC068,2894,3939,1,0,1,5718,4294,50,1474,0,0,0
-121.2,Forney Creek,Campsite 68 - Campsite 69,3.6,BC068,BC069,4643,6123,1,1,1,4294,2792,135,1636,0,0,0
-121.3,Forney Creek,Campsite 69 - Jonas Creek,1.4,BC069,BC070,1525,1975,1,1,1,2792,2406,49,434,0,0,0
-122,Forney Creek,Jonas Creek - Springhouse Branch,1.2,BC070,BC071,1566,1809,1,1,1,2406,2170,147,384,0,0,0
-123,Forney Creek,Springhouse Branch - White Oak Branch,1.3,BC071,TI098,1620,1798,1,1,0,2170,2030,151,291,0,0,0
-124,Forney Creek,White Oak Branch - Bear Creek,1.1,TI098,TI096,1288,1541,1,0,0,2030,1805,51,276,0,0,0
-125,Forney Creek,Bear Creek - Lakeshore,0.4,TI096,BC074,386,460,1,0,1,1805,1750,11,66,0,0,0
-126,Forney Ridge,Kuwohi Parking Area - Kuwohi Bypass,0.2,TH126,TI125,227,311,1,0,0,6307,6194,3,116,0,0,0
-127,Forney Ridge,Dome Bypass - Forney Creek,0.9,TI125,TI129,1112,1495,1,0,0,6194,5718,11,487,0,0,0
-128,Forney Ridge,Forney Creek - Springhouse Branch,4.5,TI129,TI118,5970,7353,1,0,0,5718,3922,346,2141,0,0,0
-129.1,Gabes Mountain,Cosby Road - Cosby Campground B Spur,0.3,TH232,TI226,511,361,1,0,0,2167,2333,167,0,0,0,0
-129.2,Gabes Mountain,Cosby Campground B Spur - Campsite 34,4.5,TI226,BC034,6659,6083,1,0,1,2333,3066,1456,723,0,0,0
-129.3,Gabes Mountain,Campsite 34 - Maddron Bald,1.8,BC034,TI219,2262,2836,1,1,0,3066,2421,133,778,0,0,0
-130,Gatlinburg,Park Headquarters - River Road,1.9,TH110,TH117,1570,1698,1,0,0,1420,1335,86,171,0,0,0
-131,Gold Mine,Cooper Road - Park Boundary,0.8,TI003,TH002,1255,991,1,0,0,1676,1992,354,37,0,0,0
-132.1,Goldmine Loop,Lakeshore - Campsite 67,0.9,TI102,BC067,1138,1414,1,0,1,2142,1804,46,385,0,0,0
-132.2,Goldmine Loop,Campsite 67 - Tunnel Bypass,1.1,BC067,TI105,1884,1584,1,1,0,1804,2239,547,111,0,0,0
-133,Goshen Prong,Little River - Camp #23,3.3,TI108,BC023,4431,3804,1,0,1,2732,3298,791,223,0,0,0
-134,Goshen Prong,Camp #23 - AT,4.4,BC023,TI112,7788,5901,1,1,0,3298,5767,2626,158,0,0,0
-135.1,Grapeyard Ridge,Greenbrier Cove Road - Campsite 32,3.2,TH183,BC032,4664,4085,1,0,1,1672,2279,1007,400,0,0,0
-135.2,Grapeyard Ridge,Campsite 32 - Roaring Fork Motor,4.4,BC032,TH144,6524,6410,1,1,0,2279,2418,1296,1157,0,0,0
-136,Grassy Branch,Kephart Prong - Dry Sluice Gap,2.5,SH115,TI193,4883,3588,1,1,0,3582,5295,1772,60,0,0,0
-137,Greenbrier Ridge,Lynn Camp Prong - AT,4.2,TI077,TI075,6580,5262,1,0,0,3186,4773,1805,218,0,0,0
-138,Gregory Bald,Parsons Branch Road - Wolf Ridge,4.1,TH007,BC013,6533,4947,1,0,1,2779,4642,1966,102,0,0,0
-139,Gregory Bald,Wolf Ridge - Gregory Ridge,1.2,BC013,TI013,1707,1750,1,1,0,4642,4602,321,362,0,0,0
+85,Kuwohi Bypass,Forney Ridge - AT,0.5,TI125,TI121,918,661,1,0,0,6194,6518,330,5,0,0,0
+86,Cold Spring Gap,Hazel Creek - Welch Ridge,3.5,TI065,TI079,6030,4494,1,0,0,2500,4468,2057,89,0,0,0
+87,Cooper Road,Abrams Creek Campground - Little Bottoms,0.9,CGABR,BC001,1154,1055,1,1,1,1112,1190,151,73,0,0,0
+88,Cooper Road,Little Bottoms - Gold Mine,1.7,BC001,TI003,2380,1870,1,1,0,1190,1676,526,40,0,0,0
+89,Cooper Road,Gold Mine - Cane Creek,0.6,TI003,TI006,676,783,1,0,0,1676,1548,38,165,0,0,0
+90,Cooper Road,Cane Creek - Beard Cane,1.8,TI006,TI008,2529,2198,1,0,0,1548,1939,560,169,0,0,0
+91,Cooper Road,Beard Cane - Wet Bottoms,5.5,TI008,TI017,7620,7741,1,0,0,1939,1833,1284,1390,0,0,0
+92,Cooper Road,Wet Bottoms - Cades Cove Loop Road,0.2,TI017,TH019,208,218,1,0,0,1833,1820,12,26,0,0,0
+93.1,Cosby Campground,Lower Mount Cammerer - Cosby Entrance Road,1,TI238,TH231,891,1168,1,0,0,2345,2070,25,299,0,0,0
+93.2,Cosby Campground,Gabes Mountain - Cosby Campground A,0.3,TI226,TH230,330,359,1,0,0,2333,2299,40,74,0,0,0
+93.3,Cosby Campground,Cosby Campground B - Cosby Horse,0.3,TH234,TI237,422,300,1,0,0,2356,2496,140,0,0,0,0
+93.4,Cosby Campground,Snake Den Ridge - Cosby Campground B,0.4,TI233,TI237,526,526,1,0,0,2497,2496,81,82,0,0,0
+93.5,Cosby Campground,Cosby Campground B - Low Gap II,0.1,TI237,TI240,320,251,1,0,0,2496,2573,86,8,0,0,0
+94.1,Cove Mountain,Park Headquarters - Laurel Falls,8.4,TH106,TI086,12813,10559,1,0,0,1455,4028,3256,683,0,0,0
+94.2,Cove Mountain,Laurel Falls - Cove Mountain Summit,0.1,TI086,TI084,166,122,1,0,0,4028,4077,49,0,0,0,0
+95.1,Crib Gap,Anthony Creek - Laurel Creek Road,0.9,TI035,TH037,1398,1350,1,0,0,2024,2055,275,244,0,0,0
+95.2,Crib Gap,Laurel Creek Road - Turkeypen Ridge,0.7,TH037,TI040,810,1106,1,0,0,2055,1754,2,303,0,0,0
+96,Crib Gap,Turkeypen Ridge - Finley Cane (through tunnel),0.1,TI040,TI042,222,225,1,0,0,1754,1756,32,31,0,0,0
+97,Crooked Arm Ridge,Rich Mountain Loop - Indian Grave Gap,2.2,TI029,TI034,4006,2948,1,0,0,1906,3321,1469,54,0,0,0
+98,Cucumber Gap,Little River - Jakes Creek,2.4,TI101,TI090,3655,3612,1,0,0,2554,2514,655,695,0,0,0
+99,Curry Mountain,Little River Road - Meigs Mountain,3.3,TH070,TI076,5482,4613,1,0,0,1694,2837,1508,365,0,0,0
+100.1,Deep Creek Horse,Noland Divide - Juney Whank Falls,0.4,TH153,TI155,596,549,1,0,0,1830,1877,102,55,0,0,0
+100.2,Deep Creek Horse,Falls Bypass W-E,0.1,TI154,TI156,184,181,1,0,0,1974,1981,42,34,0,0,0
+100.3,Deep Creek Horse,Juney Whank Falls - Deep Creek,1.1,TI156,TI162,1555,1598,1,0,0,1981,1899,253,336,0,0,0
+101,Deep Creek,Newfound Gap Road - Fork Ridge,3.9,TH166,BC053,4980,6401,1,0,1,4774,3065,227,1936,0,0,0
+102.1,Deep Creek,Fork Ridge - Campsite 54,2.7,BC053,BC054,3170,3702,1,1,1,3065,2580,222,707,0,0,0
+102.2,Deep Creek,Campsite 54 - Campsite 55,0.8,BC054,BC055,940,1102,1,1,1,2580,2465,9,124,0,0,0
+102.3,Deep Creek,Campsite 55 - Pole Road Creek,0.1,BC055,TI168,63,73,1,1,0,2465,2458,0,7,0,0,0
+103.1,Deep Creek,Pole Road Creek - Campsite 56,0.2,TI168,BC056,344,363,1,0,1,2458,2437,62,84,0,0,0
+103.2,Deep Creek,Campsite 56 - Martins Gap,0.5,BC056,BC057,580,620,1,1,1,2437,2422,35,50,0,0,0
+104.1,Deep Creek,Martins Gap - Campsite 58,0.6,BC057,BC058,668,741,1,1,1,2422,2345,53,130,0,0,0
+104.2,Deep Creek,Campsite 58 - Campsite 59,0.4,BC058,BC059,617,638,1,1,1,2345,2316,96,125,0,0,0
+104.3,Deep Creek,Campsite 59 - Campsite 60,2.5,BC059,BC060,3555,3822,1,1,1,2316,2019,534,830,0,0,0
+104.4,Deep Creek,Campsite 60 - Loop,0.8,BC060,TI165,1096,1177,1,1,0,2019,1953,146,212,0,0,0
+105,Deep Creek,Loop - Deep Creek Horse,0.9,TI165,TI162,1038,1104,1,0,0,1953,1899,55,110,0,0,0
+106,Deep Creek,Deep Creek Horse - Indian Creek,0.1,TI162,TI163,204,212,1,0,0,1899,1887,32,44,0,0,0
+107,Deep Creek,Indian Creek - Juney Whank,0.7,TI163,TI160,810,864,1,0,0,1887,1833,66,120,0,0,0
+108,Deep Creek,Juney Whank - West Deep Creek Road,0.1,TI160,TH158,147,155,1,0,0,1833,1823,21,31,0,0,0
+109,Deeplow Gap,Indian Creek - Indian Creek Motor,0.4,TI175,TI179,601,437,1,0,0,2421,2611,191,1,0,0,0
+110.1,Deeplow Gap,Indian Creek Motor - Campsite 51,0.2,TI179,BC051,180,127,1,0,1,2611,2682,70,0,0,0,0
+110.2,Deeplow Gap,Campsite 51 - Thomas Divide,1.6,BC051,TI185,3093,2298,1,1,0,2682,3722,1089,49,0,0,0
+111,Deeplow Gap,Thomas Divide - Cooper Creek,1.5,TI185,TI188,2096,2886,1,0,0,3722,2668,19,1073,0,0,0
+112,Deeplow Gap,Cooper Creek - Mingus Creek,2.4,TI188,TI195,3721,2902,1,0,0,2668,3594,1007,81,0,0,0
+113,Dry Sluice Gap,Cabin Flats - Grassy Branch,2.9,TI196,TI193,5724,4129,1,0,0,3047,5295,2286,38,0,0,0
+114,Dry Sluice Gap,Grassy Branch - AT,1.3,TI193,TI187,1851,1714,1,0,0,5295,5402,354,247,0,0,0
+115.1,Eagle Creek,Lakeshore - Campsite 89,1.6,TI032,BC089,1965,1742,1,0,1,1734,1880,185,39,0,0,0
+115.2,Eagle Creek,Campsite 89 - Campsite 96,1,BC089,BC096,1323,1154,1,1,1,1880,2003,162,39,0,0,0
+115.3,Eagle Creek,Campsite 96 - Campsite 97,2.1,BC096,BC097,2679,2241,1,1,1,2003,2384,512,131,0,0,0
+115.4,Eagle Creek,Campsite 97 - Spence Field Shelter,4.1,BC097,SH110,7756,5876,1,1,1,2384,4876,2678,187,0,0,0
+115.5,Eagle Creek,Spence Field Shelter - AT,0.1,SH110,TI045,237,212,1,1,0,4876,4912,56,20,0,0,0
+116.1,Enloe Creek,Hyatt Ridge - Campsite 47,1,TI222,BC047,1556,2086,1,0,1,4393,3658,52,787,0,0,0
+116.2,Enloe Creek,Campsite 47 - Hughes Ridge,2.6,BC047,TI214,4302,3365,1,1,0,3658,4836,1334,156,0,0,0
+117,Finley Cane,Bote Mountain - Crib Gap,2.6,TI055,TI042,3369,3587,1,0,0,2018,1756,417,679,0,0,0
+118,Finley Cane,Crib Gap - Lead Cove,0.2,TI042,TH041,323,252,1,0,0,1756,1828,88,16,0,0,0
+119,Flat Creek,Heintooga Overlook - Heintooga Ridge Road,2.6,TH245,TH250,3429,3821,1,0,0,5328,4900,369,797,0,0,0
+120,Fork Ridge,Kuwohi Road - Deep Creek,5.1,TH142,BC053,7252,9335,1,0,1,5888,3065,301,3124,0,0,0
+121.1,Forney Creek,Forney Ridge - Campsite 68,2.4,TI129,BC068,2887,3935,1,0,1,5718,4294,50,1474,0,0,0
+121.2,Forney Creek,Campsite 68 - Campsite 69,3.6,BC068,BC069,4612,6090,1,1,1,4294,2792,129,1631,0,0,0
+121.3,Forney Creek,Campsite 69 - Jonas Creek,1.4,BC069,BC070,1530,1977,1,1,1,2792,2406,52,437,0,0,0
+122,Forney Creek,Jonas Creek - Springhouse Branch,1.2,BC070,BC071,1566,1806,1,1,1,2406,2170,148,384,0,0,0
+123,Forney Creek,Springhouse Branch - White Oak Branch,1.3,BC071,TI098,1609,1786,1,1,0,2170,2030,146,287,0,0,0
+124,Forney Creek,White Oak Branch - Bear Creek,1.1,TI098,TI096,1280,1533,1,0,0,2030,1805,51,276,0,0,0
+125,Forney Creek,Bear Creek - Lakeshore,0.4,TI096,BC074,384,457,1,0,1,1805,1750,11,66,0,0,0
+126,Forney Ridge,Kuwohi Parking Area - Kuwohi Bypass,0.2,TH126,TI125,226,310,1,0,0,6307,6194,3,116,0,0,0
+127,Forney Ridge,Dome Bypass - Forney Creek,0.9,TI125,TI129,1119,1497,1,0,0,6194,5718,15,491,0,0,0
+128,Forney Ridge,Forney Creek - Springhouse Branch,4.5,TI129,TI118,5959,7332,1,0,0,5718,3922,348,2143,0,0,0
+129.1,Gabes Mountain,Cosby Road - Cosby Campground B Spur,0.3,TH232,TI226,510,359,1,0,0,2167,2333,167,0,0,0,0
+129.2,Gabes Mountain,Cosby Campground B Spur - Campsite 34,4.5,TI226,BC034,6652,6075,1,0,1,2333,3066,1463,730,0,0,0
+129.3,Gabes Mountain,Campsite 34 - Maddron Bald,1.8,BC034,TI219,2255,2826,1,1,0,3066,2421,135,779,0,0,0
+130,Gatlinburg,Park Headquarters - River Road,1.9,TH110,TH117,1568,1694,1,0,0,1420,1335,83,167,0,0,0
+131,Gold Mine,Cooper Road - Park Boundary,0.8,TI003,TH002,1249,984,1,0,0,1676,1992,351,35,0,0,0
+132.1,Goldmine Loop,Lakeshore - Campsite 67,0.9,TI102,BC067,1134,1410,1,0,1,2142,1804,46,385,0,0,0
+132.2,Goldmine Loop,Campsite 67 - Tunnel Bypass,1.1,BC067,TI105,1865,1564,1,1,0,1804,2239,545,110,0,0,0
+133,Goshen Prong,Little River - Camp #23,3.3,TI108,BC023,4360,3713,1,0,1,2732,3298,758,191,0,0,0
+134,Goshen Prong,Camp #23 - AT,4.4,BC023,TI112,7720,5806,1,1,0,3298,5767,2609,140,0,0,0
+135.1,Grapeyard Ridge,Greenbrier Cove Road - Campsite 32,3.2,TH183,BC032,4659,4076,1,0,1,1672,2279,1009,403,0,0,0
+135.2,Grapeyard Ridge,Campsite 32 - Roaring Fork Motor,4.4,BC032,TH144,6505,6392,1,1,0,2279,2418,1300,1160,0,0,0
+136,Grassy Branch,Kephart Prong - Dry Sluice Gap,2.5,SH115,TI193,4862,3568,1,1,0,3582,5295,1771,58,0,0,0
+137,Greenbrier Ridge,Lynn Camp Prong - AT,4.2,TI077,TI075,6536,5212,1,0,0,3186,4773,1789,202,0,0,0
+138,Gregory Bald,Parsons Branch Road - Wolf Ridge,4.1,TH007,BC013,6494,4905,1,0,1,2779,4642,1961,97,0,0,0
+139,Gregory Bald,Wolf Ridge - Gregory Ridge,1.2,BC013,TI013,1696,1742,1,1,0,4642,4602,321,361,0,0,0
 140,Gregory Bald,Gregory Ridge - Long Hungry Ridge,0.1,TI013,TI014,80,94,1,0,0,4602,4592,0,10,0,0,0
-141,Gregory Bald,Long Hungry Ridge - AT,2,TI014,TI022,2984,3079,1,0,0,4592,4446,492,638,0,0,0
-142.1,Gregory Ridge,Forge Creek Road - Campsite 12,2,TH016,BC012,3076,2490,1,0,1,1927,2563,762,126,0,0,0
-142.2,Gregory Ridge,Campsite 12 - Gregory Bald,3,BC012,TI013,5491,3945,1,1,0,2563,4602,2060,21,0,0,0
-143,Gunter Fork,Camel Gap - Balsam Mountain,4.1,TI247,TI241,7366,5576,1,0,0,3196,5522,2493,167,0,0,0
-144,Hannah Mountain,Hatcher Mountain Trail - Rabbit Creek Trail,1.9,TI004,BC016,2660,2181,1,0,1,1269,1760,574,84,0,0,0
-145.1,Hannah Mountain,Rabbit Creek Trail - Campsite 14,3.2,BC016,BC014,4385,4176,1,1,1,1760,2032,784,512,0,0,0
-145.2,Hannah Mountain,Campsite 14 - Parson Branch Road,4.4,BC014,TH007,6126,5551,1,1,0,2032,2779,1228,481,0,0,0
-146,Hatcher Mountain,Cooper Road - Little Bottoms,2.6,TI008,TI005,3307,3740,1,0,0,1939,1417,310,833,0,0,0
-147.1,Hazel Creek,Lakeshore - Campsite 85,3,TI052,BC085,3741,3316,1,0,1,1728,2014,345,59,0,0,0
-147.2,Hazel Creek,Campsite 85 - Jenkins Ridge,1.5,BC085,BC084,1872,1628,1,1,1,2014,2188,213,39,0,0,0
-148,Hazel Creek,Jenkins Ridge - Bone Valley,0.8,BC084,BC083,1026,913,1,1,1,2188,2281,151,59,0,0,0
-149,Hazel Creek,Bone Valley - Cold Spring Gap,1.3,BC083,TI065,1766,1526,1,1,0,2281,2500,308,88,0,0,0
-150.1,Hazel Creek,Cold Spring Gap - Campsite 82,1.7,TI065,BC082,2564,2355,1,0,1,2500,2727,505,277,0,0,0
-150.2,Hazel Creek,Campsite 82 - Welch Ridge,6.4,BC082,TI095,9583,7507,1,1,0,2727,4906,2433,254,0,0,0
-151.1,Hazel Creek Access,Fontana Lake - Campsite 86,0.5,TI051,BC086,713,643,1,0,1,1671,1728,72,14,0,0,0
+141,Gregory Bald,Long Hungry Ridge - AT,2,TI014,TI022,2971,3064,1,0,0,4592,4446,489,635,0,0,0
+142.1,Gregory Ridge,Forge Creek Road - Campsite 12,2,TH016,BC012,3065,2484,1,0,1,1927,2563,761,125,0,0,0
+142.2,Gregory Ridge,Campsite 12 - Gregory Bald,3,BC012,TI013,5459,3919,1,1,0,2563,4602,2061,22,0,0,0
+143,Gunter Fork,Camel Gap - Balsam Mountain,4.1,TI247,TI241,7360,5575,1,0,0,3196,5522,2497,171,0,0,0
+144,Hannah Mountain,Hatcher Mountain Trail - Rabbit Creek Trail,1.9,TI004,BC016,2661,2172,1,0,1,1269,1760,573,83,0,0,0
+145.1,Hannah Mountain,Rabbit Creek Trail - Campsite 14,3.2,BC016,BC014,4334,4132,1,1,1,1760,2032,762,490,0,0,0
+145.2,Hannah Mountain,Campsite 14 - Parson Branch Road,4.4,BC014,TH007,6084,5502,1,1,0,2032,2779,1214,467,0,0,0
+146,Hatcher Mountain,Cooper Road - Little Bottoms,2.6,TI008,TI005,3269,3705,1,0,0,1939,1417,299,821,0,0,0
+147.1,Hazel Creek,Lakeshore - Campsite 85,3,TI052,BC085,3731,3307,1,0,1,1728,2014,347,60,0,0,0
+147.2,Hazel Creek,Campsite 85 - Jenkins Ridge,1.5,BC085,BC084,1883,1644,1,1,1,2014,2188,224,50,0,0,0
+148,Hazel Creek,Jenkins Ridge - Bone Valley,0.8,BC084,BC083,1040,932,1,1,1,2188,2281,155,63,0,0,0
+149,Hazel Creek,Bone Valley - Cold Spring Gap,1.3,BC083,TI065,1744,1487,1,1,0,2281,2500,290,71,0,0,0
+150.1,Hazel Creek,Cold Spring Gap - Campsite 82,1.7,TI065,BC082,2497,2287,1,0,1,2500,2727,475,247,0,0,0
+150.2,Hazel Creek,Campsite 82 - Welch Ridge,6.4,BC082,TI095,9509,7439,1,1,0,2727,4906,2414,235,0,0,0
+151.1,Hazel Creek Access,Fontana Lake - Campsite 86,0.5,TI051,BC086,711,640,1,0,1,1671,1728,68,11,0,0,0
 151.2,Hazel Creek Access,Campsite 86 - Lakeshore,0.2,BC086,TI052,221,222,1,1,0,1728,1728,11,11,0,0,0
-152,Hemphill Bald,Heintooga Road - Cataloochee Divide,5.5,TH252,TI271,8048,8122,1,0,0,5129,5071,1430,1488,0,0,0
-153,Hemphill Bald,Cataloochee Divide - Caldwell Fork,3,TI271,TI260,3995,5325,1,0,0,5071,3304,96,1862,0,0,0
-154,High Rocks,Welch Ridge - High Rocks,0.3,TI081,TI080,623,448,1,0,0,4950,5183,238,4,0,0,0
-155,Hughes Ridge,Chasteen Creek - Enloe Creek,0.4,TI216,TI214,638,507,1,0,0,4662,4836,188,14,0,0,0
-156,Hughes Ridge,Enloe Creek - Bradley Fork,2.5,TI214,TI209,3618,3396,1,0,0,4836,5071,744,509,0,0,0
-157.1,Hughes Ridge,Bradley Fork - Pecks Corner Shelter,1.8,TI209,SH104,2521,2357,1,0,1,5071,5324,520,267,0,0,0
-157.2,Hughes Ridge,Pecks Corner Shelter - AT,0.4,SH104,TI205,674,510,1,1,0,5324,5546,233,12,0,0,0
-158,Huskey Gap,Newfound Gap Road - Sugarland Mountain,2,TH115,TI100,3655,2665,1,0,0,1882,3147,1302,36,0,0,0
-159.1,Huskey Gap,Sugarland Mountain - Campsite 21,1.7,TI100,BC021,2426,2885,1,0,1,3147,2574,168,742,0,0,0
-159.2,Huskey Gap,Campsite 21 - Little River,0.4,BC021,TI104,423,384,1,1,0,2574,2610,89,53,0,0,0
-160,Hyatt Ridge,Straight Fork Road - Enloe Creek,1.8,TH225,TI222,3720,2666,1,0,0,2938,4393,1468,13,0,0,0
-161,Hyatt Ridge,Enloe Creek - Beech Gap II,1.7,TI222,TI224,2690,2243,1,0,0,4393,4948,723,169,0,0,0
-162,Hyatt Ridge,Beech Gap II - CS #44,0.9,TI224,BC044,1272,1228,1,0,1,4948,5025,249,171,0,0,0
-163,Indian Creek Motor,Thomas Divide - Deeplow Gap,1.8,TI178,TI179,2149,2893,1,0,0,3459,2611,18,866,0,0,0
-164,Indian Creek,Deep Creek - Stonepile Gap,0.5,TI163,TI169,664,537,1,0,0,1887,1993,122,16,0,0,0
-165,Indian Creek,Stonepile Gap - Loop,0.3,TI169,TI171,356,314,1,0,0,1993,2021,33,4,0,0,0
-166,Indian Creek,Loop - Deeplow Gap,2.2,TI171,TI175,2867,2361,1,0,0,2021,2421,446,46,0,0,0
-167,Indian Creek,Deeplow Gap - Martins Gap,0.7,TI175,BC046,1022,794,1,0,1,2421,2621,215,15,0,0,0
-168,Indian Grave Gap,Rich Mountain Road - Rich Mountain Loop,1.1,TH023,TI028,2029,1505,1,0,0,2526,3204,704,27,0,0,0
-169,Indian Grave Gap,Rich Mountain Loop - Rich Mountain,0.8,TI028,BC005,1193,922,1,0,1,3204,3506,324,22,0,0,0
-170,Indian Grave Gap,Rich Mountain - Scott Mountain,1.8,BC005,TI034,2318,2496,1,1,0,3506,3321,293,479,0,0,0
-171,Jakes Creek,Elkmont Road - Cucumber Gap,0.7,TH091,TI090,1063,762,1,0,0,2211,2514,305,2,0,0,0
+152,Hemphill Bald,Heintooga Road - Cataloochee Divide,5.5,TH252,TI271,8085,8162,1,0,0,5129,5071,1453,1510,0,0,0
+153,Hemphill Bald,Cataloochee Divide - Caldwell Fork,3,TI271,TI260,3984,5311,1,0,0,5071,3304,96,1862,0,0,0
+154,High Rocks,Welch Ridge - High Rocks,0.3,TI081,TI080,615,440,1,0,0,4950,5183,236,3,0,0,0
+155,Hughes Ridge,Chasteen Creek - Enloe Creek,0.4,TI216,TI214,636,506,1,0,0,4662,4836,188,14,0,0,0
+156,Hughes Ridge,Enloe Creek - Bradley Fork,2.5,TI214,TI209,3607,3386,1,0,0,4836,5071,743,508,0,0,0
+157.1,Hughes Ridge,Bradley Fork - Pecks Corner Shelter,1.8,TI209,SH104,2515,2351,1,0,1,5071,5324,521,268,0,0,0
+157.2,Hughes Ridge,Pecks Corner Shelter - AT,0.4,SH104,TI205,678,516,1,1,0,5324,5546,236,14,0,0,0
+158,Huskey Gap,Newfound Gap Road - Sugarland Mountain,2,TH115,TI100,3646,2659,1,0,0,1882,3147,1303,38,0,0,0
+159.1,Huskey Gap,Sugarland Mountain - Campsite 21,1.7,TI100,BC021,2399,2857,1,0,1,3147,2574,159,733,0,0,0
+159.2,Huskey Gap,Campsite 21 - Little River,0.4,BC021,TI104,421,383,1,1,0,2574,2610,89,52,0,0,0
+160,Hyatt Ridge,Straight Fork Road - Enloe Creek,1.8,TH225,TI222,3689,2636,1,0,0,2938,4393,1465,10,0,0,0
+161,Hyatt Ridge,Enloe Creek - Beech Gap II,1.7,TI222,TI224,2684,2236,1,0,0,4393,4948,725,171,0,0,0
+162,Hyatt Ridge,Beech Gap II - CS #44,0.9,TI224,BC044,1270,1224,1,0,1,4948,5025,250,172,0,0,0
+163,Indian Creek Motor,Thomas Divide - Deeplow Gap,1.8,TI178,TI179,2130,2880,1,0,0,3459,2611,16,864,0,0,0
+164,Indian Creek,Deep Creek - Stonepile Gap,0.5,TI163,TI169,668,540,1,0,0,1887,1993,119,13,0,0,0
+165,Indian Creek,Stonepile Gap - Loop,0.3,TI169,TI171,356,313,1,0,0,1993,2021,32,3,0,0,0
+166,Indian Creek,Loop - Deeplow Gap,2.2,TI171,TI175,2859,2348,1,0,0,2021,2421,441,40,0,0,0
+167,Indian Creek,Deeplow Gap - Martins Gap,0.7,TI175,BC046,1023,795,1,0,1,2421,2621,215,15,0,0,0
+168,Indian Grave Gap,Rich Mountain Road - Rich Mountain Loop,1.1,TH023,TI028,2016,1485,1,0,0,2526,3204,702,24,0,0,0
+169,Indian Grave Gap,Rich Mountain Loop - Rich Mountain,0.8,TI028,BC005,1187,913,1,0,1,3204,3506,323,20,0,0,0
+170,Indian Grave Gap,Rich Mountain - Scott Mountain,1.8,BC005,TI034,2303,2477,1,1,0,3506,3321,288,473,0,0,0
+171,Jakes Creek,Elkmont Road - Cucumber Gap,0.7,TH091,TI090,1060,758,1,0,0,2211,2514,305,2,0,0,0
 172,Jakes Creek,Cucumber Gap - Meigs Mountain,0.1,TI090,TI089,55,75,1,0,0,2514,2499,0,15,0,0,0
-173.1,Jakes Creek,Meigs Mountain - Campsite 27,2.2,TI089,BC027,3634,2652,1,0,1,2499,3602,1132,29,0,0,0
-173.2,Jakes Creek,Campsite 27 - Miry Ridge,0.7,BC027,TI085,1265,904,1,1,0,3602,4059,458,1,0,0,0
-174,Jenkins Ridge,AT - Hazel Creek,8.9,TI049,BC084,12463,14713,1,0,1,4947,2188,1179,3938,0,0,0
-175,Jonas Creek,Forney Creek - Welch Ridge,4.1,BC070,TI094,7062,5362,1,1,0,2406,4564,2310,153,0,0,0
+173.1,Jakes Creek,Meigs Mountain - Campsite 27,2.2,TI089,BC027,3619,2640,1,0,1,2499,3602,1131,29,0,0,0
+173.2,Jakes Creek,Campsite 27 - Miry Ridge,0.7,BC027,TI085,1258,898,1,1,0,3602,4059,458,0,0,0,0
+174,Jenkins Ridge,AT - Hazel Creek,8.9,TI049,BC084,12425,14686,1,0,1,4947,2188,1174,3933,0,0,0
+175,Jonas Creek,Forney Creek - Welch Ridge,4.1,BC070,TI094,7031,5335,1,1,0,2406,4564,2311,154,0,0,0
 176.1,Juney Whank Falls,Deep Creek Road - Deep Creek Horse,0.1,TH157,TI155,153,110,1,0,0,1820,1877,56,0,0,0,0
-176.2,Juney Whank Falls,Deep Creek Horse - Falls Overlook,0.1,TI155,TI154,279,197,1,0,0,1877,1974,98,0,0,0,0
-176.3,Juney Whank Falls,Falls Overlook W-E,0.1,TI154,TI156,143,138,1,0,0,1974,1981,38,31,0,0,0
-176.4,Juney Whank Falls,Deep Creek Horse - Deep Creek,0.2,TI156,TI160,241,340,1,0,0,1981,1833,0,148,0,0,0
-177,Kanati Fork,Newfound Gap Road - Thomas Divide,2.9,TH190,TI182,6185,4684,1,0,0,2852,4964,2288,175,0,0,0
-178,Kephart Prong,Newfound Gap Road - Sweat Heifer,2,TH192,SH115,3142,2307,1,0,1,2732,3582,895,45,0,0,0
-179,Lakeshore,Lakeview Drive East - Tunnel Bypass,0.6,TH107,TI103,1804,1723,1,0,0,2079,2160,385,305,0,0,0
-180,Lakeshore,Tunnel Bypass - Goldmine Loop,0.1,TI103,TI102,81,94,1,0,0,2160,2142,6,23,0,0,0
-181,Lakeshore,Goldmine Loop - Whiteoak Branch,1.2,TI102,TI099,1780,1883,1,0,0,2142,2011,269,400,0,0,0
-182,Lakeshore,Whiteoak Branch - Forney Creek/CS #74,1,TI099,BC074,1351,1563,1,0,1,2011,1750,125,386,0,0,0
-183,Lakeshore,Forney Creek/CS #74 - Chambers Creek/CS #98,6.6,BC074,BC098,9625,9687,1,1,1,1750,1716,1694,1728,0,0,0
-184.1,Lakeshore,Chambers Creek/CS #98 - Campsite 76,2.3,BC098,BC076,3122,3085,1,1,1,1716,1753,485,448,0,0,0
-184.2,Lakeshore,Campsite 76 - Pilkey Creek,4.2,BC076,TI064,5160,5165,1,1,0,1753,1751,596,600,0,0,0
-185.1,Lakeshore,Pilkey Creek - Campsite 77,0.5,TI064,BC077,918,835,1,0,1,1751,1877,218,89,0,0,0
-185.2,Lakeshore,Campsite 77 - Campsite 81,4.2,BC077,BC081,5966,6003,1,1,1,1877,1811,977,1045,0,0,0
-185.3,Lakeshore,Campsite 81 - Ollie Cove Trail,2.7,BC081,TI054,3912,3844,1,1,0,1811,1912,795,691,0,0,0
-186,Lakeshore,Ollie Cove Trail - Hazel Creek/Proctor Bridge,0.7,TI054,TI052,931,1093,1,0,0,1912,1728,67,252,0,0,0
-187.1,Lakeshore,Hazel Creek/Proctor Bridge - Campsite 88,1.4,TI052,BC088,1960,1753,1,0,1,1728,1903,327,151,0,0,0
-187.2,Lakeshore,Campsite 88 - Eagle Creek,3,BC088,TI032,4547,4631,1,1,0,1903,1734,841,1010,0,0,0
-188,Lakeshore,Eagle Creek - CS #90,0.5,TI032,BC090,627,633,1,0,1,1734,1738,68,64,0,0,0
-189,Lakeshore,CS #90 - Lost Cove,0.3,BC090,TI030,505,399,1,1,0,1738,1841,116,12,0,0,0
-190,Lakeshore,Lost Cove - Fontana/Lakeview Drive West,5.2,TI030,TH025,7571,7574,1,0,0,1841,1887,1316,1271,0,0,0
-191,Laurel Falls,Little River Road - Little Greenbrier,3.1,TH092,TI083,4969,3790,1,0,0,2290,3640,1454,104,0,0,0
-192,Laurel Falls,Little Greenbrier - Cove Mountain,0.9,TI083,TI086,1523,1232,1,0,0,3640,4028,458,70,0,0,0
-193,Lead Cove,Laurel Creek Road - Bote Mountain,1.8,TH041,TI046,3319,2426,1,0,0,1828,3018,1212,22,0,0,0
-194.1,Little Bottoms,Cooper Road - Campsite 17,1.6,BC001,BC017,2454,2414,1,1,1,1190,1240,431,382,0,0,0
-194.2,Little Bottoms,Campsite 17 - Hatcher Mountain,0.7,BC017,TI005,1167,1043,1,1,0,1240,1417,316,139,0,0,0
-195,Little Bottoms,Hatcher Mountain - Abrams Falls Trail,0.2,TI005,TI004,263,371,1,0,0,1417,1269,0,147,0,0,0
-196,Little Brier Gap,Metcalf Bottoms - Little Greenbrier,1.4,TH073,TI078,2088,1710,1,0,0,1784,2170,465,79,0,0,0
-197,Little Cataloochee,Pretty Hollow Gap - Long Bunk,4.1,TI262,TI274,6296,6108,1,0,0,2867,3070,1226,1023,0,0,0
-198,Little Cataloochee,Long Bunk - Old NC 284 Road,1,TI274,TH276,1445,1491,1,0,0,3070,3011,225,284,0,0,0
-199,Little Greenbrier,Wear Cove Gap Road - Little Brier Gap,1.9,TH072,TI078,2700,2414,1,0,0,1824,2170,545,200,0,0,0
-200,Little Greenbrier,Little Brier Gap - Laurel Falls,2.4,TI078,TI083,4309,3161,1,0,0,2170,3640,1516,45,0,0,0
-201,Little River,Elkmont Road - Cucumber Gap,2.4,TH093,TI101,3104,2574,1,0,0,2170,2554,439,55,0,0,0
-202,Little River,Cucumber Gap - Huskey Gap,0.4,TI101,TI104,504,425,1,0,0,2554,2610,71,15,0,0,0
-203,Little River,Huskey Gap - Goshen Prong,1,TI104,TI108,1203,1034,1,0,0,2610,2732,139,17,0,0,0
-204,Little River,Goshen Prong - Rough Creek,0.8,TI108,BC024,1003,799,1,0,1,2732,2873,144,3,0,0,0
-205,Little River,Rough Creek - CS #30,1.8,BC024,BC030,2430,1824,1,1,1,2873,3386,526,12,0,0,0
-206,Long Bunk,Little Cataloochee - Mount Sterling,3.6,TI274,TI267,5762,4822,1,0,0,3070,4206,1562,426,0,0,0
-207.1,Long Hungry Ridge,Twentymile - Campsite 92,1.1,TI021,BC092,1525,1360,1,0,1,2364,2505,258,118,0,0,0
-207.2,Long Hungry Ridge,Campsite 92 - Gregory Bald,3.4,BC092,TI014,6112,4548,1,1,0,2505,4592,2164,76,0,0,0
-208,Loop,Indian Creek - Sunkota Ridge,0.5,TI171,TI167,989,703,1,0,0,2021,2392,372,1,0,0,0
-209,Loop,Sunkota Ridge - Deep Creek,0.6,TI167,TI165,916,1233,1,0,0,2392,1953,16,455,0,0,0
-210.1,Lost Cove,Lakeshore - Campsite 91,0.6,TI030,BC091,1175,976,1,0,1,1841,2038,289,93,0,0,0
-210.2,Lost Cove,Campsite 91 - AT,2.1,BC091,TI024,4343,3209,1,1,0,2038,3671,1721,88,0,0,0
-211,Low Gap I,Big Creek - AT,2.5,BC037,TI244,4353,3441,1,1,0,3006,4238,1447,214,0,0,0
-212.1,Low Gap II,Cosby Campground - Lower Mt. Cammerer,0.4,CGCOS,TI238,627,510,1,1,0,2218,2345,153,27,0,0,0
-212.2,Low Gap II,Lower Mt. Cammerer - Cosby Campground B Spur,0.4,TI238,TI240,723,527,1,0,0,2345,2573,234,6,0,0,0
-213,Low Gap II,Cosby Horse - AT,2.1,TI240,TI244,4099,2898,1,0,0,2573,4238,1666,1,0,0,0
+176.2,Juney Whank Falls,Deep Creek Horse - Falls Overlook,0.1,TI155,TI154,278,196,1,0,0,1877,1974,98,0,0,0,0
+176.3,Juney Whank Falls,Falls Overlook W-E,0.1,TI154,TI156,138,132,1,0,0,1974,1981,37,29,0,0,0
+176.4,Juney Whank Falls,Deep Creek Horse - Deep Creek,0.2,TI156,TI160,240,338,1,0,0,1981,1833,0,148,0,0,0
+177,Kanati Fork,Newfound Gap Road - Thomas Divide,2.9,TH190,TI182,6151,4648,1,0,0,2852,4964,2278,166,0,0,0
+178,Kephart Prong,Newfound Gap Road - Sweat Heifer,2,TH192,SH115,3139,2304,1,0,1,2732,3582,895,45,0,0,0
+179,Lakeshore,Lakeview Drive East - Tunnel Bypass,0.6,TH107,TI103,1823,1732,1,0,0,2079,2160,383,302,0,0,0
+180,Lakeshore,Tunnel Bypass - Goldmine Loop,0.1,TI103,TI102,79,93,1,0,0,2160,2142,5,23,0,0,0
+181,Lakeshore,Goldmine Loop - Whiteoak Branch,1.2,TI102,TI099,1770,1870,1,0,0,2142,2011,268,399,0,0,0
+182,Lakeshore,Whiteoak Branch - Forney Creek/CS #74,1,TI099,BC074,1333,1544,1,0,1,2011,1750,118,379,0,0,0
+183,Lakeshore,Forney Creek/CS #74 - Chambers Creek/CS #98,6.6,BC074,BC098,9579,9629,1,1,1,1750,1716,1677,1710,0,0,0
+184.1,Lakeshore,Chambers Creek/CS #98 - Campsite 76,2.3,BC098,BC076,3092,3062,1,1,1,1716,1753,473,436,0,0,0
+184.2,Lakeshore,Campsite 76 - Pilkey Creek,4.2,BC076,TI064,5084,5084,1,1,0,1753,1751,552,554,0,0,0
+185.1,Lakeshore,Pilkey Creek - Campsite 77,0.5,TI064,BC077,915,828,1,0,1,1751,1877,215,89,0,0,0
+185.2,Lakeshore,Campsite 77 - Campsite 81,4.2,BC077,BC081,5906,5950,1,1,1,1877,1811,963,1029,0,0,0
+185.3,Lakeshore,Campsite 81 - Ollie Cove Trail,2.7,BC081,TI054,3864,3792,1,1,0,1811,1912,778,677,0,0,0
+186,Lakeshore,Ollie Cove Trail - Hazel Creek/Proctor Bridge,0.7,TI054,TI052,927,1091,1,0,0,1912,1728,67,252,0,0,0
+187.1,Lakeshore,Hazel Creek/Proctor Bridge - Campsite 88,1.4,TI052,BC088,1960,1746,1,0,1,1728,1903,324,148,0,0,0
+187.2,Lakeshore,Campsite 88 - Eagle Creek,3,BC088,TI032,4479,4557,1,1,0,1903,1734,812,981,0,0,0
+188,Lakeshore,Eagle Creek - CS #90,0.5,TI032,BC090,615,621,1,0,1,1734,1738,58,54,0,0,0
+189,Lakeshore,CS #90 - Lost Cove,0.3,BC090,TI030,510,405,1,1,0,1738,1841,119,15,0,0,0
+190,Lakeshore,Lost Cove - Fontana/Lakeview Drive West,5.2,TI030,TH025,7461,7454,1,0,0,1841,1887,1266,1219,0,0,0
+191,Laurel Falls,Little River Road - Little Greenbrier,3.1,TH092,TI083,4948,3778,1,0,0,2290,3640,1455,105,0,0,0
+192,Laurel Falls,Little Greenbrier - Cove Mountain,0.9,TI083,TI086,1513,1223,1,0,0,3640,4028,457,69,0,0,0
+193,Lead Cove,Laurel Creek Road - Bote Mountain,1.8,TH041,TI046,3311,2417,1,0,0,1828,3018,1215,25,0,0,0
+194.1,Little Bottoms,Cooper Road - Campsite 17,1.6,BC001,BC017,2457,2409,1,1,1,1190,1240,436,386,0,0,0
+194.2,Little Bottoms,Campsite 17 - Hatcher Mountain,0.7,BC017,TI005,1162,1030,1,1,0,1240,1417,315,138,0,0,0
+195,Little Bottoms,Hatcher Mountain - Abrams Falls Trail,0.2,TI005,TI004,261,370,1,0,0,1417,1269,0,147,0,0,0
+196,Little Brier Gap,Metcalf Bottoms - Little Greenbrier,1.4,TH073,TI078,2060,1680,1,0,0,1784,2170,452,66,0,0,0
+197,Little Cataloochee,Pretty Hollow Gap - Long Bunk,4.1,TI262,TI274,6268,6087,1,0,0,2867,3070,1222,1019,0,0,0
+198,Little Cataloochee,Long Bunk - Old NC 284 Road,1,TI274,TH276,1443,1486,1,0,0,3070,3011,224,283,0,0,0
+199,Little Greenbrier,Wear Cove Gap Road - Little Brier Gap,1.9,TH072,TI078,2689,2403,1,0,0,1824,2170,542,197,0,0,0
+200,Little Greenbrier,Little Brier Gap - Laurel Falls,2.4,TI078,TI083,4251,3099,1,0,0,2170,3640,1507,37,0,0,0
+201,Little River,Elkmont Road - Cucumber Gap,2.4,TH093,TI101,3088,2547,1,0,0,2170,2554,427,44,0,0,0
+202,Little River,Cucumber Gap - Huskey Gap,0.4,TI101,TI104,503,421,1,0,0,2554,2610,70,13,0,0,0
+203,Little River,Huskey Gap - Goshen Prong,1,TI104,TI108,1201,1026,1,0,0,2610,2732,135,14,0,0,0
+204,Little River,Goshen Prong - Rough Creek,0.8,TI108,BC024,1002,794,1,0,1,2732,2873,142,1,0,0,0
+205,Little River,Rough Creek - CS #30,1.8,BC024,BC030,2428,1820,1,1,1,2873,3386,527,14,0,0,0
+206,Long Bunk,Little Cataloochee - Mount Sterling,3.6,TI274,TI267,5733,4800,1,0,0,3070,4206,1559,423,0,0,0
+207.1,Long Hungry Ridge,Twentymile - Campsite 92,1.1,TI021,BC092,1482,1303,1,0,1,2364,2505,232,91,0,0,0
+207.2,Long Hungry Ridge,Campsite 92 - Gregory Bald,3.4,BC092,TI014,6066,4499,1,1,0,2505,4592,2160,72,0,0,0
+208,Loop,Indian Creek - Sunkota Ridge,0.5,TI171,TI167,985,700,1,0,0,2021,2392,372,1,0,0,0
+209,Loop,Sunkota Ridge - Deep Creek,0.6,TI167,TI165,898,1215,1,0,0,2392,1953,12,451,0,0,0
+210.1,Lost Cove,Lakeshore - Campsite 91,0.6,TI030,BC091,1180,983,1,0,1,1841,2038,290,93,0,0,0
+210.2,Lost Cove,Campsite 91 - AT,2.1,BC091,TI024,4343,3212,1,1,0,2038,3671,1723,89,0,0,0
+211,Low Gap I,Big Creek - AT,2.5,BC037,TI244,4334,3426,1,1,0,3006,4238,1446,213,0,0,0
+212.1,Low Gap II,Cosby Campground - Lower Mt. Cammerer,0.4,CGCOS,TI238,624,509,1,1,0,2218,2345,153,26,0,0,0
+212.2,Low Gap II,Lower Mt. Cammerer - Cosby Campground B Spur,0.4,TI238,TI240,721,525,1,0,0,2345,2573,235,6,0,0,0
+213,Low Gap II,Cosby Horse - AT,2.1,TI240,TI244,4084,2890,1,0,0,2573,4238,1667,1,0,0,0
 214,Lower Mount Cammerer,Cosby Campground - Low Gap II,0.1,TH235,TI238,158,151,1,0,0,2337,2345,24,16,0,0,0
-215.1,Lower Mount Cammerer,Low Gap II - Campsite 35,3.3,TI238,BC035,4562,4269,1,0,1,2345,2630,844,558,0,0,0
-215.2,Lower Mount Cammerer,Campsite 35 - AT,4,BC035,TI254,6181,5453,1,1,0,2630,3464,1378,545,0,0,0
-216,Lumber Ridge,Tremont Road - Meigs Mountain,4.1,TH061,TI067,6326,5448,1,0,0,1354,2411,1542,485,0,0,0
-217.1,Lynn Camp Prong,Greenbrier Ridge - Campsite 28,1.5,TI077,BC028,1969,1654,1,0,1,3186,3455,324,56,0,0,0
-217.2,Lynn Camp Prong,Campsite 28 - Miry Ridge,2.2,BC028,TI088,3561,2750,1,1,0,3455,4417,1060,98,0,0,0
-218,Maddron Bald,Laurel Springs Road - Old Settlers,1.2,TH220,TI219,1923,1416,1,0,0,1866,2421,563,8,0,0,0
-219,Maddron Bald,Old Settlers - Albright Grove I,1.7,TI219,TI217,2674,2070,1,0,0,2421,3111,748,57,0,0,0
-220,Maddron Bald,Albright Grove I - Albright Grove II,0.3,TI217,TI218,549,399,1,0,0,3111,3299,189,1,0,0,0
-221.1,Maddron Bald,Albright Grove II - Campsite 29,2.4,TI218,BC029,4083,3049,1,0,1,3299,4525,1288,62,0,0,0
-221.2,Maddron Bald,Campsite 29 - Snake Den Ridge,1.6,BC029,TI221,2644,1932,1,1,0,4525,5412,909,21,0,0,0
-222,Martins Gap,Indian Creek - Sunkota Ridge,1.5,BC046,TI173,2663,2051,1,1,0,2621,3394,850,77,0,0,0
-223,Martins Gap,Sunkota Ridge - Deep Creek,1.5,TI173,BC057,2163,2896,1,0,1,3394,2422,47,1019,0,0,0
-224,McKee Branch,Cataloochee Divide - Caldwell Fork,2.3,TI278,TI269,3349,4621,1,0,0,4811,3064,33,1780,0,0,0
-225,Meigs Creek,Little River Road - Lumber Ridge,3.5,TH066,TI067,5160,4388,1,0,0,1563,2411,1233,385,0,0,0
-226.1,Meigs Mountain,Jakes Creek - Campsite 20,1.9,TI089,BC020,2778,2772,1,0,1,2499,2496,513,517,0,0,0
-226.2,Meigs Mountain,Campsite 20 - Curry Mountain,2.2,BC020,TI076,3098,2788,1,1,0,2496,2837,581,240,0,0,0
-227.1,Meigs Mountain,Curry Mountain - Campsite 19,0.5,TI076,BC019,583,548,1,0,1,2837,2864,77,49,0,0,0
-227.2,Meigs Mountain,Campsite 19 - Lumber Ridge,1.4,BC019,TI067,2116,2462,1,1,0,2864,2411,208,662,0,0,0
-228,Metcalf Bottoms,Metcalf Bottoms Picnic Area - Little Brier Gap,0.7,TH069,TH073,958,835,1,0,0,1679,1784,185,81,0,0,0
-229,Middle Prong,Tremont Road - Panther Creek,2.3,TH063,TI074,3459,2585,1,0,0,1910,2625,754,38,0,0,0
-230,Middle Prong,Panther Creek - Greenbrier Ridge,1.8,TI074,TI077,2549,1912,1,0,0,2625,3186,587,26,0,0,0
-231,Mingus Creek,Newfound Gap Road - Deeplow Gap,2.9,TH200,TI195,4974,3718,1,0,0,2078,3594,1603,86,0,0,0
-232,Mingus Creek,Deeplow Gap - Newton Bald,2.8,TI195,TI191,4945,3793,1,0,0,3594,5053,1578,119,0,0,0
-233.1,Miry Ridge,Jakes Creek - Campsite 26,1.9,TI085,BC026,2856,2499,1,0,1,4059,4541,705,223,0,0,0
-233.2,Miry Ridge,Campsite 26 - Lynn Camp Prong,0.6,BC026,TI088,711,826,1,1,0,4541,4417,43,167,0,0,0
-234,Miry Ridge,Lynn Camp Prong - AT,2.5,TI088,TI087,3544,3052,1,0,0,4417,4957,780,239,0,0,0
-235,Mount Cammerer,AT - Lookout Tower,0.6,TI249,TI253,858,890,1,0,0,4948,4917,143,176,0,0,0
-236,Mount Sterling Ridge,Mt. Sterling - Pretty Hollow Gap,1.4,TI259,TI256,1812,2210,1,0,0,5681,5176,132,636,0,0,0
-237,Mount Sterling Ridge,Pretty Hollow Gap - Balsam Mountain,3.9,TI256,TI242,5377,5090,1,0,0,5176,5545,917,548,0,0,0
-238,Mount Sterling,Old NC 284 Road - Long Bunk,0.5,TH273,TI267,901,668,1,0,0,3888,4206,329,11,0,0,0
-239,Mount Sterling,Long Bunk - Mt. Sterling Ridge,1.8,TI267,TI259,3685,2640,1,0,0,4206,5681,1487,12,0,0,0
-240,Mount Sterling,Mt. Sterling Ridge - Tower,0.4,TI259,BC038,576,447,1,0,1,5681,5839,171,12,0,0,0
-241,Newton Bald,Newfound Gap Road - Mingus Creek,4.7,TH201,TI191,9180,7055,1,0,0,2184,5053,3173,303,0,0,0
-242.1,Newton Bald,Mingus Creek - Campsite 52,0.6,TI191,BC052,677,772,1,0,1,5053,4949,38,143,0,0,0
-242.2,Newton Bald,Campsite 52 - Thomas Divide,0.1,BC052,TI189,115,104,1,1,0,4949,4960,17,6,0,0,0
-243,Noland Creek,Camp #66 - Lakeview Drive East,1,TI116,TH114,1471,1236,1,0,0,1697,1915,258,40,0,0,0
-244.1,Noland Creek,Lakeview Drive East - Campsite 65,1.3,TH113,BC065,1649,1438,1,0,1,1835,2012,270,93,0,0,0
-244.2,Noland Creek,Campsite 65 - Springhouse Branch,2.8,BC065,BC064,4080,3513,1,1,1,2012,2545,798,265,0,0,0
-245.1,Noland Creek,Springhouse Branch - Campsite 63,1.4,BC064,BC063,1913,1538,1,1,1,2545,2869,367,43,0,0,0
-245.2,Noland Creek,Campsite 63 - Campsite 62,1.2,BC063,BC062,1872,1563,1,1,1,2869,3169,401,101,0,0,0
-245.3,Noland Creek,Campsite 62 - Campsite 61,1.6,BC062,BC061,2152,1863,1,1,1,3169,3509,496,156,0,0,0
-245.4,Noland Creek,Campsite 61 - Noland Divide,1.1,BC061,TI147,2075,1528,1,1,0,3509,4244,761,26,0,0,0
-246,Noland Divide,West Deep Creek Road - Pole Road Creek,7.8,TH153,TI147,12704,10940,1,0,0,1830,4244,3458,1044,0,0,0
-247,Noland Divide,Pole Road Creek - Kuwohi Road,3.7,TI147,TH135,5995,4573,1,0,0,4244,5937,1816,123,0,0,0
-248,Oconaluftee River,Oconaluftee Visitor Center - Park Boundary,1.6,TH208,TH210,1836,1901,1,0,0,2026,1984,64,107,0,0,0
-249.1,Old Settlers,Ramsey Cascades Road - Campsite 33,6.6,TH184,BC033,9152,8998,1,0,1,1694,1971,1634,1358,0,0,0
-249.2,Old Settlers,Campsite 33 - Maddron Bald,9.2,BC033,TI219,13466,13129,1,1,0,1971,2421,2653,2202,0,0,0
-250.1,Old Sugarlands,Newfound Gap Road - Quiet Walkway Connector,1.2,TH111,TI215,1575,1401,1,0,0,1463,1591,228,100,0,0,0
-250.2,Old Sugarlands,Quiet Walkway Connector - Bull Head,2.3,TI215,TI127,3630,2733,1,0,0,1591,2579,1036,49,0,0,0
-251.1,Old Sugarlands,Bull Head - Rainbow Falls,0.4,TI127,TI131,524,536,1,0,0,2579,2556,66,88,0,0,0
+215.1,Lower Mount Cammerer,Low Gap II - Campsite 35,3.3,TI238,BC035,4569,4279,1,0,1,2345,2630,853,567,0,0,0
+215.2,Lower Mount Cammerer,Campsite 35 - AT,4,BC035,TI254,6184,5456,1,1,0,2630,3464,1389,556,0,0,0
+216,Lumber Ridge,Tremont Road - Meigs Mountain,4.1,TH061,TI067,6287,5412,1,0,0,1354,2411,1536,479,0,0,0
+217.1,Lynn Camp Prong,Greenbrier Ridge - Campsite 28,1.5,TI077,BC028,1967,1651,1,0,1,3186,3455,323,54,0,0,0
+217.2,Lynn Camp Prong,Campsite 28 - Miry Ridge,2.2,BC028,TI088,3553,2736,1,1,0,3455,4417,1057,95,0,0,0
+218,Maddron Bald,Laurel Springs Road - Old Settlers,1.2,TH220,TI219,1917,1413,1,0,0,1866,2421,563,8,0,0,0
+219,Maddron Bald,Old Settlers - Albright Grove I,1.7,TI219,TI217,2670,2069,1,0,0,2421,3111,750,59,0,0,0
+220,Maddron Bald,Albright Grove I - Albright Grove II,0.3,TI217,TI218,547,396,1,0,0,3111,3299,188,1,0,0,0
+221.1,Maddron Bald,Albright Grove II - Campsite 29,2.4,TI218,BC029,4084,3056,1,0,1,3299,4525,1293,66,0,0,0
+221.2,Maddron Bald,Campsite 29 - Snake Den Ridge,1.6,BC029,TI221,2635,1927,1,1,0,4525,5412,909,22,0,0,0
+222,Martins Gap,Indian Creek - Sunkota Ridge,1.5,BC046,TI173,2662,2047,1,1,0,2621,3394,849,76,0,0,0
+223,Martins Gap,Sunkota Ridge - Deep Creek,1.5,TI173,BC057,2149,2883,1,0,1,3394,2422,44,1016,0,0,0
+224,McKee Branch,Cataloochee Divide - Caldwell Fork,2.3,TI278,TI269,3314,4588,1,0,0,4811,3064,28,1775,0,0,0
+225,Meigs Creek,Little River Road - Lumber Ridge,3.5,TH066,TI067,5170,4390,1,0,0,1563,2411,1235,387,0,0,0
+226.1,Meigs Mountain,Jakes Creek - Campsite 20,1.9,TI089,BC020,2755,2750,1,0,1,2499,2496,505,509,0,0,0
+226.2,Meigs Mountain,Campsite 20 - Curry Mountain,2.2,BC020,TI076,3077,2764,1,1,0,2496,2837,574,232,0,0,0
+227.1,Meigs Mountain,Curry Mountain - Campsite 19,0.5,TI076,BC019,580,547,1,0,1,2837,2864,75,48,0,0,0
+227.2,Meigs Mountain,Campsite 19 - Lumber Ridge,1.4,BC019,TI067,2106,2457,1,1,0,2864,2411,205,658,0,0,0
+228,Metcalf Bottoms,Metcalf Bottoms Picnic Area - Little Brier Gap,0.7,TH069,TH073,955,832,1,0,0,1679,1784,183,79,0,0,0
+229,Middle Prong,Tremont Road - Panther Creek,2.3,TH063,TI074,3387,2535,1,0,0,1910,2625,750,35,0,0,0
+230,Middle Prong,Panther Creek - Greenbrier Ridge,1.8,TI074,TI077,2552,1908,1,0,0,2625,3186,589,28,0,0,0
+231,Mingus Creek,Newfound Gap Road - Deeplow Gap,2.9,TH200,TI195,4959,3713,1,0,0,2078,3594,1600,84,0,0,0
+232,Mingus Creek,Deeplow Gap - Newton Bald,2.8,TI195,TI191,4945,3791,1,0,0,3594,5053,1576,118,0,0,0
+233.1,Miry Ridge,Jakes Creek - Campsite 26,1.9,TI085,BC026,2848,2488,1,0,1,4059,4541,704,222,0,0,0
+233.2,Miry Ridge,Campsite 26 - Lynn Camp Prong,0.6,BC026,TI088,707,823,1,1,0,4541,4417,42,166,0,0,0
+234,Miry Ridge,Lynn Camp Prong - AT,2.5,TI088,TI087,3528,3037,1,0,0,4417,4957,776,236,0,0,0
+235,Mount Cammerer,AT - Lookout Tower,0.6,TI249,TI253,854,884,1,0,0,4948,4917,143,173,0,0,0
+236,Mount Sterling Ridge,Mt. Sterling - Pretty Hollow Gap,1.4,TI259,TI256,1805,2203,1,0,0,5681,5176,131,636,0,0,0
+237,Mount Sterling Ridge,Pretty Hollow Gap - Balsam Mountain,3.9,TI256,TI242,5360,5077,1,0,0,5176,5545,913,544,0,0,0
+238,Mount Sterling,Old NC 284 Road - Long Bunk,0.5,TH273,TI267,898,665,1,0,0,3888,4206,329,11,0,0,0
+239,Mount Sterling,Long Bunk - Mt. Sterling Ridge,1.8,TI267,TI259,3683,2647,1,0,0,4206,5681,1493,17,0,0,0
+240,Mount Sterling,Mt. Sterling Ridge - Tower,0.4,TI259,BC038,572,444,1,0,1,5681,5839,170,12,0,0,0
+241,Newton Bald,Newfound Gap Road - Mingus Creek,4.7,TH201,TI191,9063,6930,1,0,0,2184,5053,3139,270,0,0,0
+242.1,Newton Bald,Mingus Creek - Campsite 52,0.6,TI191,BC052,674,769,1,0,1,5053,4949,37,141,0,0,0
+242.2,Newton Bald,Campsite 52 - Thomas Divide,0.1,BC052,TI189,114,104,1,1,0,4949,4960,16,5,0,0,0
+243,Noland Creek,Camp #66 - Lakeview Drive East,1,TI116,TH114,1475,1237,1,0,0,1697,1915,257,40,0,0,0
+244.1,Noland Creek,Lakeview Drive East - Campsite 65,1.3,TH113,BC065,1662,1446,1,0,1,1835,2012,275,97,0,0,0
+244.2,Noland Creek,Campsite 65 - Springhouse Branch,2.8,BC065,BC064,4084,3518,1,1,1,2012,2545,798,265,0,0,0
+245.1,Noland Creek,Springhouse Branch - Campsite 63,1.4,BC064,BC063,1915,1540,1,1,1,2545,2869,371,46,0,0,0
+245.2,Noland Creek,Campsite 63 - Campsite 62,1.2,BC063,BC062,1860,1549,1,1,1,2869,3169,397,97,0,0,0
+245.3,Noland Creek,Campsite 62 - Campsite 61,1.6,BC062,BC061,2157,1865,1,1,1,3169,3509,496,156,0,0,0
+245.4,Noland Creek,Campsite 61 - Noland Divide,1.1,BC061,TI147,2059,1510,1,1,0,3509,4244,760,25,0,0,0
+246,Noland Divide,West Deep Creek Road - Pole Road Creek,7.8,TH153,TI147,12620,10857,1,0,0,1830,4244,3431,1017,0,0,0
+247,Noland Divide,Pole Road Creek - Kuwohi Road,3.7,TI147,TH135,5982,4564,1,0,0,4244,5937,1817,124,0,0,0
+248,Oconaluftee River,Oconaluftee Visitor Center - Park Boundary,1.6,TH208,TH210,1838,1900,1,0,0,2026,1984,66,108,0,0,0
+249.1,Old Settlers,Ramsey Cascades Road - Campsite 33,6.6,TH184,BC033,9120,8980,1,0,1,1694,1971,1635,1358,0,0,0
+249.2,Old Settlers,Campsite 33 - Maddron Bald,9.2,BC033,TI219,13444,13105,1,1,0,1971,2421,2657,2207,0,0,0
+250.1,Old Sugarlands,Newfound Gap Road - Quiet Walkway Connector,1.2,TH111,TI215,1568,1393,1,0,0,1463,1591,226,98,0,0,0
+250.2,Old Sugarlands,Quiet Walkway Connector - Bull Head,2.3,TI215,TI127,3617,2715,1,0,0,1591,2579,1033,46,0,0,0
+251.1,Old Sugarlands,Bull Head - Rainbow Falls,0.4,TI127,TI131,526,537,1,0,0,2579,2556,66,89,0,0,0
 251.2,Old Sugarlands,Rainbow Falls - Cherokee Orchard Road,0,TI131,TH132,60,48,1,0,0,2556,2570,16,2,0,0,0
-252,Ollie Cove,Fontana Lake - Lakeshore,0.3,TI053,TI054,520,374,1,0,0,1711,1912,203,2,0,0,0
-253,Palmer Creek,Pretty Hollow Gap - Balsam Mountain Road,3.3,TI258,TH248,5645,4462,1,0,0,2986,4509,1754,232,0,0,0
-254,Panther Creek,Middle Prong - Jakes Creek,2.3,TI074,TI085,4084,2993,1,0,0,2625,4059,1475,41,0,0,0
-255,Pole Road Creek,Noland Divide - Deep Creek,3.3,TI147,TI168,4448,5814,1,0,0,4244,2458,159,1944,0,0,0
-256,Porters Creek,Greenbrier Road - Brushy Mountain,1,TH181,TI177,1424,1097,1,0,0,1884,2212,354,26,0,0,0
-257,Porters Creek,Brushy Mountain - CS #31,2.7,TI177,BC031,4367,3348,1,0,1,2212,3413,1311,110,0,0,0
-258,Pretty Hollow Gap,Cataloochee Road - Little Cataloochee,0.8,TH263,TI262,991,833,1,0,0,2745,2867,133,11,0,0,0
-259,Pretty Hollow Gap,Little Cataloochee - Palmer Creek,0.8,TI262,TI258,976,801,1,0,0,2867,2986,123,4,0,0,0
-260.1,Pretty Hollow Gap,Palmer Creek - Campsite 39,0.3,TI258,BC039,395,286,1,0,1,2986,3078,92,0,0,0,0
-260.2,Pretty Hollow Gap,Campsite 39 - Pretty Hollow Gap,3.7,BC039,TI256,6537,4873,1,1,0,3078,5176,2204,106,0,0,0
-261,Rabbit Creek,Abrams Creek Ranger Station - Hannah Mountain,2.7,TH001,BC016,4135,3628,1,0,1,1121,1760,1030,391,0,0,0
-262.1,Rabbit Creek,Hannah Mountain - Campsite 15,1,BC016,BC015,1254,1479,1,1,1,1760,1475,107,391,0,0,0
-262.2,Rabbit Creek,Campsite 15 - Cades Cove,4.1,BC015,TH015,5971,5782,1,1,0,1475,1706,1172,942,0,0,0
-263,Rainbow Falls,Cherokee Orchard Road - Trillium Gap,0.1,TH134,TI133,109,85,1,0,0,2581,2610,30,1,0,0,0
-264,Rainbow Falls,Trillium Gap - Bull Head,6,TI133,TI149,10968,8438,1,0,0,2610,5979,3759,390,0,0,0
-265,Rainbow Falls,Bull Head - Alum Cave,0.5,TI149,TI151,993,707,1,0,0,5979,6359,382,2,0,0,0
-266,Rainbow Falls,Alum Cave - LeConte Lodge,0.1,TI151,TI152,171,132,1,0,0,6359,6395,35,0,0,0,0
-267,Ramsey Cascades,Greenbrier Cove Road - Ramsey Cascades,4,TH194,TI211,7104,5409,1,0,0,2076,4267,2355,164,0,0,0
-268,Rich Mountain Loop,Cades Cove Loop Road - Crooked Arm Ridge,0.5,TH031,TI029,558,562,1,0,0,1920,1906,52,66,0,0,0
-269,Rich Mountain Loop,Crooked Arm Ridge - Indian Grave Gap,2.9,TI029,TI028,4815,3831,1,0,0,1906,3204,1508,210,0,0,0
-270,Rich Mountain,Rich Mountain Road - Indian Grave Gap,2.3,TH027,BC005,4212,3011,1,0,1,1971,3506,1545,10,0,0,0
-271,Road Prong,Chimney Tops - Kuwohi Road,2.4,TI140,TH150,4501,3492,1,0,0,3840,5272,1617,185,0,0,0
-272,Rough Creek,Little River - Sugarland Mountain,2.8,BC024,TI120,4663,3473,1,1,0,2873,4294,1493,72,0,0,0
-273.1,Rough Fork,Cataloochee Road - Campsite 40,1.5,TH261,BC040,1939,1602,1,0,1,2817,3053,255,19,0,0,0
-273.2,Rough Fork,Campsite 40 - Caldwell Fork,1.4,BC040,TI255,2721,1970,1,1,0,3053,4040,998,12,0,0,0
-274,Rough Fork,Caldwell Fork - Heintooga Road,3.5,TI255,TH252,5137,4107,1,0,0,4040,5129,1163,74,0,0,0
-275,Roundtop,Wear Cove Gap Road - Townsend Wye,7.5,TH071,TH059,10371,10849,1,0,0,1768,1146,1475,2097,0,0,0
-276.1,Russell Field,Anthony Creek - Campsite 10,0.9,TI036,BC010,1461,1062,1,0,1,2480,2964,495,12,0,0,0
-276.2,Russell Field,Campsite 10 - AT,2.6,BC010,SH111,4519,3471,1,1,1,2964,4348,1475,91,0,0,0
-277,Schoolhouse Gap,Laurel River Road - Turkeypen Ridge,1.1,TH048,TI043,1470,1258,1,0,0,1593,1813,274,54,0,0,0
-278,Schoolhouse Gap,Turkeypen Ridge - Chestnut Top,1,TI043,TI039,1381,1096,1,0,0,1813,2091,305,27,0,0,0
-279,Schoolhouse Gap,Chestnut Top - Scott Mountain,0.2,TI039,TH038,243,318,1,0,0,2091,2016,4,79,0,0,0
-280,Scott Mountain,Crooked Arm Ridge - CS #6,0.1,TI034,BC006,119,158,1,0,1,3321,3279,1,43,0,0,0
-281,Smokemont Loop,Bradley Fork - Smokemont Campground,3.9,TI198,CGSMO,6118,6336,1,0,1,2446,2202,1201,1445,0,0,0
-282.1,Snake Den Ridge,Cosby Campground B - Cosby Horse II,0.3,TH229,TI233,411,292,1,0,0,2361,2497,137,0,0,0,0
-282.2,Snake Den Ridge,Cosby Horse II - Maddron Bald,4.3,TI233,TI221,7997,5775,1,0,0,2497,5412,2955,40,0,0,0
-283,Snake Den Ridge,Maddron Bald - AT,0.7,TI221,TI223,1170,832,1,0,0,5412,5789,377,1,0,0,0
-284,Springhouse Branch,Forney Creek - Forney Ridge,4.2,BC071,TI118,7505,6262,1,1,0,2170,3922,2268,516,0,0,0
-285,Springhouse Branch,Forney Ridge - Noland Creek,2.8,TI118,BC064,3783,4838,1,0,1,3922,2545,183,1559,0,0,0
-286,Spruce Mountain,Balsam Mountain Road - Campsite 42,1,TH243,BC042,2165,1702,1,0,1,4800,5449,746,97,0,0,0
-287,Stone Pile Gap,Thomas Divide - Indian Creek,0.9,TH172,TI169,1192,1527,1,0,0,2445,1993,49,503,0,0,0
-288,Sugarland Mountain,Little River Road - Huskey Gap,3.1,TH092,TI100,5223,4525,1,0,0,2290,3147,1373,516,0,0,0
-289,Sugarland Mountain,Huskey Gap - Rough Creek,4.1,TI100,TI120,6334,5407,1,0,0,3147,4294,1631,485,0,0,0
-290.1,Sugarland Mountain,Rough Creek - Mount Collins Shelter,4.4,TI120,SH106,7234,6075,1,0,1,4294,5846,2050,498,0,0,0
-290.2,Sugarland Mountain,Mount Collins Shelter - AT,0.4,SH106,TI139,452,342,1,1,0,5846,5958,115,1,0,0,0
-291,Sunkota Ridge,Loop - Martins Gap,3.8,TI167,TI173,6344,5572,1,0,0,2392,3394,1717,716,0,0,0
-292,Sunkota Ridge,Martins Gap - Thomas Divide,4.9,TI173,TI186,7346,6190,1,0,0,3394,4766,1798,426,0,0,0
-293,Swallow Fork,Big Creek - Mount Sterling Ridge,4,TI251,TI256,6907,5157,1,0,0,2972,5176,2318,114,0,0,0
-294,Sweat Heifer Creek,Kephart Prong - AT,3.7,SH115,TI174,6769,5072,1,1,0,3582,5834,2389,138,0,0,0
-295,Thomas Divide,Newfound Gap Road - Kanati Fork,1.8,TH176,TI182,2692,2451,1,0,0,4637,4964,606,280,0,0,0
-296,Thomas Divide,Kanati Fork - Sunkota Ridge,2.8,TI182,TI186,4051,4176,1,0,0,4964,4766,666,864,0,0,0
-297,Thomas Divide,Sunkota Ridge - Newton Bald,0.4,TI186,TI189,615,458,1,0,0,4766,4960,199,5,0,0,0
-298,Thomas Divide,Newton Bald - Deeplow Gap,3.1,TI189,TI185,4247,5186,1,0,0,4960,3722,314,1552,0,0,0
-299,Thomas Divide,Deeplow Gap - Indian Creek Motor,2.4,TI185,TI178,3730,3912,1,0,0,3722,3459,656,918,0,0,0
-300,Thomas Divide,Indian Creek Motor - Stone Pile Gap,2.1,TI178,TH172,2550,3418,1,0,0,3459,2445,57,1069,0,0,0
-301,Thomas Divide,Stone Pile Gap - Tom Branch Road,1.1,TH172,TH170,1392,1616,1,0,0,2445,2181,98,364,0,0,0
-302.1,Tow String,Tow String - Benton MacKaye Connector,2.1,TH212,TI206,3230,3036,1,0,0,2138,2320,646,463,0,0,0
-302.2,Tow String,Benton MacKaye Connector - Bradley Fork,0.1,TI206,TI202,108,132,1,0,0,2320,2292,0,29,0,0,0
-303.1,Trillium Gap,Cherokee Orchard Road - Rainbow Falls,0.1,TI131,TI133,149,105,1,0,0,2556,2610,54,0,0,0,0
-303.2,Trillium Gap,Rainbow Falls - Baskins Creek,0.5,TI133,TH137,866,741,1,0,0,2610,2740,180,50,0,0,0
-304,Trillium Gap,Baskins Creek - Roaring Fork Parking Spur,1.7,TH137,TI146,2724,2324,1,0,0,2740,3261,721,200,0,0,0
-305,Trillium Gap,Roaring Fork Parking - Main Trail,0.2,TH145,TI146,273,193,1,0,0,3163,3261,98,0,0,0,0
-306,Trillium Gap,Spur - Brushy Mountain,2.9,TI146,TI159,4690,3469,1,0,0,3261,4717,1505,50,0,0,0
-307,Trillium Gap,Brushy Mountain - LeConte,3.6,TI159,TI152,6601,5308,1,0,0,4717,6395,2079,401,0,0,0
-308,Tunnel Bypass,Lakeview Drive East - Goldmine Loop,0.4,TH107,TI105,684,560,1,0,0,2079,2239,195,34,0,0,0
-309,Tunnel Bypass,Goldmine Loop - Lakeshore,1.2,TI105,TI103,1594,1688,1,0,0,2239,2160,222,301,0,0,0
-310,Turkeypen Ridge,Laurel River Road - Crib Gap,0.2,TH041,TI040,217,288,1,0,0,1828,1754,2,76,0,0,0
-311,Turkeypen Ridge,Crib Gap - Schoolhouse Gap,3.4,TI040,TI043,5104,5072,1,0,0,1754,1813,940,881,0,0,0
-312,Twentymile Loop,Twentymile - Wolf Ridge,2.9,TI021,TI012,3935,4362,1,0,0,2364,1842,488,1010,0,0,0
-313,Twentymile,Twentymile Ranger Station - Wolf Ridge,0.5,TH010,TI011,788,648,1,0,0,1334,1464,163,33,0,0,0
-314.1,Twentymile,Wolf Ridge - Campsite 93,1.3,TI011,BC093,1830,1411,1,0,1,1464,1879,447,33,0,0,0
-314.2,Twentymile,Campsite 93 - Twentymile Loop,1.3,BC093,TI021,2005,1513,1,1,0,1879,2364,513,27,0,0,0
-315,Twentymile,Twentymile Loop - AT,1.9,TI021,TI024,3594,2599,1,0,0,2364,3671,1322,14,0,0,0
-316,Twin Creeks,Ogle Nature Trail - Cherokee Orchard Road,1.9,TI128,TH119,2085,2813,1,0,0,2244,1540,18,723,0,0,0
-317,Welch Ridge,AT - Hazel Creek,1.7,TI097,TI095,2188,2589,1,0,0,5424,4906,129,647,0,0,0
-318,Welch Ridge,Hazel Creek - Jonas Creek,0.7,TI095,TI094,843,1138,1,0,0,4906,4564,5,348,0,0,0
-319,Welch Ridge,Jonas Creek - Bear Creek,3.9,TI094,TI082,5545,5333,1,0,0,4564,4881,1030,712,0,0,0
-320,Welch Ridge,Bear Creek - High Rocks,0.3,TI082,TI081,407,327,1,0,0,4881,4950,78,8,0,0,0
-321,Welch Ridge,High Rocks - Cold Spring Gap,0.6,TI081,TI079,926,1288,1,0,0,4950,4468,6,485,0,0,0
-322.1,West Prong,Tremont Road - Campsite 18,2.1,TH060,BC018,3563,3347,1,0,1,1344,1600,823,568,0,0,0
-322.2,West Prong,Campsite 18 - Bote Mountain,0.6,BC018,TI056,1155,885,1,1,0,1600,1963,395,33,0,0,0
-323,Wet Bottom,Cooper Road - Abrams Falls,1,TI017,TH015,1136,1281,1,0,0,1833,1706,55,182,0,0,0
-324,Whiteoak Branch,Lakeshore - Forney Creek,1.8,TI099,TI098,2431,2434,1,0,0,2011,2030,423,404,0,0,0
-325,Wolf Ridge,Twentymile - Twentymile Loop,1.1,TI011,TI012,1682,1289,1,0,0,1464,1842,418,40,0,0,0
-326.1,Wolf Ridge,Twentymile Loop - Campsite 95,0.9,TI012,BC095,1306,1018,1,0,1,1842,2177,363,28,0,0,0
-326.2,Wolf Ridge,Campsite 95 - Gregory Bald,4.3,BC095,BC013,7661,5822,1,1,1,2177,4642,2626,160,0,0,0
-400,Abrams Creek Campground,Abrams Creek Ranger Station - Abrams Creek Campground,0.5,TH001,CGABR,590,606,0,0,1,1121,1112,30,38,0,0,0
-401,Abrams Falls Road,Abrams Falls Trailhead - Cades Cove Loop Road,0.5,RI018,TH015,538,550,0,0,0,1714,1706,15,23,0,0,0
+252,Ollie Cove,Fontana Lake - Lakeshore,0.3,TI053,TI054,516,370,1,0,0,1711,1912,202,1,0,0,0
+253,Palmer Creek,Pretty Hollow Gap - Balsam Mountain Road,3.3,TI258,TH248,5618,4441,1,0,0,2986,4509,1746,224,0,0,0
+254,Panther Creek,Middle Prong - Jakes Creek,2.3,TI074,TI085,4069,2974,1,0,0,2625,4059,1478,45,0,0,0
+255,Pole Road Creek,Noland Divide - Deep Creek,3.3,TI147,TI168,4403,5766,1,0,0,4244,2458,143,1929,0,0,0
+256,Porters Creek,Greenbrier Road - Brushy Mountain,1,TH181,TI177,1424,1102,1,0,0,1884,2212,355,27,0,0,0
+257,Porters Creek,Brushy Mountain - CS #31,2.7,TI177,BC031,4354,3336,1,0,1,2212,3413,1313,112,0,0,0
+258,Pretty Hollow Gap,Cataloochee Road - Little Cataloochee,0.8,TH263,TI262,990,832,1,0,0,2745,2867,133,11,0,0,0
+259,Pretty Hollow Gap,Little Cataloochee - Palmer Creek,0.8,TI262,TI258,975,801,1,0,0,2867,2986,123,3,0,0,0
+260.1,Pretty Hollow Gap,Palmer Creek - Campsite 39,0.3,TI258,BC039,394,286,1,0,1,2986,3078,92,0,0,0,0
+260.2,Pretty Hollow Gap,Campsite 39 - Pretty Hollow Gap,3.7,BC039,TI256,6527,4870,1,1,0,3078,5176,2204,106,0,0,0
+261,Rabbit Creek,Abrams Creek Ranger Station - Hannah Mountain,2.7,TH001,BC016,4102,3594,1,0,1,1121,1760,1020,381,0,0,0
+262.1,Rabbit Creek,Hannah Mountain - Campsite 15,1,BC016,BC015,1240,1468,1,1,1,1760,1475,107,392,0,0,0
+262.2,Rabbit Creek,Campsite 15 - Cades Cove,4.1,BC015,TH015,5936,5750,1,1,0,1475,1706,1166,936,0,0,0
+263,Rainbow Falls,Cherokee Orchard Road - Trillium Gap,0.1,TH134,TI133,108,85,1,0,0,2581,2610,30,1,0,0,0
+264,Rainbow Falls,Trillium Gap - Bull Head,6,TI133,TI149,10920,8400,1,0,0,2610,5979,3751,381,0,0,0
+265,Rainbow Falls,Bull Head - Alum Cave,0.5,TI149,TI151,982,698,1,0,0,5979,6359,382,2,0,0,0
+266,Rainbow Falls,Alum Cave - LeConte Lodge,0.1,TI151,TI152,172,132,1,0,0,6359,6395,36,0,0,0,0
+267,Ramsey Cascades,Greenbrier Cove Road - Ramsey Cascades,4,TH194,TI211,7091,5395,1,0,0,2076,4267,2353,162,0,0,0
+268,Rich Mountain Loop,Cades Cove Loop Road - Crooked Arm Ridge,0.5,TH031,TI029,556,559,1,0,0,1920,1906,52,66,0,0,0
+269,Rich Mountain Loop,Crooked Arm Ridge - Indian Grave Gap,2.9,TI029,TI028,4789,3805,1,0,0,1906,3204,1508,210,0,0,0
+270,Rich Mountain,Rich Mountain Road - Indian Grave Gap,2.3,TH027,BC005,4185,2992,1,0,1,1971,3506,1544,8,0,0,0
+271,Road Prong,Chimney Tops - Kuwohi Road,2.4,TI140,TH150,4476,3462,1,0,0,3840,5272,1612,179,0,0,0
+272,Rough Creek,Little River - Sugarland Mountain,2.8,BC024,TI120,4648,3460,1,1,0,2873,4294,1490,69,0,0,0
+273.1,Rough Fork,Cataloochee Road - Campsite 40,1.5,TH261,BC040,1939,1600,1,0,1,2817,3053,255,19,0,0,0
+273.2,Rough Fork,Campsite 40 - Caldwell Fork,1.4,BC040,TI255,2718,1972,1,1,0,3053,4040,1000,12,0,0,0
+274,Rough Fork,Caldwell Fork - Heintooga Road,3.5,TI255,TH252,5130,4103,1,0,0,4040,5129,1163,75,0,0,0
+275,Roundtop,Wear Cove Gap Road - Townsend Wye,7.5,TH071,TH059,10326,10798,1,0,0,1768,1146,1456,2078,0,0,0
+276.1,Russell Field,Anthony Creek - Campsite 10,0.9,TI036,BC010,1449,1050,1,0,1,2480,2964,491,8,0,0,0
+276.2,Russell Field,Campsite 10 - AT,2.6,BC010,SH111,4509,3470,1,1,1,2964,4348,1476,91,0,0,0
+277,Schoolhouse Gap,Laurel River Road - Turkeypen Ridge,1.1,TH048,TI043,1460,1243,1,0,0,1593,1813,267,47,0,0,0
+278,Schoolhouse Gap,Turkeypen Ridge - Chestnut Top,1,TI043,TI039,1376,1089,1,0,0,1813,2091,303,25,0,0,0
+279,Schoolhouse Gap,Chestnut Top - Scott Mountain,0.2,TI039,TH038,243,317,1,0,0,2091,2016,4,79,0,0,0
+280,Scott Mountain,Crooked Arm Ridge - CS #6,0.1,TI034,BC006,117,158,1,0,1,3321,3279,0,43,0,0,0
+281,Smokemont Loop,Bradley Fork - Smokemont Campground,3.9,TI198,CGSMO,6095,6312,1,0,1,2446,2202,1204,1448,0,0,0
+282.1,Snake Den Ridge,Cosby Campground B - Cosby Horse II,0.3,TH229,TI233,410,292,1,0,0,2361,2497,137,0,0,0,0
+282.2,Snake Den Ridge,Cosby Horse II - Maddron Bald,4.3,TI233,TI221,7980,5771,1,0,0,2497,5412,2957,42,0,0,0
+283,Snake Den Ridge,Maddron Bald - AT,0.7,TI221,TI223,1166,831,1,0,0,5412,5789,378,1,0,0,0
+284,Springhouse Branch,Forney Creek - Forney Ridge,4.2,BC071,TI118,7451,6191,1,1,0,2170,3922,2247,495,0,0,0
+285,Springhouse Branch,Forney Ridge - Noland Creek,2.8,TI118,BC064,3759,4815,1,0,1,3922,2545,177,1554,0,0,0
+286,Spruce Mountain,Balsam Mountain Road - Campsite 42,1,TH243,BC042,2153,1696,1,0,1,4800,5449,744,96,0,0,0
+287,Stone Pile Gap,Thomas Divide - Indian Creek,0.9,TH172,TI169,1163,1503,1,0,0,2445,1993,43,495,0,0,0
+288,Sugarland Mountain,Little River Road - Huskey Gap,3.1,TH092,TI100,5192,4486,1,0,0,2290,3147,1363,506,0,0,0
+289,Sugarland Mountain,Huskey Gap - Rough Creek,4.1,TI100,TI120,6274,5344,1,0,0,3147,4294,1614,467,0,0,0
+290.1,Sugarland Mountain,Rough Creek - Mount Collins Shelter,4.4,TI120,SH106,7225,6062,1,0,1,4294,5846,2050,498,0,0,0
+290.2,Sugarland Mountain,Mount Collins Shelter - AT,0.4,SH106,TI139,451,343,1,1,0,5846,5958,114,2,0,0,0
+291,Sunkota Ridge,Loop - Martins Gap,3.8,TI167,TI173,6328,5554,1,0,0,2392,3394,1719,718,0,0,0
+292,Sunkota Ridge,Martins Gap - Thomas Divide,4.9,TI173,TI186,7308,6150,1,0,0,3394,4766,1786,414,0,0,0
+293,Swallow Fork,Big Creek - Mount Sterling Ridge,4,TI251,TI256,6913,5171,1,0,0,2972,5176,2324,121,0,0,0
+294,Sweat Heifer Creek,Kephart Prong - AT,3.7,SH115,TI174,6722,5017,1,1,0,3582,5834,2377,125,0,0,0
+295,Thomas Divide,Newfound Gap Road - Kanati Fork,1.8,TH176,TI182,2670,2429,1,0,0,4637,4964,600,273,0,0,0
+296,Thomas Divide,Kanati Fork - Sunkota Ridge,2.8,TI182,TI186,4028,4155,1,0,0,4964,4766,663,861,0,0,0
+297,Thomas Divide,Sunkota Ridge - Newton Bald,0.4,TI186,TI189,612,455,1,0,0,4766,4960,199,5,0,0,0
+298,Thomas Divide,Newton Bald - Deeplow Gap,3.1,TI189,TI185,4213,5155,1,0,0,4960,3722,309,1547,0,0,0
+299,Thomas Divide,Deeplow Gap - Indian Creek Motor,2.4,TI185,TI178,3688,3869,1,0,0,3722,3459,646,909,0,0,0
+300,Thomas Divide,Indian Creek Motor - Stone Pile Gap,2.1,TI178,TH172,2560,3420,1,0,0,3459,2445,60,1075,0,0,0
+301,Thomas Divide,Stone Pile Gap - Tom Branch Road,1.1,TH172,TH170,1398,1618,1,0,0,2445,2181,104,367,0,0,0
+302.1,Tow String,Tow String - Benton MacKaye Connector,2.1,TH212,TI206,3220,3027,1,0,0,2138,2320,648,466,0,0,0
+302.2,Tow String,Benton MacKaye Connector - Bradley Fork,0.1,TI206,TI202,107,130,1,0,0,2320,2292,0,28,0,0,0
+303.1,Trillium Gap,Cherokee Orchard Road - Rainbow Falls,0.1,TI131,TI133,148,104,1,0,0,2556,2610,54,0,0,0,0
+303.2,Trillium Gap,Rainbow Falls - Baskins Creek,0.5,TI133,TH137,862,737,1,0,0,2610,2740,178,48,0,0,0
+304,Trillium Gap,Baskins Creek - Roaring Fork Parking Spur,1.7,TH137,TI146,2699,2297,1,0,0,2740,3261,714,193,0,0,0
+305,Trillium Gap,Roaring Fork Parking - Main Trail,0.2,TH145,TI146,272,192,1,0,0,3163,3261,98,0,0,0,0
+306,Trillium Gap,Spur - Brushy Mountain,2.9,TI146,TI159,4669,3454,1,0,0,3261,4717,1503,48,0,0,0
+307,Trillium Gap,Brushy Mountain - LeConte,3.6,TI159,TI152,6614,5323,1,0,0,4717,6395,2080,401,0,0,0
+308,Tunnel Bypass,Lakeview Drive East - Goldmine Loop,0.4,TH107,TI105,677,549,1,0,0,2079,2239,191,31,0,0,0
+309,Tunnel Bypass,Goldmine Loop - Lakeshore,1.2,TI105,TI103,1586,1680,1,0,0,2239,2160,220,299,0,0,0
+310,Turkeypen Ridge,Laurel River Road - Crib Gap,0.2,TH041,TI040,218,288,1,0,0,1828,1754,2,76,0,0,0
+311,Turkeypen Ridge,Crib Gap - Schoolhouse Gap,3.4,TI040,TI043,5004,4961,1,0,0,1754,1813,902,843,0,0,0
+312,Twentymile Loop,Twentymile - Wolf Ridge,2.9,TI021,TI012,3895,4316,1,0,0,2364,1842,470,992,0,0,0
+313,Twentymile,Twentymile Ranger Station - Wolf Ridge,0.5,TH010,TI011,771,613,1,0,0,1334,1464,151,21,0,0,0
+314.1,Twentymile,Wolf Ridge - Campsite 93,1.3,TI011,BC093,1811,1365,1,0,1,1464,1879,437,22,0,0,0
+314.2,Twentymile,Campsite 93 - Twentymile Loop,1.3,BC093,TI021,1971,1468,1,1,0,1879,2364,502,17,0,0,0
+315,Twentymile,Twentymile Loop - AT,1.9,TI021,TI024,3535,2532,1,0,0,2364,3671,1314,7,0,0,0
+316,Twin Creeks,Ogle Nature Trail - Cherokee Orchard Road,1.9,TI128,TH119,2076,2804,1,0,0,2244,1540,17,721,0,0,0
+317,Welch Ridge,AT - Hazel Creek,1.7,TI097,TI095,2182,2582,1,0,0,5424,4906,128,646,0,0,0
+318,Welch Ridge,Hazel Creek - Jonas Creek,0.7,TI095,TI094,837,1132,1,0,0,4906,4564,5,347,0,0,0
+319,Welch Ridge,Jonas Creek - Bear Creek,3.9,TI094,TI082,5521,5303,1,0,0,4564,4881,1028,710,0,0,0
+320,Welch Ridge,Bear Creek - High Rocks,0.3,TI082,TI081,405,326,1,0,0,4881,4950,77,8,0,0,0
+321,Welch Ridge,High Rocks - Cold Spring Gap,0.6,TI081,TI079,917,1281,1,0,0,4950,4468,5,487,0,0,0
+322.1,West Prong,Tremont Road - Campsite 18,2.1,TH060,BC018,3482,3257,1,0,1,1344,1600,799,543,0,0,0
+322.2,West Prong,Campsite 18 - Bote Mountain,0.6,BC018,TI056,1148,875,1,1,0,1600,1963,395,32,0,0,0
+323,Wet Bottom,Cooper Road - Abrams Falls,1,TI017,TH015,1136,1278,1,0,0,1833,1706,55,182,0,0,0
+324,Whiteoak Branch,Lakeshore - Forney Creek,1.8,TI099,TI098,2414,2417,1,0,0,2011,2030,417,398,0,0,0
+325,Wolf Ridge,Twentymile - Twentymile Loop,1.1,TI011,TI012,1664,1268,1,0,0,1464,1842,415,37,0,0,0
+326.1,Wolf Ridge,Twentymile Loop - Campsite 95,0.9,TI012,BC095,1301,1004,1,0,1,1842,2177,362,27,0,0,0
+326.2,Wolf Ridge,Campsite 95 - Gregory Bald,4.3,BC095,BC013,7599,5760,1,1,1,2177,4642,2621,156,0,0,0
+400,Abrams Creek Campground,Abrams Creek Ranger Station - Abrams Creek Campground,0.5,TH001,CGABR,589,604,0,0,1,1121,1112,28,36,0,0,0
+401,Abrams Falls Road,Abrams Falls Trailhead - Cades Cove Loop Road,0.5,RI018,TH015,537,550,0,0,0,1714,1706,14,22,0,0,0
 402,AT - Kuwohi Connector,AT - Kuwohi,0,TI123,TI122,54,38,0,0,0,6621,6641,20,0,0,0,0
-403,Balsam Mountain Road,Beech Gap I - Beech Gap II,0.2,TH227,TH228,213,275,0,0,0,3149,3102,0,47,0,0,0
-404,Balsam Mountain Road,Spruce Mountain - Palmer Creek,1.8,TH243,TH248,2056,2396,0,0,0,4800,4509,63,355,0,0,0
-405,Balsam Mountain Road,Palmer Creek - Balsam Mountain,0.6,TH248,TH246,684,802,0,0,0,4509,4424,6,90,0,0,0
+403,Balsam Mountain Road,Beech Gap I - Beech Gap II,0.2,TH227,TH228,212,275,0,0,0,3149,3102,0,47,0,0,0
+404,Balsam Mountain Road,Spruce Mountain - Palmer Creek,1.8,TH243,TH248,2081,2411,0,0,0,4800,4509,77,368,0,0,0
+405,Balsam Mountain Road,Palmer Creek - Balsam Mountain,0.6,TH248,TH246,689,804,0,0,0,4509,4424,9,93,0,0,0
 406,Benton MacKaye Connector Road,Smokemont Road - Benton MacKaye Connector,0,RI203,TH204,39,28,0,0,0,2189,2204,15,0,0,0,0
 407,Big Creek Campground Loop Road,Big Creek - Baxter Creek,0.1,TH265,CGBIG,56,78,0,0,1,1732,1710,0,22,0,0,0
-408,Big Creek Entrance Road,Chestnut Branch - Big Creek,0.6,TH266,TH265,795,653,0,0,0,1626,1732,117,10,0,0,0
-409,Big Creek Entrance Road,Mount Sterling Road - Chestnut Branch,0.3,RI268,TH266,359,276,0,0,0,1560,1626,66,1,0,0,0
-410,Cades Cove Loop Road,Cooper Road - Abrams Falls Road,0.6,TH019,RI018,702,822,0,0,0,1820,1714,9,114,0,0,0
-411,Cades Cove Loop Road,Cades Cove Campground - Rich Mountain Loop,0.3,CGCAD,TH031,284,304,0,1,0,1933,1920,5,17,0,0,0
+408,Big Creek Entrance Road,Chestnut Branch - Big Creek,0.6,TH266,TH265,795,653,0,0,0,1626,1732,117,11,0,0,0
+409,Big Creek Entrance Road,Mount Sterling Road - Chestnut Branch,0.3,RI268,TH266,358,274,0,0,0,1560,1626,66,0,0,0,0
+410,Cades Cove Loop Road,Cooper Road - Abrams Falls Road,0.6,TH019,RI018,701,822,0,0,0,1820,1714,9,115,0,0,0
+411,Cades Cove Loop Road,Cades Cove Campground - Rich Mountain Loop,0.3,CGCAD,TH031,283,304,0,1,0,1933,1920,4,17,0,0,0
 412,Cades Cove Picnic Area Road,Anthony Creek - Cades Cove Campground,0.2,TH033,CGCAD,269,307,0,0,1,1961,1933,7,34,0,0,0
-413,Cataloochee Entrance Road,Cataloochee Campground - Pretty Hollow Gap,1.5,CGCAT,TH263,1828,1660,0,1,0,2636,2745,110,1,0,0,0
-414,Cataloochee Entrance Road,Pretty Hollow Gap - Big Fork Ridge,0.8,TH263,TH261,1001,892,0,0,0,2745,2817,79,8,0,0,0
-415,Cherokee Orchard Road,Ogle Nature Trail - Old Sugarlands,0.6,TH130,TH132,1045,750,0,0,0,2244,2570,329,2,0,0,0
+413,Cataloochee Entrance Road,Cataloochee Campground - Pretty Hollow Gap,1.5,CGCAT,TH263,1827,1660,0,1,0,2636,2745,110,1,0,0,0
+414,Cataloochee Entrance Road,Pretty Hollow Gap - Big Fork Ridge,0.8,TH263,TH261,1001,891,0,0,0,2745,2817,79,8,0,0,0
+415,Cherokee Orchard Road,Ogle Nature Trail - Old Sugarlands,0.6,TH130,TH132,1042,747,0,0,0,2244,2570,329,2,0,0,0
 416,Cherokee Orchard Road,Old Sugarlands - Rainbow Falls,0.1,TH132,TH134,86,77,0,0,0,2570,2581,13,2,0,0,0
-417,Cosby Campground A-B Connector,Cosby Campground A - Snake Den Ridge,0.1,TH230,TH229,168,118,0,0,0,2299,2361,62,0,0,0,0
-418,Cosby Campground A Section,Low Gap II - Gabes Mountain Connector,0.2,CGCOS,TH230,305,220,0,1,0,2218,2299,81,1,0,0,0
+417,Cosby Campground A-B Connector,Cosby Campground A - Snake Den Ridge,0.1,TH230,TH229,167,118,0,0,0,2299,2361,62,0,0,0,0
+418,Cosby Campground A Section,Low Gap II - Gabes Mountain Connector,0.2,CGCOS,TH230,304,220,0,1,0,2218,2299,81,0,0,0,0
 419,Cosby Campground B Section,Lower Mount Cammerer Connector - Snake Den Ridge,0.3,TH234,TH229,371,358,0,0,0,2356,2361,30,25,0,0,0
-420,Cosby Campground Road,Gabes Mountain - Low Gap II,0.2,TH232,CGCOS,234,178,0,0,1,2167,2218,52,0,0,0,0
-421,Cosby Campground Road,Low Gap II - Lower Mount Cammerer,0.3,CGCOS,TH235,499,367,0,1,0,2218,2337,119,0,0,0,0
-422,Cosby Entrance Road,Cosby Horse - Gabes Mountain,0.2,TH231,TH232,352,249,0,0,0,2070,2167,97,0,0,0,0
-423,Deep Creek Road,Juney Whank Falls - Deep Creek,0,TH157,TH158,36,33,0,0,0,1820,1823,4,1,0,0,0
-424,Elkmont Road,Little River - Jakes Creek,0.2,TH093,TH091,214,170,0,0,0,2170,2211,42,2,0,0,0
-425,Forge Creek Road,Abrams Falls Road - Gregory Ridge,2.6,RI018,TH016,3212,2931,0,0,0,1714,1927,336,123,0,0,0
-426,Galbraith Creek Road,Thomas Divide - Juney Whank Falls,1.1,TH170,TH157,1348,1666,0,0,0,2181,1820,43,403,0,0,0
-427,Greenbrier Road,Grapeyard Ridge - Porters Creek,0.9,TH183,TH181,1227,935,0,0,0,1672,1884,211,0,0,0,0
-428,Heintooga Ridge Road,Rough Fork - Balsam Mountain Campground,2.3,TH252,CGBAL,2780,2483,0,0,1,5129,5323,198,3,0,0,0
-429,Heintooga Ridge Road,Balsam Mountain Campground - Flat Creek,0.5,CGBAL,TH245,586,580,0,1,0,5323,5328,12,7,0,0,0
-430,Heintooga Ridge Road,Flat Creek - Rough Fork,0.9,TH250,TH252,1206,870,0,0,0,4900,5129,229,0,0,0,0
-431,Kuwohi Road,AT - Noland Divide,0.5,TH136,TH135,791,581,0,0,0,5791,5937,167,21,0,0,0
-432,Lakeview Drive,Noland Creek - Lakeshore,0.6,TH113,TH107,1168,883,0,0,0,1835,2079,276,33,0,0,0
-433,Lakeview Drive,Noland Creek S - Noland Creek N,0.1,TH114,TH113,140,198,0,0,0,1915,1835,0,79,0,0,0
-434,Laurel Creek Road,Bote Mountain - Schoolhouse Gap,0.1,TH050,TH048,114,113,0,0,0,1593,1593,2,2,0,0,0
+420,Cosby Campground Road,Gabes Mountain - Low Gap II,0.2,TH232,CGCOS,233,177,0,0,1,2167,2218,52,0,0,0,0
+421,Cosby Campground Road,Low Gap II - Lower Mount Cammerer,0.3,CGCOS,TH235,498,366,0,1,0,2218,2337,118,0,0,0,0
+422,Cosby Entrance Road,Cosby Horse - Gabes Mountain,0.2,TH231,TH232,351,248,0,0,0,2070,2167,97,0,0,0,0
+423,Deep Creek Road,Juney Whank Falls - Deep Creek,0,TH157,TH158,36,32,0,0,0,1820,1823,4,1,0,0,0
+424,Elkmont Road,Little River - Jakes Creek,0.2,TH093,TH091,213,170,0,0,0,2170,2211,42,1,0,0,0
+425,Forge Creek Road,Abrams Falls Road - Gregory Ridge,2.6,RI018,TH016,3208,2930,0,0,0,1714,1927,335,122,0,0,0
+426,Galbraith Creek Road,Thomas Divide - Juney Whank Falls,1.1,TH170,TH157,1353,1672,0,0,0,2181,1820,45,405,0,0,0
+427,Greenbrier Road,Grapeyard Ridge - Porters Creek,0.9,TH183,TH181,1226,934,0,0,0,1672,1884,211,0,0,0,0
+428,Heintooga Ridge Road,Rough Fork - Balsam Mountain Campground,2.3,TH252,CGBAL,2780,2482,0,0,1,5129,5323,198,3,0,0,0
+429,Heintooga Ridge Road,Balsam Mountain Campground - Flat Creek,0.5,CGBAL,TH245,586,579,0,1,0,5323,5328,12,7,0,0,0
+430,Heintooga Ridge Road,Flat Creek - Rough Fork,0.9,TH250,TH252,1204,868,0,0,0,4900,5129,229,0,0,0,0
+431,Kuwohi Road,AT - Noland Divide,0.5,TH136,TH135,790,580,0,0,0,5791,5937,167,21,0,0,0
+432,Lakeview Drive,Noland Creek - Lakeshore,0.6,TH113,TH107,1016,774,0,0,0,1835,2079,276,32,0,0,0
+433,Lakeview Drive,Noland Creek S - Noland Creek N,0.1,TH114,TH113,146,207,0,0,0,1915,1835,0,80,0,0,0
+434,Laurel Creek Road,Bote Mountain - Schoolhouse Gap,0.1,TH050,TH048,114,114,0,0,0,1593,1593,2,2,0,0,0
 435,Little River Gorge Road,Wear Cove Gap Road - Curry Mountain,0.2,RI068,TH070,276,260,0,0,0,1684,1694,10,0,0,0,0
-436,Little River Gorge Road,Wear Cove Gap Road - Meigs Creek,2,RI068,TH066,2201,2386,0,0,0,1684,1563,3,124,0,0,0
-437,Little River Gorge Road,Townsend Wye - Roundtop,0.2,RI058,TH059,114,116,0,0,0,1147,1146,1,2,0,0,0
+436,Little River Gorge Road,Wear Cove Gap Road - Meigs Creek,2,RI068,TH066,2201,2385,0,0,0,1684,1563,3,124,0,0,0
+437,Little River Gorge Road,Townsend Wye - Roundtop,0.2,RI058,TH059,114,116,0,0,0,1147,1146,0,1,0,0,0
 438,Lower Mount Cammerer Connector,Lower Mount Cammerer - Cosby Horse,0,TH235,TH234,62,44,0,0,0,2337,2356,19,0,0,0,0
 439,Mingus Mill Access Road,Newfound Gap Road - Mingus Creek,0.1,RI207,TH200,136,109,0,0,0,2058,2078,21,0,0,0,0
-440,Mount Sterling Road,Big Creek Entrance Road - AT,1,RI268,TH264,1892,1525,0,0,0,1560,1996,544,107,0,0,0
+440,Mount Sterling Road,Big Creek Entrance Road - AT,1,RI268,TH264,1920,1550,0,0,0,1560,1996,545,109,0,0,0
 441,Newfound Gap Road,Kanati Fork - Kephart Prong,0.3,TH190,TH192,351,497,0,0,0,2852,2732,0,120,0,0,0
 442,Newfound Gap Road,Tow String Road - Newton Bald,1.1,RI213,TH201,1310,1218,0,0,0,2124,2184,60,0,0,0,0
 443,Newfound Gap Road,Tow String Road - Mingus Mill Access Road,1.5,RI207,RI213,1801,1701,0,0,0,2058,2124,73,7,0,0,0
-444,Newfound Gap Road,Deep Creek - AT,1.7,TH166,TH164,2195,1842,0,0,0,4774,5045,303,31,0,0,0
-445,Newfound Gap Road,Thomas Divide - Deep Creek,1.8,TH176,TH166,2147,1962,0,0,0,4637,4774,228,92,0,0,0
-446,Oconaluftee Visitor Center,Oconaluftee River - Mingus Mill Access Road,0.6,TH208,RI207,740,694,0,0,0,2026,2058,36,5,0,0,0
-447,Ogle Place Nature Trail,Cherokee Orchard Road - Twin Creeks,0.2,TH130,TI128,264,261,0,0,0,2244,2244,32,31,0,0,0
+444,Newfound Gap Road,Deep Creek - AT,1.7,TH166,TH164,2193,1840,0,0,0,4774,5045,302,30,0,0,0
+445,Newfound Gap Road,Thomas Divide - Deep Creek,1.8,TH176,TH166,2146,1961,0,0,0,4637,4774,228,92,0,0,0
+446,Oconaluftee Visitor Center,Oconaluftee River - Mingus Mill Access Road,0.6,TH208,RI207,740,693,0,0,0,2026,2058,37,5,0,0,0
+447,Ogle Place Nature Trail,Cherokee Orchard Road - Twin Creeks,0.2,TH130,TI128,264,261,0,0,0,2244,2244,33,32,0,0,0
 448,Park Headquarters Road,Gatlinburg - Sugarlands Residence Road,0.3,TH110,RI109,372,331,0,0,0,1420,1449,34,5,0,0,0
 449,Park Headquarters Road,Sugarlands Residence Road - Old Sugarlands,0.2,RI109,TH111,255,226,0,0,0,1449,1463,33,19,0,0,0
-450,Parson Branch Road,Gregory Ridge - Hannah Mountain,3.2,TH016,TH007,4672,3896,0,0,0,1927,2779,1068,216,0,0,0
-451,Ramsey Prong Road,Grapeyard Ridge - Old Settlers,0.2,TH183,TH184,233,200,0,0,0,1672,1694,38,17,0,0,0
-452,Ramsey Prong Road,Old Settlers - Ramsey Cascades,1.4,TH184,TH194,1984,1523,0,0,0,1694,2076,405,24,0,0,0
+450,Parson Branch Road,Gregory Ridge - Hannah Mountain,3.2,TH016,TH007,4648,3880,0,0,0,1927,2779,1065,213,0,0,0
+451,Ramsey Prong Road,Grapeyard Ridge - Old Settlers,0.2,TH183,TH184,233,200,0,0,0,1672,1694,39,17,0,0,0
+452,Ramsey Prong Road,Old Settlers - Ramsey Cascades,1.4,TH184,TH194,1978,1520,0,0,0,1694,2076,405,23,0,0,0
 453,Rich Mountain Road,Ace Gap - Rich Mountain,0.1,TH026,TH027,93,66,0,0,0,1949,1971,21,0,0,0,0
 454,Roaring Fork Motor Nature Trail,Baskins Creek - Grapeyard Ridge,0,TH143,TH144,54,65,0,0,0,2435,2418,1,17,0,0,0
-455,Smokemont Campground Road,Smokemont Loop - Bradley Fork,0.6,CGSMO,TH199,691,621,0,1,0,2202,2247,46,0,0,0,0
+455,Smokemont Campground Road,Smokemont Loop - Bradley Fork,0.6,CGSMO,TH199,690,621,0,1,0,2202,2247,46,0,0,0,0
 456,Smokemont Road,Benton MacKaye Connector Road - Smokemont Loop,0.3,RI203,CGSMO,316,296,0,0,1,2189,2202,21,8,0,0,0
 457,Smokemont Road,Newton Bald - Benton MacKaye Connector Road,0.1,TH201,RI203,65,58,0,0,0,2184,2189,5,0,0,0,0
-458,Straight Fork Road,Beech Gap II - Hyatt Ridge,1.3,TH228,TH225,1411,1661,0,0,0,3102,2938,3,167,0,0,0
-459,Sugarlands Residence Road,Park Headquarters Road - Cove Mountain,0.1,RI109,TH106,86,76,0,0,0,1449,1455,6,0,0,0,0
-460,Tow String Road,Newfound Gap Road - Tow String,0.4,RI213,TH212,459,438,0,0,0,2124,2138,28,14,0,0,0
-461,Townsend Wye,Chestnut Top - Tremont Road,0.2,TH057,RI058,184,171,0,0,0,1137,1147,27,17,0,0,0
-462,Tremont Environmental Education Center Road,West Prong - Lumber Ridge,0.1,TH060,TH061,161,145,0,0,0,1344,1354,18,9,0,0,0
-463,Tremont Road,Townsend Wye - West Prong,2.3,RI058,TH060,2874,2582,0,0,0,1147,1344,245,47,0,0,0
-464,Upper Tremont Road,West Prong - Middle Prong,3.1,TH060,TH063,4081,3256,0,0,0,1344,1910,582,16,0,0,0
-465,US 441 - Airport Road,Gatlinburg - Twin Creeks,1.4,TH117,TH119,1802,1503,0,0,0,1335,1540,221,16,0,0,0
+458,Straight Fork Road,Beech Gap II - Hyatt Ridge,1.3,TH228,TH225,1411,1661,0,0,0,3102,2938,4,168,0,0,0
+459,Sugarlands Residence Road,Park Headquarters Road - Cove Mountain,0.1,RI109,TH106,86,76,0,0,0,1449,1455,7,0,0,0,0
+460,Tow String Road,Newfound Gap Road - Tow String,0.4,RI213,TH212,458,438,0,0,0,2124,2138,28,14,0,0,0
+461,Townsend Wye,Chestnut Top - Tremont Road,0.2,TH057,RI058,186,174,0,0,0,1137,1147,27,17,0,0,0
+462,Tremont Environmental Education Center Road,West Prong - Lumber Ridge,0.1,TH060,TH061,156,139,0,0,0,1344,1354,16,7,0,0,0
+463,Tremont Road,Townsend Wye - West Prong,2.3,RI058,TH060,2868,2575,0,0,0,1147,1344,245,47,0,0,0
+464,Upper Tremont Road,West Prong - Middle Prong,3.1,TH060,TH063,4073,3247,0,0,0,1344,1910,582,16,0,0,0
+465,US 441 - Airport Road,Gatlinburg - Twin Creeks,1.4,TH117,TH119,1800,1502,0,0,0,1335,1540,221,16,0,0,0
 466,Wear Cove Gap Road,Metcalf Bottoms - Little River Gorge Road,0.1,TH069,RI068,108,101,0,0,0,1679,1684,5,0,0,0,0
 467,Wear Cove Gap Road,Little Greenbrier - Roundtop,0.1,TH072,TH071,134,190,0,0,0,1824,1768,0,57,0,0,0
-468,Quiet Walkway Connector,Huskey Gap - Old Sugarlands,1.3,TH115,TI215,1426,1778,0,0,0,1882,1591,36,327,0,0,0
+468,Quiet Walkway Connector,Huskey Gap - Old Sugarlands,1.3,TH115,TI215,1431,1780,0,0,0,1882,1591,38,328,0,0,0
