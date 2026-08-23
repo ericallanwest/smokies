@@ -1,0 +1,751 @@
+[
+ {
+  "id": "CGABR",
+  "name": "Abrams Creek Campground",
+  "type": "campground",
+  "lat": 35.61064,
+  "lon": -83.93286
+ },
+ {
+  "id": "TH015",
+  "name": "Abrams Falls Trailhead",
+  "type": "trailhead",
+  "lat": 35.59134,
+  "lon": -83.85287
+ },
+ {
+  "id": "TH026",
+  "name": "Ace Gap Trailhead",
+  "type": "trailhead",
+  "lat": 35.6456,
+  "lon": -83.80529
+ },
+ {
+  "id": "TH148",
+  "name": "Alum Cave Trailhead",
+  "type": "trailhead",
+  "lat": 35.62861,
+  "lon": -83.45066
+ },
+ {
+  "id": "TH033",
+  "name": "Anthony Creek Trailhead",
+  "type": "trailhead",
+  "lat": 35.60499,
+  "lon": -83.77017
+ },
+ {
+  "id": "TH025",
+  "name": "AT / Lakeshore Trailhead",
+  "type": "trailhead",
+  "lat": 35.46045,
+  "lon": -83.81108
+ },
+ {
+  "id": "TH136",
+  "name": "AT at Collins Gap",
+  "type": "trailhead",
+  "lat": 35.57419,
+  "lon": -83.48181
+ },
+ {
+  "id": "TH264",
+  "name": "AT at Davenport Gap",
+  "type": "trailhead",
+  "lat": 35.77048,
+  "lon": -83.11082
+ },
+ {
+  "id": "TH164",
+  "name": "AT at Newfound Gap",
+  "type": "trailhead",
+  "lat": 35.61122,
+  "lon": -83.42528
+ },
+ {
+  "id": "CGBAL",
+  "name": "Balsam Mountain Campground",
+  "type": "campground",
+  "lat": 35.56811,
+  "lon": -83.17587
+ },
+ {
+  "id": "TH246",
+  "name": "Balsam Mountain Trailhead",
+  "type": "trailhead",
+  "lat": 35.63363,
+  "lon": -83.17909
+ },
+ {
+  "id": "TH143",
+  "name": "Baskins Creek Trailhead N",
+  "type": "trailhead",
+  "lat": 35.69425,
+  "lon": -83.46664
+ },
+ {
+  "id": "TH137",
+  "name": "Baskins Creek Trailhead S",
+  "type": "trailhead",
+  "lat": 35.67703,
+  "lon": -83.4785
+ },
+ {
+  "id": "TH227",
+  "name": "Beech Gap I Trailhead",
+  "type": "trailhead",
+  "lat": 35.62406,
+  "lon": -83.21129
+ },
+ {
+  "id": "TH228",
+  "name": "Beech Gap II Trailhead",
+  "type": "trailhead",
+  "lat": 35.6213,
+  "lon": -83.21091
+ },
+ {
+  "id": "TH204",
+  "name": "Benton MacKaye Connector Trailhead",
+  "type": "trailhead",
+  "lat": 35.553,
+  "lon": -83.30882
+ },
+ {
+  "id": "CGBIG",
+  "name": "Big Creek Campground",
+  "type": "campground",
+  "lat": 35.7515,
+  "lon": -83.10954
+ },
+ {
+  "id": "TH265",
+  "name": "Big Creek Trailhead N",
+  "type": "trailhead",
+  "lat": 35.75187,
+  "lon": -83.11018
+ },
+ {
+  "id": "TH261",
+  "name": "Big Fork Ridge / Rough Fork Trailhead",
+  "type": "trailhead",
+  "lat": 35.6172,
+  "lon": -83.11983
+ },
+ {
+  "id": "TH050",
+  "name": "Bote Mountain Trailhead",
+  "type": "trailhead",
+  "lat": 35.62811,
+  "lon": -83.72557
+ },
+ {
+  "id": "TH199",
+  "name": "Bradley Fork Trailhead",
+  "type": "trailhead",
+  "lat": 35.56308,
+  "lon": -83.3107
+ },
+ {
+  "id": "CGCAD",
+  "name": "Cades Cove Campground",
+  "type": "campground",
+  "lat": 35.60628,
+  "lon": -83.77406
+ },
+ {
+  "id": "CGCAT",
+  "name": "Cataloochee Campground",
+  "type": "campground",
+  "lat": 35.63142,
+  "lon": -83.0881
+ },
+ {
+  "id": "TH279",
+  "name": "Cataloochee Divide Trailhead",
+  "type": "trailhead",
+  "lat": 35.63263,
+  "lon": -83.04499
+ },
+ {
+  "id": "TH266",
+  "name": "Chestnut Branch Trailhead",
+  "type": "trailhead",
+  "lat": 35.75944,
+  "lon": -83.10596
+ },
+ {
+  "id": "TH057",
+  "name": "Chestnut Top Trailhead",
+  "type": "trailhead",
+  "lat": 35.66049,
+  "lon": -83.70893
+ },
+ {
+  "id": "TH141",
+  "name": "Chimney Tops Trailhead",
+  "type": "trailhead",
+  "lat": 35.63544,
+  "lon": -83.46976
+ },
+ {
+  "id": "TH019",
+  "name": "Cooper Road Trailhead E",
+  "type": "trailhead",
+  "lat": 35.60009,
+  "lon": -83.84273
+ },
+ {
+  "id": "CGCOS",
+  "name": "Cosby Campground",
+  "type": "campground",
+  "lat": 35.75593,
+  "lon": -83.208
+ },
+ {
+  "id": "TH231",
+  "name": "Cosby Horse Trail at Entrance Road",
+  "type": "trailhead",
+  "lat": 35.76108,
+  "lon": -83.21023
+ },
+ {
+  "id": "TH234",
+  "name": "Cosby Horse Trail Connector at Cosby Campground B",
+  "type": "trailhead",
+  "lat": 35.75174,
+  "lon": -83.20551
+ },
+ {
+  "id": "TH106",
+  "name": "Cove Mountain Trailhead",
+  "type": "trailhead",
+  "lat": 35.68797,
+  "lon": -83.53819
+ },
+ {
+  "id": "TH037",
+  "name": "Crib Gap at Laurel Creek Road",
+  "type": "trailhead",
+  "lat": 35.60276,
+  "lon": -83.75446
+ },
+ {
+  "id": "TH070",
+  "name": "Curry Mountain Trailhead",
+  "type": "trailhead",
+  "lat": 35.67552,
+  "lon": -83.64638
+ },
+ {
+  "id": "TH166",
+  "name": "Deep Creek Trailhead N",
+  "type": "trailhead",
+  "lat": 35.59939,
+  "lon": -83.42253
+ },
+ {
+  "id": "TH158",
+  "name": "Deep Creek Trailhead S",
+  "type": "trailhead",
+  "lat": 35.46477,
+  "lon": -83.43379
+ },
+ {
+  "id": "TH245",
+  "name": "Flat Creek Trailhead N",
+  "type": "trailhead",
+  "lat": 35.57312,
+  "lon": -83.18029
+ },
+ {
+  "id": "TH250",
+  "name": "Flat Creek Trailhead S",
+  "type": "trailhead",
+  "lat": 35.55402,
+  "lon": -83.16387
+ },
+ {
+  "id": "TH142",
+  "name": "Fork Ridge Trailhead",
+  "type": "trailhead",
+  "lat": 35.59071,
+  "lon": -83.46966
+ },
+ {
+  "id": "TH230",
+  "name": "Gabes Mountain Connector at Cosby Campground A",
+  "type": "trailhead",
+  "lat": 35.75446,
+  "lon": -83.21024
+ },
+ {
+  "id": "TH232",
+  "name": "Gabes Mountain Trailhead",
+  "type": "trailhead",
+  "lat": 35.75785,
+  "lon": -83.20963
+ },
+ {
+  "id": "TH117",
+  "name": "Gatlinburg Trailhead N",
+  "type": "trailhead",
+  "lat": 35.70607,
+  "lon": -83.52376
+ },
+ {
+  "id": "TH110",
+  "name": "Gatlinburg Trailhead S",
+  "type": "trailhead",
+  "lat": 35.69139,
+  "lon": -83.53535
+ },
+ {
+  "id": "TH002",
+  "name": "Gold Mine Trailhead",
+  "type": "trailhead",
+  "lat": 35.64328,
+  "lon": -83.90864
+ },
+ {
+  "id": "TH183",
+  "name": "Grapeyard Ridge Trailhead E",
+  "type": "trailhead",
+  "lat": 35.70797,
+  "lon": -83.38266
+ },
+ {
+  "id": "TH144",
+  "name": "Grapeyard Ridge Trailhead W",
+  "type": "trailhead",
+  "lat": 35.69479,
+  "lon": -83.4666
+ },
+ {
+  "id": "TH016",
+  "name": "Gregory Ridge Trailhead",
+  "type": "trailhead",
+  "lat": 35.56296,
+  "lon": -83.84702
+ },
+ {
+  "id": "TH007",
+  "name": "Hannah Mountain Trailhead",
+  "type": "trailhead",
+  "lat": 35.54294,
+  "lon": -83.89437
+ },
+ {
+  "id": "TH252",
+  "name": "Hemphill Bald / Rough Fork Trailhead",
+  "type": "trailhead",
+  "lat": 35.56329,
+  "lon": -83.16159
+ },
+ {
+  "id": "TH115",
+  "name": "Huskey Gap Trailhead",
+  "type": "trailhead",
+  "lat": 35.66321,
+  "lon": -83.5264
+ },
+ {
+  "id": "TH225",
+  "name": "Hyatt Ridge Trailhead",
+  "type": "trailhead",
+  "lat": 35.60895,
+  "lon": -83.22293
+ },
+ {
+  "id": "TH023",
+  "name": "Indian Grave Gap Trailhead",
+  "type": "trailhead",
+  "lat": 35.62331,
+  "lon": -83.81573
+ },
+ {
+  "id": "TH091",
+  "name": "Jakes Creek Trailhead",
+  "type": "trailhead",
+  "lat": 35.65202,
+  "lon": -83.58123
+ },
+ {
+  "id": "TH157",
+  "name": "Juney Whank Falls Trailhead",
+  "type": "trailhead",
+  "lat": 35.46444,
+  "lon": -83.43407
+ },
+ {
+  "id": "TH190",
+  "name": "Kanati Fork Trailhead",
+  "type": "trailhead",
+  "lat": 35.58792,
+  "lon": -83.36386
+ },
+ {
+  "id": "TH192",
+  "name": "Kephart Prong Trailhead",
+  "type": "trailhead",
+  "lat": 35.58575,
+  "lon": -83.35841
+ },
+ {
+  "id": "TH126",
+  "name": "Kuwohi Trailhead",
+  "type": "trailhead",
+  "lat": 35.5568,
+  "lon": -83.49609
+ },
+ {
+  "id": "TH107",
+  "name": "Lakeshore Trailhead E",
+  "type": "trailhead",
+  "lat": 35.45864,
+  "lon": -83.53745
+ },
+ {
+  "id": "TH092",
+  "name": "Laurel Falls / Sugarland Mountain Trailhead",
+  "type": "trailhead",
+  "lat": 35.67185,
+  "lon": -83.58046
+ },
+ {
+  "id": "TH073",
+  "name": "Little Brier Gap Trailhead",
+  "type": "trailhead",
+  "lat": 35.6837,
+  "lon": -83.63935
+ },
+ {
+  "id": "TH276",
+  "name": "Little Cataloochee Trailhead",
+  "type": "trailhead",
+  "lat": 35.67616,
+  "lon": -83.08726
+ },
+ {
+  "id": "TH072",
+  "name": "Little Greenbrier Trailhead",
+  "type": "trailhead",
+  "lat": 35.69419,
+  "lon": -83.64598
+ },
+ {
+  "id": "TH093",
+  "name": "Little River Trailhead",
+  "type": "trailhead",
+  "lat": 35.6537,
+  "lon": -83.58022
+ },
+ {
+  "id": "TH235",
+  "name": "Lower Mount Cammerer Trailhead",
+  "type": "trailhead",
+  "lat": 35.75199,
+  "lon": -83.20497
+ },
+ {
+  "id": "TH061",
+  "name": "Lumber Ridge Trailhead",
+  "type": "trailhead",
+  "lat": 35.64084,
+  "lon": -83.68926
+ },
+ {
+  "id": "TH220",
+  "name": "Maddron Bald Trailhead",
+  "type": "trailhead",
+  "lat": 35.7695,
+  "lon": -83.26677
+ },
+ {
+  "id": "TH066",
+  "name": "Meigs Creek Trailhead",
+  "type": "trailhead",
+  "lat": 35.66949,
+  "lon": -83.66209
+ },
+ {
+  "id": "TH069",
+  "name": "Metcalf Bottoms Trailhead",
+  "type": "trailhead",
+  "lat": 35.67906,
+  "lon": -83.64734
+ },
+ {
+  "id": "TH063",
+  "name": "Middle Prong Trailhead",
+  "type": "trailhead",
+  "lat": 35.61811,
+  "lon": -83.66975
+ },
+ {
+  "id": "TH200",
+  "name": "Mingus Creek Trailhead",
+  "type": "trailhead",
+  "lat": 35.52068,
+  "lon": -83.30978
+ },
+ {
+  "id": "TH273",
+  "name": "Mount Sterling Trailhead",
+  "type": "trailhead",
+  "lat": 35.70023,
+  "lon": -83.09743
+ },
+ {
+  "id": "TH201",
+  "name": "Newton Bald Trailhead",
+  "type": "trailhead",
+  "lat": 35.55264,
+  "lon": -83.30977
+ },
+ {
+  "id": "TH113",
+  "name": "Noland Creek Trailhead N",
+  "type": "trailhead",
+  "lat": 35.4582,
+  "lon": -83.527
+ },
+ {
+  "id": "TH114",
+  "name": "Noland Creek Trailhead S",
+  "type": "trailhead",
+  "lat": 35.45733,
+  "lon": -83.52663
+ },
+ {
+  "id": "TH135",
+  "name": "Noland Divide Trailhead N",
+  "type": "trailhead",
+  "lat": 35.56717,
+  "lon": -83.48183
+ },
+ {
+  "id": "TH153",
+  "name": "Noland Divide Trailhead S",
+  "type": "trailhead",
+  "lat": 35.46007,
+  "lon": -83.43946
+ },
+ {
+  "id": "TH208",
+  "name": "Oconaluftee River Trailhead N",
+  "type": "trailhead",
+  "lat": 35.51335,
+  "lon": -83.30556
+ },
+ {
+  "id": "TH210",
+  "name": "Oconaluftee River Trailhead S",
+  "type": "trailhead",
+  "lat": 35.49946,
+  "lon": -83.30361
+ },
+ {
+  "id": "TH130",
+  "name": "Ogle Place Trailhead",
+  "type": "trailhead",
+  "lat": 35.68344,
+  "lon": -83.49019
+ },
+ {
+  "id": "TH184",
+  "name": "Old Settlers Trailhead W",
+  "type": "trailhead",
+  "lat": 35.70775,
+  "lon": -83.38014
+ },
+ {
+  "id": "TH132",
+  "name": "Old Sugarlands Trailhead E",
+  "type": "trailhead",
+  "lat": 35.67591,
+  "lon": -83.48669
+ },
+ {
+  "id": "TH111",
+  "name": "Old Sugarlands Trailhead W",
+  "type": "trailhead",
+  "lat": 35.68806,
+  "lon": -83.53509
+ },
+ {
+  "id": "TH248",
+  "name": "Palmer Creek Trailhead",
+  "type": "trailhead",
+  "lat": 35.62817,
+  "lon": -83.17384
+ },
+ {
+  "id": "TH181",
+  "name": "Porters Creek Trailhead",
+  "type": "trailhead",
+  "lat": 35.6968,
+  "lon": -83.38821
+ },
+ {
+  "id": "TH263",
+  "name": "Pretty Hollow Gap Trailhead",
+  "type": "trailhead",
+  "lat": 35.62659,
+  "lon": -83.11241
+ },
+ {
+  "id": "TH001",
+  "name": "Rabbit Creek Trailhead",
+  "type": "trailhead",
+  "lat": 35.60786,
+  "lon": -83.9362
+ },
+ {
+  "id": "TH134",
+  "name": "Rainbow Falls Trailhead",
+  "type": "trailhead",
+  "lat": 35.67571,
+  "lon": -83.48566
+ },
+ {
+  "id": "TH194",
+  "name": "Ramsey Cascades Trailhead",
+  "type": "trailhead",
+  "lat": 35.70267,
+  "lon": -83.35752
+ },
+ {
+  "id": "TH031",
+  "name": "Rich Mountain Loop Trailhead",
+  "type": "trailhead",
+  "lat": 35.60674,
+  "lon": -83.77825
+ },
+ {
+  "id": "TH027",
+  "name": "Rich Mountain Trailhead",
+  "type": "trailhead",
+  "lat": 35.64466,
+  "lon": -83.80522
+ },
+ {
+  "id": "TH150",
+  "name": "Road Prong Trailhead",
+  "type": "trailhead",
+  "lat": 35.60937,
+  "lon": -83.44655
+ },
+ {
+  "id": "TH071",
+  "name": "Roundtop Trailhead E",
+  "type": "trailhead",
+  "lat": 35.69245,
+  "lon": -83.64608
+ },
+ {
+  "id": "TH059",
+  "name": "Roundtop Trailhead W",
+  "type": "trailhead",
+  "lat": 35.66057,
+  "lon": -83.70672
+ },
+ {
+  "id": "TH038",
+  "name": "Schoolhouse Gap Trailhead N",
+  "type": "trailhead",
+  "lat": 35.64325,
+  "lon": -83.7502
+ },
+ {
+  "id": "TH048",
+  "name": "Schoolhouse Gap Trailhead S",
+  "type": "trailhead",
+  "lat": 35.62719,
+  "lon": -83.7266
+ },
+ {
+  "id": "CGSMO",
+  "name": "Smokemont Campground",
+  "type": "campground",
+  "lat": 35.55571,
+  "lon": -83.31181
+ },
+ {
+  "id": "TH229",
+  "name": "Snake Den Ridge Trailhead",
+  "type": "trailhead",
+  "lat": 35.75314,
+  "lon": -83.21037
+ },
+ {
+  "id": "TH243",
+  "name": "Spruce Mountain Trailhead",
+  "type": "trailhead",
+  "lat": 35.61109,
+  "lon": -83.18446
+ },
+ {
+  "id": "TH172",
+  "name": "Stone Pile Gap Trailhead",
+  "type": "trailhead",
+  "lat": 35.46937,
+  "lon": -83.41517
+ },
+ {
+  "id": "TH176",
+  "name": "Thomas Divide Trailhead N",
+  "type": "trailhead",
+  "lat": 35.58593,
+  "lon": -83.39884
+ },
+ {
+  "id": "TH170",
+  "name": "Thomas Divide Trailhead S",
+  "type": "trailhead",
+  "lat": 35.46522,
+  "lon": -83.41918
+ },
+ {
+  "id": "TH212",
+  "name": "Tow String Trailhead",
+  "type": "trailhead",
+  "lat": 35.54373,
+  "lon": -83.2999
+ },
+ {
+  "id": "TH145",
+  "name": "Trillium Gap Spur Trailhead",
+  "type": "trailhead",
+  "lat": 35.68027,
+  "lon": -83.46267
+ },
+ {
+  "id": "TH041",
+  "name": "Turkeypen Ridge Trailhead",
+  "type": "trailhead",
+  "lat": 35.60684,
+  "lon": -83.74488
+ },
+ {
+  "id": "TH010",
+  "name": "Twentymile Trailhead",
+  "type": "trailhead",
+  "lat": 35.46746,
+  "lon": -83.87673
+ },
+ {
+  "id": "TH119",
+  "name": "Twin Creeks Trailhead N",
+  "type": "trailhead",
+  "lat": 35.70094,
+  "lon": -83.51119
+ },
+ {
+  "id": "TH060",
+  "name": "West Prong Trailhead",
+  "type": "trailhead",
+  "lat": 35.64143,
+  "lon": -83.69069
+ }
+]

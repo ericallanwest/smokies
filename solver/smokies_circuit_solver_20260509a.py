@@ -32,6 +32,8 @@ _ap.add_argument('--tobler-peak', type=float, default=None,
 _ap.add_argument('--profiles', type=str, default=None,
                  help='Path to segment_profiles.json (default: searched next to the '
                       'edge list, then under docs/data/)')
+_ap.add_argument('--start-node', type=str, default=None,
+                 help='Begin the itinerary at this trailhead or campground (e.g. TH252). Default: the highest-degree trailhead, which minimises repositioning.')
 _ap.add_argument('--balance-alpha', type=float, default=0.90,
                  help='Among itineraries tied on days and resupply stops, reject any whose shortest non-last day falls below this fraction of the best tied candidate, then take the least total walking (default: 0.90)')
 _ap.add_argument('--progress', action='store_true',
@@ -88,6 +90,10 @@ def envelope_base() -> dict:
                        "peak_slope": TOBLER_PARAMS[2], "custom": TOBLER_CUSTOM},
             "max_resupply_days": _args.max_resupply_days,
             "town_nights": _args.town_nights,
+            # What the hiker asked for, and where the walk actually begins --
+            # they differ when nothing was pinned.
+            "start_node_requested": _args.start_node,
+            "start_node": globals().get('start_node'),
             "time_budget": TIME_BUDGET,
             # globals().get: a complete-map or no-split run emits an envelope
             # before step 4 has set these.
@@ -1160,10 +1166,29 @@ else:
 
 assert nx.is_eulerian(G_euler), "G_euler still not Eulerian after bridge fixes"
 
-# Select starting node: TH or CG with the highest degree in G_euler
+# Select starting node: TH or CG with the highest degree in G_euler, unless
+# the hiker named one.  A closed circuit is a cycle, so its start is a free
+# choice among the nodes it visits -- picking a different one rotates the arc
+# list and changes nothing else about the route or its cost.  Only the day
+# split has to be redone, because day boundaries must land on campsites.
 valid_start_nodes = [n for n, d in G.nodes(data=True)
                      if d['node_type'] in VALID_CIRCUIT_ENDPOINTS and n in G_euler]
-start_node = max(valid_start_nodes, key=lambda n: G_euler.degree(n))
+if _args.start_node:
+    START_NODE_PINNED = _args.start_node.strip().upper()
+    if START_NODE_PINNED not in G.nodes:
+        raise SystemExit(f"--start-node {START_NODE_PINNED!r} is not a node in "
+                         f"the network")
+    if G.nodes[START_NODE_PINNED]['node_type'] not in VALID_CIRCUIT_ENDPOINTS:
+        raise SystemExit(f"--start-node {START_NODE_PINNED!r} is a "
+                         f"{G.nodes[START_NODE_PINNED]['node_type']}; a hike can "
+                         f"only begin at a trailhead or campground")
+    if START_NODE_PINNED not in G_euler:
+        raise SystemExit(f"--start-node {START_NODE_PINNED!r} is not on the "
+                         f"circuit, so the route never passes through it")
+    start_node = START_NODE_PINNED
+else:
+    START_NODE_PINNED = None
+    start_node = max(valid_start_nodes, key=lambda n: G_euler.degree(n))
 print(f"\nStarting node : {start_node}  ({G.nodes[start_node]['node_type']}, "
       f"degree {G_euler.degree(start_node)} in G_euler)")
 
@@ -2093,6 +2118,16 @@ def retarget_termini_for_budget(circuit, open_circuit):
     atomic (no interior nodes), so terminus placement is the only rescue.
     """
     if circuit is None:
+        return circuit, open_circuit
+    if START_NODE_PINNED is not None:
+        # Rotating would move day 1 away from the trailhead the hiker asked
+        # for, which is the one thing they explicitly chose.  Honour the pin
+        # and say plainly that it may cost feasibility, rather than quietly
+        # starting them somewhere else.
+        print(f"\nBudget retarget: skipped -- start pinned to "
+              f"{START_NODE_PINNED}.  If a required arc cannot fit any interior "
+              f"day at {MAX_DAY_SECONDS / 3600:.0f}h, this configuration will "
+              f"yield no itinerary; an unpinned start could rescue it.")
         return circuit, open_circuit
     INF = float('inf')
     _out, _back = {}, {}
