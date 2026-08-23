@@ -271,28 +271,6 @@
           "gain": 97,
           "is_deadhead": false,
           "direction": "fwd"
-        },
-        {
-          "from": "BC003",
-          "to": "TI020",
-          "edge_id": "43.2",
-          "trail": "Beard Cane",
-          "miles": 0.6,
-          "seconds": 1166,
-          "gain": 420,
-          "is_deadhead": false,
-          "direction": "fwd"
-        },
-        {
-          "from": "TI020",
-          "to": "BC003",
-          "edge_id": "43.2",
-          "trail": "Beard Cane",
-          "miles": 0.6,
-          "seconds": 844,
-          "gain": 4,
-          "is_deadhead": true,
-          "direction": "dh"
         }
       ]
     },
@@ -309,8 +287,8 @@
           "miles": 0.6,
           "seconds": 1166,
           "gain": 420,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI020",
@@ -863,7 +841,7 @@
     {
       "day": 4,
       "start_node": "SH106",
-      "end_node": "CGSMO",
+      "end_node": "BC050",
       "arcs": [
         {
           "from": "SH106",
@@ -1117,7 +1095,14 @@
           "gain": 34,
           "is_deadhead": true,
           "direction": "dh"
-        },
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "start_node": "BC050",
+      "end_node": "BC050",
+      "arcs": [
         {
           "from": "BC050",
           "to": "TI202",
@@ -1159,35 +1144,6 @@
           "miles": 0.0,
           "seconds": 28,
           "gain": 0,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "RI203",
-          "to": "CGSMO",
-          "edge_id": "456.0",
-          "trail": "Smokemont Road",
-          "miles": 0.3,
-          "seconds": 316,
-          "gain": 21,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 5,
-      "start_node": "CGSMO",
-      "end_node": "BC050",
-      "arcs": [
-        {
-          "from": "CGSMO",
-          "to": "RI203",
-          "edge_id": "456.0",
-          "trail": "Smokemont Road",
-          "miles": 0.3,
-          "seconds": 296,
-          "gain": 8,
           "is_deadhead": true,
           "direction": "dh"
         },
@@ -2467,7 +2423,7 @@
     {
       "day": 10,
       "start_node": "BC039",
-      "end_node": "BC035",
+      "end_node": "SH101",
       "arcs": [
         {
           "from": "BC039",
@@ -2688,7 +2644,14 @@
           "gain": 663,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 11,
+      "start_node": "SH101",
+      "end_node": "SH102",
+      "arcs": [
         {
           "from": "SH101",
           "to": "TI257",
@@ -2721,14 +2684,7 @@
           "gain": 556,
           "is_deadhead": false,
           "direction": "rev"
-        }
-      ]
-    },
-    {
-      "day": 11,
-      "start_node": "BC035",
-      "end_node": "BC036",
-      "arcs": [
+        },
         {
           "from": "BC035",
           "to": "TI238",
@@ -3036,7 +2992,14 @@
           "gain": 569,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 12,
+      "start_node": "SH102",
+      "end_node": "SH116",
+      "arcs": [
         {
           "from": "SH102",
           "to": "TI236",
@@ -3058,35 +3021,6 @@
           "gain": 190,
           "is_deadhead": false,
           "direction": "rev"
-        },
-        {
-          "from": "TI247",
-          "to": "BC036",
-          "edge_id": "74.0",
-          "trail": "Camel Gap",
-          "miles": 0.6,
-          "seconds": 676,
-          "gain": 32,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 12,
-      "start_node": "BC036",
-      "end_node": "SH116",
-      "arcs": [
-        {
-          "from": "BC036",
-          "to": "TI247",
-          "edge_id": "74.0",
-          "trail": "Camel Gap",
-          "miles": 0.6,
-          "seconds": 814,
-          "gain": 151,
-          "is_deadhead": true,
-          "direction": "dh"
         },
         {
           "from": "TI247",

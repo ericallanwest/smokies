@@ -4471,7 +4471,7 @@
     {
       "day": 37,
       "start_node": "BC061",
-      "end_node": "BC065",
+      "end_node": "BC067",
       "arcs": [
         {
           "from": "BC061",
@@ -4538,14 +4538,7 @@
           "gain": 265,
           "is_deadhead": false,
           "direction": "rev"
-        }
-      ]
-    },
-    {
-      "day": 38,
-      "start_node": "BC065",
-      "end_node": "BC071",
-      "arcs": [
+        },
         {
           "from": "BC065",
           "to": "TH113",
@@ -4666,7 +4659,14 @@
           "gain": 46,
           "is_deadhead": false,
           "direction": "fwd"
-        },
+        }
+      ]
+    },
+    {
+      "day": 38,
+      "start_node": "BC067",
+      "end_node": "BC064",
+      "arcs": [
         {
           "from": "BC067",
           "to": "TI105",
@@ -4732,14 +4732,7 @@
           "gain": 287,
           "is_deadhead": false,
           "direction": "rev"
-        }
-      ]
-    },
-    {
-      "day": 39,
-      "start_node": "BC071",
-      "end_node": "BC068",
-      "arcs": [
+        },
         {
           "from": "BC071",
           "to": "BC070",
@@ -4772,6 +4765,35 @@
           "gain": 2247,
           "is_deadhead": false,
           "direction": "fwd"
+        },
+        {
+          "from": "TI118",
+          "to": "BC064",
+          "edge_id": "285.0",
+          "trail": "Springhouse Branch",
+          "miles": 2.8,
+          "seconds": 3759,
+          "gain": 177,
+          "is_deadhead": true,
+          "direction": "dh"
+        }
+      ]
+    },
+    {
+      "day": 39,
+      "start_node": "BC064",
+      "end_node": "BC068",
+      "arcs": [
+        {
+          "from": "BC064",
+          "to": "TI118",
+          "edge_id": "285.0",
+          "trail": "Springhouse Branch",
+          "miles": 2.8,
+          "seconds": 4815,
+          "gain": 1554,
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI118",
@@ -6310,7 +6332,7 @@
     {
       "day": 53,
       "start_node": "BC010",
-      "end_node": "BC096",
+      "end_node": "TH025",
       "arcs": [
         {
           "from": "BC010",
@@ -6366,14 +6388,7 @@
           "gain": 131,
           "is_deadhead": false,
           "direction": "rev"
-        }
-      ]
-    },
-    {
-      "day": 54,
-      "start_node": "BC096",
-      "end_node": "SH112",
-      "arcs": [
+        },
         {
           "from": "BC096",
           "to": "BC089",
@@ -6428,7 +6443,14 @@
           "gain": 1266,
           "is_deadhead": false,
           "direction": "fwd"
-        },
+        }
+      ]
+    },
+    {
+      "day": 54,
+      "start_node": "TH025",
+      "end_node": "SH110",
+      "arcs": [
         {
           "from": "TH025",
           "to": "TI024",
@@ -6472,14 +6494,7 @@
           "gain": 909,
           "is_deadhead": false,
           "direction": "fwd"
-        }
-      ]
-    },
-    {
-      "day": 55,
-      "start_node": "SH112",
-      "end_node": "BC084",
-      "arcs": [
+        },
         {
           "from": "SH112",
           "to": "SH111",
@@ -6515,6 +6530,57 @@
         },
         {
           "from": "TI047",
+          "to": "TI045",
+          "edge_id": "13.0",
+          "trail": "Appalachian",
+          "miles": 0.1,
+          "seconds": 94,
+          "gain": 27,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "TI045",
+          "to": "SH110",
+          "edge_id": "115.5",
+          "trail": "Eagle Creek",
+          "miles": 0.1,
+          "seconds": 212,
+          "gain": 20,
+          "is_deadhead": true,
+          "direction": "dh"
+        }
+      ]
+    },
+    {
+      "day": 55,
+      "start_node": "SH110",
+      "end_node": "BC081",
+      "arcs": [
+        {
+          "from": "SH110",
+          "to": "TI045",
+          "edge_id": "115.5",
+          "trail": "Eagle Creek",
+          "miles": 0.1,
+          "seconds": 237,
+          "gain": 56,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "TI045",
+          "to": "TI047",
+          "edge_id": "13.0",
+          "trail": "Appalachian",
+          "miles": 0.1,
+          "seconds": 66,
+          "gain": 0,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "TI047",
           "to": "TI049",
           "edge_id": "14.0",
           "trail": "Appalachian",
@@ -6534,14 +6600,7 @@
           "gain": 1174,
           "is_deadhead": false,
           "direction": "fwd"
-        }
-      ]
-    },
-    {
-      "day": 56,
-      "start_node": "BC084",
-      "end_node": "BC076",
-      "arcs": [
+        },
         {
           "from": "BC084",
           "to": "BC085",
@@ -6607,7 +6666,14 @@
           "gain": 677,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 56,
+      "start_node": "BC081",
+      "end_node": "BC074",
+      "arcs": [
         {
           "from": "BC081",
           "to": "BC077",
@@ -6640,14 +6706,7 @@
           "gain": 554,
           "is_deadhead": false,
           "direction": "rev"
-        }
-      ]
-    },
-    {
-      "day": 57,
-      "start_node": "BC076",
-      "end_node": "BC075",
-      "arcs": [
+        },
         {
           "from": "BC076",
           "to": "BC098",
@@ -6669,7 +6728,14 @@
           "gain": 1710,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 57,
+      "start_node": "BC074",
+      "end_node": "SH107",
+      "arcs": [
         {
           "from": "BC074",
           "to": "TI096",
@@ -6735,14 +6801,7 @@
           "gain": 1059,
           "is_deadhead": false,
           "direction": "fwd"
-        }
-      ]
-    },
-    {
-      "day": 58,
-      "start_node": "BC075",
-      "end_node": "BC023",
-      "arcs": [
+        },
         {
           "from": "BC075",
           "to": "TI082",
@@ -6797,7 +6856,14 @@
           "gain": 400,
           "is_deadhead": true,
           "direction": "dh"
-        },
+        }
+      ]
+    },
+    {
+      "day": 58,
+      "start_node": "SH107",
+      "end_node": "TH117",
+      "arcs": [
         {
           "from": "SH107",
           "to": "TI112",
@@ -6819,14 +6885,7 @@
           "gain": 140,
           "is_deadhead": false,
           "direction": "rev"
-        }
-      ]
-    },
-    {
-      "day": 59,
-      "start_node": "BC023",
-      "end_node": "TH117",
-      "arcs": [
+        },
         {
           "from": "BC023",
           "to": "TI108",
@@ -6917,6 +6976,101 @@
         },
         {
           "from": "TI215",
+          "to": "TH111",
+          "edge_id": "250.1",
+          "trail": "Old Sugarlands",
+          "miles": 1.2,
+          "seconds": 1393,
+          "gain": 98,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "TH111",
+          "to": "RI109",
+          "edge_id": "449.0",
+          "trail": "Park Headquarters Road",
+          "miles": 0.2,
+          "seconds": 226,
+          "gain": 19,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "RI109",
+          "to": "TH110",
+          "edge_id": "448.0",
+          "trail": "Park Headquarters Road",
+          "miles": 0.3,
+          "seconds": 331,
+          "gain": 5,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "TH110",
+          "to": "TH117",
+          "edge_id": "130.0",
+          "trail": "Gatlinburg",
+          "miles": 1.9,
+          "seconds": 1568,
+          "gain": 83,
+          "is_deadhead": true,
+          "direction": "dh"
+        }
+      ]
+    },
+    {
+      "day": 59,
+      "start_node": "TH117",
+      "end_node": "TH117",
+      "arcs": [
+        {
+          "from": "TH117",
+          "to": "TH110",
+          "edge_id": "130.0",
+          "trail": "Gatlinburg",
+          "miles": 1.9,
+          "seconds": 1694,
+          "gain": 167,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "TH110",
+          "to": "RI109",
+          "edge_id": "448.0",
+          "trail": "Park Headquarters Road",
+          "miles": 0.3,
+          "seconds": 372,
+          "gain": 34,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "RI109",
+          "to": "TH111",
+          "edge_id": "449.0",
+          "trail": "Park Headquarters Road",
+          "miles": 0.2,
+          "seconds": 255,
+          "gain": 33,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "TH111",
+          "to": "TI215",
+          "edge_id": "250.1",
+          "trail": "Old Sugarlands",
+          "miles": 1.2,
+          "seconds": 1568,
+          "gain": 226,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "TI215",
           "to": "TI127",
           "edge_id": "250.2",
           "trail": "Old Sugarlands",
@@ -6991,6 +7145,28 @@
           "gain": 16,
           "is_deadhead": true,
           "direction": "dh"
+        },
+        {
+          "from": "TH117",
+          "to": "TH110",
+          "edge_id": "130.0",
+          "trail": "Gatlinburg",
+          "miles": 1.9,
+          "seconds": 1694,
+          "gain": 167,
+          "is_deadhead": false,
+          "direction": "rev"
+        },
+        {
+          "from": "TH110",
+          "to": "TH117",
+          "edge_id": "130.0",
+          "trail": "Gatlinburg",
+          "miles": 1.9,
+          "seconds": 1568,
+          "gain": 83,
+          "is_deadhead": true,
+          "direction": "dh"
         }
       ]
     },
@@ -7007,8 +7183,8 @@
           "miles": 1.9,
           "seconds": 1694,
           "gain": 167,
-          "is_deadhead": false,
-          "direction": "rev"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TH110",
@@ -8439,25 +8615,18 @@
       "days_since_last": 6
     },
     {
-      "day": 54,
-      "node": "TH025",
-      "name": "Fontana Village",
-      "in_park": false,
-      "days_since_last": 2
-    },
-    {
-      "day": 59,
+      "day": 58,
       "node": "TH117",
       "name": "Gatlinburg",
       "in_park": false,
-      "days_since_last": 5
+      "days_since_last": 6
     },
     {
       "day": 61,
       "node": "RI058",
       "name": "Townsend",
       "in_park": false,
-      "days_since_last": 2
+      "days_since_last": 3
     },
     {
       "day": 66,

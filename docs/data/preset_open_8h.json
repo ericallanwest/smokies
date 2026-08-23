@@ -7287,7 +7287,7 @@
     {
       "day": 59,
       "start_node": "BC075",
-      "end_node": "SH106",
+      "end_node": "SH107",
       "arcs": [
         {
           "from": "BC075",
@@ -7343,7 +7343,14 @@
           "gain": 400,
           "is_deadhead": true,
           "direction": "dh"
-        },
+        }
+      ]
+    },
+    {
+      "day": 60,
+      "start_node": "SH107",
+      "end_node": "BC024",
+      "arcs": [
         {
           "from": "SH107",
           "to": "TI112",
@@ -7409,14 +7416,7 @@
           "gain": 2,
           "is_deadhead": false,
           "direction": "rev"
-        }
-      ]
-    },
-    {
-      "day": 60,
-      "start_node": "SH106",
-      "end_node": "BC021",
-      "arcs": [
+        },
         {
           "from": "SH106",
           "to": "TI120",
@@ -7460,7 +7460,14 @@
           "gain": 14,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 61,
+      "start_node": "BC024",
+      "end_node": "BC027",
+      "arcs": [
         {
           "from": "BC024",
           "to": "TI108",
@@ -7540,57 +7547,6 @@
         },
         {
           "from": "TI101",
-          "to": "TI104",
-          "edge_id": "202.0",
-          "trail": "Little River",
-          "miles": 0.4,
-          "seconds": 503,
-          "gain": 70,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI104",
-          "to": "BC021",
-          "edge_id": "159.2",
-          "trail": "Huskey Gap",
-          "miles": 0.4,
-          "seconds": 383,
-          "gain": 52,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 61,
-      "start_node": "BC021",
-      "end_node": "BC028",
-      "arcs": [
-        {
-          "from": "BC021",
-          "to": "TI104",
-          "edge_id": "159.2",
-          "trail": "Huskey Gap",
-          "miles": 0.4,
-          "seconds": 421,
-          "gain": 89,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI104",
-          "to": "TI101",
-          "edge_id": "202.0",
-          "trail": "Little River",
-          "miles": 0.4,
-          "seconds": 421,
-          "gain": 13,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI101",
           "to": "TI090",
           "edge_id": "98.0",
           "trail": "Cucumber Gap",
@@ -7665,7 +7621,14 @@
           "gain": 1131,
           "is_deadhead": false,
           "direction": "fwd"
-        },
+        }
+      ]
+    },
+    {
+      "day": 62,
+      "start_node": "BC027",
+      "end_node": "SH109",
+      "arcs": [
         {
           "from": "BC027",
           "to": "TI085",
@@ -7709,14 +7672,7 @@
           "gain": 95,
           "is_deadhead": false,
           "direction": "rev"
-        }
-      ]
-    },
-    {
-      "day": 62,
-      "start_node": "BC028",
-      "end_node": "BC028",
-      "arcs": [
+        },
         {
           "from": "BC028",
           "to": "TI077",
@@ -7796,6 +7752,35 @@
         },
         {
           "from": "TI075",
+          "to": "SH109",
+          "edge_id": "15.2",
+          "trail": "Appalachian",
+          "miles": 0.3,
+          "seconds": 495,
+          "gain": 137,
+          "is_deadhead": true,
+          "direction": "dh"
+        }
+      ]
+    },
+    {
+      "day": 63,
+      "start_node": "SH109",
+      "end_node": "BC009",
+      "arcs": [
+        {
+          "from": "SH109",
+          "to": "TI075",
+          "edge_id": "15.2",
+          "trail": "Appalachian",
+          "miles": 0.3,
+          "seconds": 436,
+          "gain": 29,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "TI075",
           "to": "TI077",
           "edge_id": "137.0",
           "trail": "Greenbrier Ridge",
@@ -7804,35 +7789,6 @@
           "gain": 202,
           "is_deadhead": false,
           "direction": "rev"
-        },
-        {
-          "from": "TI077",
-          "to": "BC028",
-          "edge_id": "217.1",
-          "trail": "Lynn Camp Prong",
-          "miles": 1.5,
-          "seconds": 1967,
-          "gain": 323,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 63,
-      "start_node": "BC028",
-      "end_node": "BC009",
-      "arcs": [
-        {
-          "from": "BC028",
-          "to": "TI077",
-          "edge_id": "217.1",
-          "trail": "Lynn Camp Prong",
-          "miles": 1.5,
-          "seconds": 1651,
-          "gain": 54,
-          "is_deadhead": true,
-          "direction": "dh"
         },
         {
           "from": "TI077",

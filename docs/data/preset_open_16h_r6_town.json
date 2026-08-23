@@ -186,6 +186,28 @@
         },
         {
           "from": "TI274",
+          "to": "TH276",
+          "edge_id": "198.0",
+          "trail": "Little Cataloochee",
+          "miles": 1.0,
+          "seconds": 1443,
+          "gain": 224,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "TH276",
+          "to": "TI274",
+          "edge_id": "198.0",
+          "trail": "Little Cataloochee",
+          "miles": 1.0,
+          "seconds": 1486,
+          "gain": 283,
+          "is_deadhead": false,
+          "direction": "rev"
+        },
+        {
+          "from": "TI274",
           "to": "TI262",
           "edge_id": "197.0",
           "trail": "Little Cataloochee",
@@ -256,28 +278,6 @@
           "gain": 1222,
           "is_deadhead": true,
           "direction": "dh"
-        },
-        {
-          "from": "TI274",
-          "to": "TH276",
-          "edge_id": "198.0",
-          "trail": "Little Cataloochee",
-          "miles": 1.0,
-          "seconds": 1443,
-          "gain": 224,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TH276",
-          "to": "TI274",
-          "edge_id": "198.0",
-          "trail": "Little Cataloochee",
-          "miles": 1.0,
-          "seconds": 1486,
-          "gain": 283,
-          "is_deadhead": false,
-          "direction": "rev"
         },
         {
           "from": "TI274",

@@ -2318,7 +2318,7 @@
     {
       "day": 17,
       "start_node": "BC052",
-      "end_node": "BC061",
+      "end_node": "BC057",
       "arcs": [
         {
           "from": "BC052",
@@ -2407,7 +2407,14 @@
           "gain": 44,
           "is_deadhead": false,
           "direction": "fwd"
-        },
+        }
+      ]
+    },
+    {
+      "day": 18,
+      "start_node": "BC057",
+      "end_node": "BC024",
+      "arcs": [
         {
           "from": "BC057",
           "to": "BC056",
@@ -2440,35 +2447,6 @@
           "gain": 1929,
           "is_deadhead": false,
           "direction": "rev"
-        },
-        {
-          "from": "TI147",
-          "to": "BC061",
-          "edge_id": "245.4",
-          "trail": "Noland Creek",
-          "miles": 1.1,
-          "seconds": 1510,
-          "gain": 25,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 18,
-      "start_node": "BC061",
-      "end_node": "BC024",
-      "arcs": [
-        {
-          "from": "BC061",
-          "to": "TI147",
-          "edge_id": "245.4",
-          "trail": "Noland Creek",
-          "miles": 1.1,
-          "seconds": 2059,
-          "gain": 760,
-          "is_deadhead": true,
-          "direction": "dh"
         },
         {
           "from": "TI147",
@@ -3318,7 +3296,14 @@
           "gain": 301,
           "is_deadhead": false,
           "direction": "fwd"
-        },
+        }
+      ]
+    },
+    {
+      "day": 24,
+      "start_node": "BC053",
+      "end_node": "TH158",
+      "arcs": [
         {
           "from": "BC053",
           "to": "TH166",
@@ -3340,14 +3325,7 @@
           "gain": 227,
           "is_deadhead": true,
           "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 24,
-      "start_node": "BC053",
-      "end_node": "BC046",
-      "arcs": [
+        },
         {
           "from": "BC053",
           "to": "BC054",
@@ -3534,7 +3512,14 @@
           "gain": 21,
           "is_deadhead": false,
           "direction": "fwd"
-        },
+        }
+      ]
+    },
+    {
+      "day": 25,
+      "start_node": "TH158",
+      "end_node": "BC051",
+      "arcs": [
         {
           "from": "TH158",
           "to": "TI160",
@@ -3633,14 +3618,7 @@
           "gain": 76,
           "is_deadhead": false,
           "direction": "rev"
-        }
-      ]
-    },
-    {
-      "day": 25,
-      "start_node": "BC046",
-      "end_node": "TH158",
-      "arcs": [
+        },
         {
           "from": "BC046",
           "to": "TI175",
@@ -3739,7 +3717,14 @@
           "gain": 70,
           "is_deadhead": false,
           "direction": "fwd"
-        },
+        }
+      ]
+    },
+    {
+      "day": 26,
+      "start_node": "BC051",
+      "end_node": "BC062",
+      "arcs": [
         {
           "from": "BC051",
           "to": "TI185",
@@ -3871,14 +3856,7 @@
           "gain": 4,
           "is_deadhead": true,
           "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 26,
-      "start_node": "TH158",
-      "end_node": "BC065",
-      "arcs": [
+        },
         {
           "from": "TH158",
           "to": "TH157",
@@ -3944,7 +3922,14 @@
           "gain": 156,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 27,
+      "start_node": "BC062",
+      "end_node": "BC071",
+      "arcs": [
         {
           "from": "BC062",
           "to": "BC063",
@@ -3999,14 +3984,7 @@
           "gain": 265,
           "is_deadhead": false,
           "direction": "rev"
-        }
-      ]
-    },
-    {
-      "day": 27,
-      "start_node": "BC065",
-      "end_node": "BC064",
-      "arcs": [
+        },
         {
           "from": "BC065",
           "to": "TH113",
@@ -4193,7 +4171,14 @@
           "gain": 287,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 28,
+      "start_node": "BC071",
+      "end_node": "BC069",
+      "arcs": [
         {
           "from": "BC071",
           "to": "BC070",
@@ -4226,35 +4211,6 @@
           "gain": 2247,
           "is_deadhead": false,
           "direction": "fwd"
-        },
-        {
-          "from": "TI118",
-          "to": "BC064",
-          "edge_id": "285.0",
-          "trail": "Springhouse Branch",
-          "miles": 2.8,
-          "seconds": 3759,
-          "gain": 177,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 28,
-      "start_node": "BC064",
-      "end_node": "BC069",
-      "arcs": [
-        {
-          "from": "BC064",
-          "to": "TI118",
-          "edge_id": "285.0",
-          "trail": "Springhouse Branch",
-          "miles": 2.8,
-          "seconds": 4815,
-          "gain": 1554,
-          "is_deadhead": true,
-          "direction": "dh"
         },
         {
           "from": "TI118",
@@ -6654,7 +6610,7 @@
     {
       "day": 44,
       "start_node": "SH110",
-      "end_node": "SH106",
+      "end_node": "SH107",
       "arcs": [
         {
           "from": "SH110",
@@ -6754,7 +6710,14 @@
           "gain": 400,
           "is_deadhead": false,
           "direction": "fwd"
-        },
+        }
+      ]
+    },
+    {
+      "day": 45,
+      "start_node": "SH107",
+      "end_node": "SH105",
+      "arcs": [
         {
           "from": "SH107",
           "to": "TI112",
@@ -6820,57 +6783,6 @@
           "gain": 4,
           "is_deadhead": false,
           "direction": "fwd"
-        },
-        {
-          "from": "TH142",
-          "to": "TI139",
-          "edge_id": "22.1",
-          "trail": "Appalachian",
-          "miles": 0.2,
-          "seconds": 377,
-          "gain": 73,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI139",
-          "to": "SH106",
-          "edge_id": "290.2",
-          "trail": "Sugarland Mountain",
-          "miles": 0.4,
-          "seconds": 343,
-          "gain": 2,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 45,
-      "start_node": "SH106",
-      "end_node": "SH105",
-      "arcs": [
-        {
-          "from": "SH106",
-          "to": "TI139",
-          "edge_id": "290.2",
-          "trail": "Sugarland Mountain",
-          "miles": 0.4,
-          "seconds": 451,
-          "gain": 114,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI139",
-          "to": "TH142",
-          "edge_id": "22.1",
-          "trail": "Appalachian",
-          "miles": 0.2,
-          "seconds": 300,
-          "gain": 4,
-          "is_deadhead": true,
-          "direction": "dh"
         },
         {
           "from": "TH142",

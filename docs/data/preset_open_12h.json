@@ -6,7 +6,7 @@
     {
       "day": 1,
       "start_node": "TH252",
-      "end_node": "BC041",
+      "end_node": "BC040",
       "arcs": [
         {
           "from": "TH252",
@@ -117,14 +117,7 @@
           "gain": 12,
           "is_deadhead": true,
           "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 2,
-      "start_node": "BC041",
-      "end_node": "BC037",
-      "arcs": [
+        },
         {
           "from": "BC041",
           "to": "TI255",
@@ -146,7 +139,14 @@
           "gain": 12,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "start_node": "BC040",
+      "end_node": "BC037",
+      "arcs": [
         {
           "from": "BC040",
           "to": "TH261",

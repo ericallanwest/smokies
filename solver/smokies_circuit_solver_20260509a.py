@@ -32,6 +32,8 @@ _ap.add_argument('--tobler-peak', type=float, default=None,
 _ap.add_argument('--profiles', type=str, default=None,
                  help='Path to segment_profiles.json (default: searched next to the '
                       'edge list, then under docs/data/)')
+_ap.add_argument('--balance-alpha', type=float, default=0.90,
+                 help='Among itineraries tied on days and resupply stops, reject any whose shortest non-last day falls below this fraction of the best tied candidate, then take the least total walking (default: 0.90)')
 _ap.add_argument('--progress', action='store_true',
                  help='Emit machine-readable "PROGRESS <pct> <label>" lines on stdout')
 _ap.add_argument('--json-out', type=str, default=None,
@@ -103,6 +105,8 @@ def envelope_base() -> dict:
 
 CSV_PATH = 'smokies_edge_list_20260509a.csv'
 MAX_DAY_SECONDS = int(_args.max_hours * 3600)
+# Env override exists so a batch can sweep the knob without editing code.
+BALANCE_ALPHA = float(os.environ.get('SMOKIES_BALANCE_ALPHA', _args.balance_alpha))
 # There is no user-facing minimum-day parameter.  The day split first finds
 # the minimum possible day count with no floor, then maximizes the shortest
 # day at that count (see split_days_balanced).
@@ -1630,6 +1634,45 @@ def shortest_nonlast(dd):
     return min(sum(d['weight'] for *_, d in day) for day in pool)
 
 
+def _total_walking(dd):
+    """Every second the hiker is moving, deadhead included."""
+    return sum(d['weight'] for day in dd for *_, d in day)
+
+
+def pick_itinerary(items, days_of=lambda x: x):
+    """Choose among itineraries already equal on day count.
+
+    Prefer the least total walking -- but not at any price in day balance.
+    The two pull against each other: the campsite detours that stop a 2h day
+    landing beside a 12h one are the same detours that add walking, so ranking
+    walking alone quietly picks the lumpiest split every time.
+
+    Hence a floor, measured against the best candidate actually on the table
+    rather than an absolute standard.  Achievable balance is set by terrain,
+    not by choosing well -- the shortest non-last day runs 42-62% of the mean
+    at 8h, where campsite spacing forces early stops, against 80-92% at 16h --
+    so any fixed threshold is either toothless at 16h or fatal at 8h.  A 75%
+    of mean floor would reject every 8h itinerary that exists.  Relative to the
+    best tied candidate it self-calibrates per tier and can never reject
+    everything, since the best-balanced candidate always scores 1.0.
+    """
+    # Fewest resupply stops first, before anything else here.  A stop is
+    # hours of hitching and shopping that the model only ever sees as the
+    # walking part of a detour, so it must not lose to a metric that is fully
+    # measured.  Enforced at every selection point, not just the last one:
+    # ranking it only across variants let the greedy floor sweep quietly buy a
+    # town visit with 8.9h of walking, which is a trade the ranking says we do
+    # not make.
+    best_stops = min(_n_resupply_stops(days_of(i)) for i in items)
+    items = [i for i in items
+             if _n_resupply_stops(days_of(i)) == best_stops] or items
+    best_bal = max(shortest_nonlast(days_of(i)) for i in items)
+    elig = [i for i in items
+            if shortest_nonlast(days_of(i)) >= BALANCE_ALPHA * best_bal] or items
+    return min(elig, key=lambda i: (_total_walking(days_of(i)),
+                                    -shortest_nonlast(days_of(i))))
+
+
 def classify_arcs(days):
     """Walk-order traversal categories, matching the web app (docs/js/viz.js).
 
@@ -1918,6 +1961,16 @@ def planned_resupply_schedule(days, rs_set, max_days):
     return stops
 
 
+def _n_resupply_stops(days):
+    """Planned town visits.  Defined up here because pick_itinerary ranks on
+    it, and that runs inside the day-split loop."""
+    if MAX_DAYS_BETWEEN_RESUPPLY is None:
+        return 0
+    sched = planned_resupply_schedule(days, resupply_set,
+                                      MAX_DAYS_BETWEEN_RESUPPLY)
+    return len(sched) if sched is not None else float('inf')
+
+
 def insert_overnight_detours(arc_seq, max_day_s, label):
     """When a camp-to-camp gap along the walk exceeds the daily budget, no
     detour-free day split exists and the greedy fallback can livelock in
@@ -2103,79 +2156,111 @@ def retarget_termini_for_budget(circuit, open_circuit):
     return rotated, new_open
 
 
-def trim_open_termini(days):
-    """Drop deadhead arcs from the two ends of a split open itinerary.
+def _open_trim_cuts(arcs):
+    """How many deadhead arcs may be cut from each end of an open walk.
 
-    An open walk that opens by hiking a connector road covers nothing on its
-    first leg and reads to a hiker as a mistake -- the default 12h itinerary
-    began with 0.9mi of Heintooga Ridge Road purely because the Eulerian path
-    happened to leave the source on that arc.  Nothing forces it: a leading
-    run of deadhead arcs can be dropped outright, since the walk still covers
-    every required arc and the hiker simply starts where those arcs ended.
-    The same holds for a trailing run.
+    A leading run of deadhead arcs on an open walk is free to delete: the walk
+    still covers every required arc, and the hiker simply starts where the run
+    ended.  The same holds at the tail.  The only real constraint is somewhere
+    to be dropped off or collected, so cut only as deep as leaves the walk at a
+    trailhead or campground -- and take the deepest legal cut, since the first
+    one is not always the best.
 
-    The one real constraint is where a hiker can be dropped off or collected,
-    so trim only as deep as leaves the walk beginning and ending at a
-    trailhead or campground -- and take the deepest legal cut, since the
-    first one is not always the best.  That also repairs an illegal terminus:
-    retarget_termini_for_budget rotates the walk and drops an arc without
-    rechecking node type, which is how 8h came to finish at RI109, a road
-    intersection no one can be picked up from.
-
-    Deliberately applied to the SPLIT itinerary rather than to the arc
-    sequence before splitting.  Trimming first also works and lets the DP
-    spend the freed time elsewhere, which is tempting -- it saves a whole day
-    on four resupply configurations.  But the day-split chooser ranks on day
-    count, resupply stops and shortest non-last day, never on total walking,
-    so re-splitting reshuffles campsite detours blindly: measured over the
-    full preset set it saved 4 days but added up to 2.6h of walking to six
-    16h itineraries that saved nothing.  Trimming after the split cannot
-    perturb the day boundaries, so it is strictly an improvement everywhere.
-    Revisit if total walking time ever becomes a chooser tiebreaker.
+    Returns (cut_head, cut_tail, seconds_saved).
     """
-    if not days:
-        return days
-    arcs = [(di, a) for di, day in enumerate(days) for a in day]
-
     def _ok(n):
         return node_type(n) in VALID_CIRCUIT_ENDPOINTS
 
     lead = 0
-    while lead < len(arcs) and arcs[lead][1][3].get('is_deadhead'):
+    while lead < len(arcs) and arcs[lead][3].get('is_deadhead'):
         lead += 1
     # Dropping the first i arcs makes the head of arc i-1 the new start node.
-    cut_head = max((i for i in range(1, lead + 1) if _ok(arcs[i - 1][1][1])),
+    cut_head = max((i for i in range(1, lead + 1) if _ok(arcs[i - 1][1])),
                    default=0)
 
     tail = 0
     while (tail < len(arcs) - cut_head
-           and arcs[len(arcs) - 1 - tail][1][3].get('is_deadhead')):
+           and arcs[len(arcs) - 1 - tail][3].get('is_deadhead')):
         tail += 1
     # Dropping the last j arcs makes the tail of arc -j the new end node.
-    cut_tail = max((j for j in range(1, tail + 1) if _ok(arcs[len(arcs) - j][1][0])),
+    cut_tail = max((j for j in range(1, tail + 1) if _ok(arcs[len(arcs) - j][0])),
                    default=0)
 
+    saved = (sum(d['weight'] for *_, d in arcs[:cut_head])
+             + sum(d['weight'] for *_, d in arcs[len(arcs) - cut_tail:]))
+    return cut_head, cut_tail, saved
+
+
+def trim_open_arcs(seq):
+    """Trim an open walk before it is split into days.
+
+    The default 12h itinerary used to begin with 0.9mi of Heintooga Ridge Road,
+    covering nothing, purely because nx.eulerian_path happened to leave the
+    source on that arc rather than on Flat Creek.  All 57 open presets began or
+    ended on a deadhead this way, 18.4h of walking in total.
+
+    Trimming here rather than after the split hands the freed time to the
+    day-split DP, which can then repack -- worth a whole day on four resupply
+    configurations.  That is only safe because the chooser now ranks total
+    walking behind a balance floor; without it, re-splitting reshuffled
+    campsite detours blindly and added up to 2.6h of walking to six 16h
+    itineraries that saved no days at all.
+    """
+    if not seq:
+        return seq
+    cut_head, cut_tail, saved = _open_trim_cuts(seq)
+    if not cut_head and not cut_tail:
+        return seq
+    trimmed = seq[cut_head:len(seq) - cut_tail]
+    print(f"\nOpen termini trim: dropped {cut_head} leading + {cut_tail} "
+          f"trailing deadhead arc(s) before splitting, {saved:,}s "
+          f"({saved / 3600:.2f}h)")
+    print(f"  walk now runs {trimmed[0][0]} .. {trimmed[-1][1]}, opening on "
+          f"{trimmed[0][3].get('trail', '?')} and closing on "
+          f"{trimmed[-1][3].get('trail', '?')}")
+    return trimmed
+
+
+def trim_open_termini(days):
+    """Safety net: trim the ends of an already-split open itinerary.
+
+    trim_open_arcs has normally done this already, so this is usually a no-op.
+    It runs anyway because resupply and campsite detour insertion both rewrite
+    the walk after that point and could in principle reintroduce a deadhead
+    end.  It also repairs an illegal terminus that predates either trim:
+    retarget_termini_for_budget rotates the walk and drops an arc without
+    rechecking node type, which is how 8h came to finish at RI109, a road
+    intersection no one can be collected from.
+    """
+    if not days:
+        return days
+    flat = [a for day in days for a in day]
+    cut_head, cut_tail, saved = _open_trim_cuts(flat)
     if not cut_head and not cut_tail:
         return days
 
-    saved = (sum(a[3]['weight'] for _, a in arcs[:cut_head])
-             + sum(a[3]['weight'] for _, a in arcs[len(arcs) - cut_tail:]))
-    keep = arcs[cut_head:len(arcs) - cut_tail]
+    idx = [di for di, day in enumerate(days) for _ in day]
+    keep = list(zip(idx, flat))[cut_head:len(flat) - cut_tail]
     trimmed = [day for day in
                ([a for di, a in keep if di == i] for i in range(len(days)))
                if day]
-    dropped_days = len(days) - len(trimmed)
-    print(f"\nOpen termini trim: dropped {cut_head} leading + {cut_tail} "
-          f"trailing deadhead arc(s), {saved:,}s ({saved / 3600:.2f}h)")
+    print(f"\nOpen termini trim (post-split): dropped {cut_head} leading + "
+          f"{cut_tail} trailing deadhead arc(s), {saved:,}s ({saved / 3600:.2f}h)")
     print(f"  walk now runs {trimmed[0][0][0]} .. {trimmed[-1][-1][1]}, opening "
           f"on {trimmed[0][0][3].get('trail', '?')} and closing on "
           f"{trimmed[-1][-1][3].get('trail', '?')}")
-    if dropped_days:
-        print(f"  {dropped_days} day(s) were entirely deadhead and are gone")
+    if len(days) - len(trimmed):
+        print(f"  {len(days) - len(trimmed)} day(s) were entirely deadhead "
+              f"and are gone")
     return trimmed
 
 
 circuit, open_circuit = retarget_termini_for_budget(circuit, open_circuit)
+
+# Env switch exists only so the batch below can measure trim placement
+# both ways; pre-split is the intended behaviour.
+if os.environ.get('SMOKIES_TRIM_PRESPLIT', '1') == '1':
+    open_circuit = trim_open_arcs(open_circuit)
 
 # Run the balanced day split for closed and open circuits; campsite-detour
 # planning first, greedy+detour sweep as fallback, if no floor-0 split exists.
@@ -2315,7 +2400,8 @@ for _job_i, (base_label, _tag, arc_seq) in enumerate(_split_jobs):
                 seen_sigs.add(sig)
                 ties.append(c)
 
-    days, floor_s, best_frac, method = None, -1, None, None
+    days, best_frac, method = None, None, None
+    _pool = []
     for n, frac, aug, greedy_days in ties:
         days_bal, _fs = split_days_balanced(aug)
         if days_bal is not None and len(days_bal) == n_best:
@@ -2325,10 +2411,19 @@ for _job_i, (base_label, _tag, arc_seq) in enumerate(_split_jobs):
         else:
             continue
         cand_days = _clean(cand_days, f"greedy floor {frac:.0%}")
-        m = shortest_nonlast(cand_days)
-        print(f"    tie @ floor {frac:>5.0%}: shortest non-last day {fmt_hm(m)}")
-        if m > floor_s:
-            days, floor_s, best_frac = cand_days, m, frac
+        print(f"    tie @ floor {frac:>5.0%}: shortest non-last day "
+              f"{fmt_hm(shortest_nonlast(cand_days))}, "
+              f"{_total_walking(cand_days) / 3600:.1f}h walking")
+        _pool.append((cand_days, frac))
+    if _pool:
+        days, best_frac = pick_itinerary(_pool, days_of=lambda c: c[0])
+        if len(_pool) > 1:
+            _bb = max(shortest_nonlast(c[0]) for c in _pool)
+            _kept = sum(1 for c in _pool
+                        if shortest_nonlast(c[0]) >= BALANCE_ALPHA * _bb)
+            print(f"    -> floor {best_frac:.0%} wins: "
+                  f"{len(_pool) - _kept} of {len(_pool)} cut by the "
+                  f"{BALANCE_ALPHA:.0%} balance floor, least walking of the rest")
 
     if days is None and ties:              # safety net: first tied greedy split
         days, best_frac = _clean(ties[0][3], "greedy fallback"), ties[0][1]
@@ -2336,24 +2431,22 @@ for _job_i, (base_label, _tag, arc_seq) in enumerate(_split_jobs):
         method = (f"greedy+detour (floor {best_frac:.0%}) -> DP balanced, "
                   f"best of {len(ties)} tie(s)")
 
-    # Keep the best remedy: fewer days, then longer shortest non-last day.
-    # A plan beats the sweep only strictly (published presets came from the
-    # sweep); the detour-free base wins full ties since it adds no walking.
-    if days_plan is not None and (
-            days is None
-            or len(days_plan) < len(days)
-            or (len(days_plan) == len(days)
-                and shortest_nonlast(days_plan) > shortest_nonlast(days))):
-        days, floor_s = days_plan, floor_plan
-        method = "campsite-detour plan -> DP (min days, floor maximized)"
-
-    if days_base is not None and (
-            days is None
-            or len(days_base) < len(days)
-            or (len(days_base) == len(days)
-                and shortest_nonlast(days_base) >= shortest_nonlast(days))):
-        days, floor_s = days_base, floor_base
-        method = "DP (min days, floor maximized)"
+    # Keep the best remedy: fewest days first, then the shared rule.  This
+    # replaces three hand-written tie-breaks that each expressed a piece of the
+    # same intent -- including "the detour-free base wins full ties since it
+    # adds no walking", which minimising walking now says directly.
+    _remedies = []
+    if days is not None:
+        _remedies.append((days, method))
+    if days_plan is not None:
+        _remedies.append((days_plan, "campsite-detour plan -> DP (min days)"))
+    if days_base is not None:
+        _remedies.append((days_base, "DP (min days)"))
+    if _remedies:
+        _fewest = min(len(r[0]) for r in _remedies)
+        days, method = pick_itinerary([r for r in _remedies
+                                       if len(r[0]) == _fewest],
+                                      days_of=lambda r: r[0])
 
     if days is None:
         print(f"  {label}: no valid split found")
@@ -2366,15 +2459,6 @@ for _job_i, (base_label, _tag, arc_seq) in enumerate(_split_jobs):
           f"({t / 3600:.1f}h total, shortest non-last day {fmt_hm(shortest)})")
     _split_cands.setdefault(base_label, []).append((days, _tag))
 
-# Pick the winning variant per circuit: fewest days, then fewest planned
-# resupply stops, then longest shortest non-last day.
-def _n_resupply_stops(days):
-    if MAX_DAYS_BETWEEN_RESUPPLY is None:
-        return 0
-    sched = planned_resupply_schedule(days, resupply_set,
-                                      MAX_DAYS_BETWEEN_RESUPPLY)
-    return len(sched) if sched is not None else float('inf')
-
 for base_label in ("Closed", "Open"):
     if base_label in dp_results:            # circuit itself was absent
         continue
@@ -2382,8 +2466,23 @@ for base_label in ("Closed", "Open"):
     if not cands:
         dp_results[base_label] = None
         continue
-    days, tag = min(cands, key=lambda c: (len(c[0]), _n_resupply_stops(c[0]),
-                                          -shortest_nonlast(c[0])))
+    # Rank: fewest days, then fewest resupply stops -- a stop is hours of
+    # hitching and shopping the model only sees as the walking part of a
+    # detour, so nothing cheaper-to-measure may outrank it.  Everything still
+    # tied then goes through the shared balance-floor / least-walking rule.
+    def _primary(c):
+        return (len(c[0]), _n_resupply_stops(c[0]))
+    _best_primary = min(_primary(c) for c in cands)
+    _tied = [c for c in cands if _primary(c) == _best_primary]
+    days, tag = pick_itinerary(_tied, days_of=lambda c: c[0])
+    if len(_tied) > 1:
+        _bb = max(shortest_nonlast(c[0]) for c in _tied)
+        _kept = sum(1 for c in _tied
+                    if shortest_nonlast(c[0]) >= BALANCE_ALPHA * _bb)
+        print(f"  {base_label}: {len(_tied)} variant(s) tied on "
+              f"{_best_primary[0]} days / {_best_primary[1]} resupply stop(s); "
+              f"{len(_tied) - _kept} cut by the {BALANCE_ALPHA:.0%} balance "
+              f"floor, kept [{tag}] at {_total_walking(days) / 3600:.1f}h walking")
     if base_label == "Open":
         days = trim_open_termini(days)
     dp_results[base_label] = days

@@ -3440,50 +3440,6 @@
           "gain": 616,
           "is_deadhead": false,
           "direction": "fwd"
-        },
-        {
-          "from": "SH116",
-          "to": "TI242",
-          "edge_id": "37.2",
-          "trail": "Balsam Mountain",
-          "miles": 0.2,
-          "seconds": 300,
-          "gain": 107,
-          "is_deadhead": false,
-          "direction": "fwd"
-        },
-        {
-          "from": "TI242",
-          "to": "TI241",
-          "edge_id": "38.0",
-          "trail": "Balsam Mountain",
-          "miles": 0.9,
-          "seconds": 1052,
-          "gain": 65,
-          "is_deadhead": false,
-          "direction": "fwd"
-        },
-        {
-          "from": "TI241",
-          "to": "TI242",
-          "edge_id": "38.0",
-          "trail": "Balsam Mountain",
-          "miles": 0.9,
-          "seconds": 1105,
-          "gain": 87,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI242",
-          "to": "SH116",
-          "edge_id": "37.2",
-          "trail": "Balsam Mountain",
-          "miles": 0.2,
-          "seconds": 211,
-          "gain": 0,
-          "is_deadhead": true,
-          "direction": "dh"
         }
       ]
     },
@@ -3500,8 +3456,8 @@
           "miles": 0.2,
           "seconds": 300,
           "gain": 107,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI242",
@@ -3511,8 +3467,8 @@
           "miles": 0.9,
           "seconds": 1052,
           "gain": 65,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI241",
@@ -3683,8 +3639,8 @@
           "miles": 3.2,
           "seconds": 4659,
           "gain": 1009,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         }
       ]
     },
@@ -3693,28 +3649,6 @@
       "start_node": "BC032",
       "end_node": "SH114",
       "arcs": [
-        {
-          "from": "BC032",
-          "to": "TH183",
-          "edge_id": "135.1",
-          "trail": "Grapeyard Ridge",
-          "miles": 3.2,
-          "seconds": 4076,
-          "gain": 403,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TH183",
-          "to": "BC032",
-          "edge_id": "135.1",
-          "trail": "Grapeyard Ridge",
-          "miles": 3.2,
-          "seconds": 4659,
-          "gain": 1009,
-          "is_deadhead": false,
-          "direction": "fwd"
-        },
         {
           "from": "BC032",
           "to": "TH144",
@@ -5510,7 +5444,7 @@
     {
       "day": 33,
       "start_node": "BC071",
-      "end_node": "BC071",
+      "end_node": "BC069",
       "arcs": [
         {
           "from": "BC071",
@@ -5676,7 +5610,14 @@
           "gain": 129,
           "is_deadhead": false,
           "direction": "fwd"
-        },
+        }
+      ]
+    },
+    {
+      "day": 34,
+      "start_node": "BC069",
+      "end_node": "BC083",
+      "arcs": [
         {
           "from": "BC069",
           "to": "BC070",
@@ -5687,35 +5628,6 @@
           "gain": 52,
           "is_deadhead": false,
           "direction": "fwd"
-        },
-        {
-          "from": "BC070",
-          "to": "BC071",
-          "edge_id": "122.0",
-          "trail": "Forney Creek",
-          "miles": 1.2,
-          "seconds": 1566,
-          "gain": 148,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 34,
-      "start_node": "BC071",
-      "end_node": "BC083",
-      "arcs": [
-        {
-          "from": "BC071",
-          "to": "BC070",
-          "edge_id": "122.0",
-          "trail": "Forney Creek",
-          "miles": 1.2,
-          "seconds": 1806,
-          "gain": 384,
-          "is_deadhead": true,
-          "direction": "dh"
         },
         {
           "from": "BC070",

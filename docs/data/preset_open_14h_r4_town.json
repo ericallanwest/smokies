@@ -3257,7 +3257,7 @@
     {
       "day": 16,
       "start_node": "BC024",
-      "end_node": "BC059",
+      "end_node": "BC058",
       "arcs": [
         {
           "from": "BC024",
@@ -3401,7 +3401,14 @@
           "gain": 53,
           "is_deadhead": false,
           "direction": "fwd"
-        },
+        }
+      ]
+    },
+    {
+      "day": 17,
+      "start_node": "BC058",
+      "end_node": "TH158",
+      "arcs": [
         {
           "from": "BC058",
           "to": "BC059",
@@ -3412,14 +3419,7 @@
           "gain": 96,
           "is_deadhead": false,
           "direction": "fwd"
-        }
-      ]
-    },
-    {
-      "day": 17,
-      "start_node": "BC059",
-      "end_node": "TH158",
-      "arcs": [
+        },
         {
           "from": "BC059",
           "to": "BC060",
@@ -4535,7 +4535,7 @@
     {
       "day": 21,
       "start_node": "BC083",
-      "end_node": "BC095",
+      "end_node": "BC093",
       "arcs": [
         {
           "from": "BC083",
@@ -4723,7 +4723,14 @@
           "gain": 17,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 22,
+      "start_node": "BC093",
+      "end_node": "BC092",
+      "arcs": [
         {
           "from": "BC093",
           "to": "TI011",
@@ -4778,14 +4785,7 @@
           "gain": 362,
           "is_deadhead": true,
           "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 22,
-      "start_node": "BC095",
-      "end_node": "BC095",
-      "arcs": [
+        },
         {
           "from": "BC095",
           "to": "BC013",
@@ -4895,7 +4895,14 @@
           "gain": 72,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 23,
+      "start_node": "BC092",
+      "end_node": "BC002",
+      "arcs": [
         {
           "from": "BC092",
           "to": "TI021",
@@ -4928,14 +4935,7 @@
           "gain": 362,
           "is_deadhead": false,
           "direction": "fwd"
-        }
-      ]
-    },
-    {
-      "day": 23,
-      "start_node": "BC095",
-      "end_node": "BC002",
-      "arcs": [
+        },
         {
           "from": "BC095",
           "to": "BC013",
@@ -5300,7 +5300,7 @@
     {
       "day": 25,
       "start_node": "BC003",
-      "end_node": "SH111",
+      "end_node": "BC010",
       "arcs": [
         {
           "from": "BC003",
@@ -5521,7 +5521,14 @@
           "gain": 491,
           "is_deadhead": false,
           "direction": "fwd"
-        },
+        }
+      ]
+    },
+    {
+      "day": 26,
+      "start_node": "BC010",
+      "end_node": "SH112",
+      "arcs": [
         {
           "from": "BC010",
           "to": "SH111",
@@ -5532,14 +5539,7 @@
           "gain": 1476,
           "is_deadhead": false,
           "direction": "fwd"
-        }
-      ]
-    },
-    {
-      "day": 26,
-      "start_node": "SH111",
-      "end_node": "SH112",
-      "arcs": [
+        },
         {
           "from": "SH111",
           "to": "TI045",

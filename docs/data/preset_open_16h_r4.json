@@ -186,6 +186,28 @@
         },
         {
           "from": "TI274",
+          "to": "TH276",
+          "edge_id": "198.0",
+          "trail": "Little Cataloochee",
+          "miles": 1.0,
+          "seconds": 1443,
+          "gain": 224,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "TH276",
+          "to": "TI274",
+          "edge_id": "198.0",
+          "trail": "Little Cataloochee",
+          "miles": 1.0,
+          "seconds": 1486,
+          "gain": 283,
+          "is_deadhead": false,
+          "direction": "rev"
+        },
+        {
+          "from": "TI274",
           "to": "TI262",
           "edge_id": "197.0",
           "trail": "Little Cataloochee",
@@ -256,28 +278,6 @@
           "gain": 1222,
           "is_deadhead": true,
           "direction": "dh"
-        },
-        {
-          "from": "TI274",
-          "to": "TH276",
-          "edge_id": "198.0",
-          "trail": "Little Cataloochee",
-          "miles": 1.0,
-          "seconds": 1443,
-          "gain": 224,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TH276",
-          "to": "TI274",
-          "edge_id": "198.0",
-          "trail": "Little Cataloochee",
-          "miles": 1.0,
-          "seconds": 1486,
-          "gain": 283,
-          "is_deadhead": false,
-          "direction": "rev"
         },
         {
           "from": "TI274",
@@ -4408,7 +4408,7 @@
     {
       "day": 17,
       "start_node": "BC071",
-      "end_node": "BC083",
+      "end_node": "BC082",
       "arcs": [
         {
           "from": "BC071",
@@ -4618,7 +4618,14 @@
           "gain": 235,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 18,
+      "start_node": "BC082",
+      "end_node": "BC113",
+      "arcs": [
         {
           "from": "BC082",
           "to": "TI065",
@@ -4629,35 +4636,6 @@
           "gain": 247,
           "is_deadhead": false,
           "direction": "rev"
-        },
-        {
-          "from": "TI065",
-          "to": "BC083",
-          "edge_id": "149.0",
-          "trail": "Hazel Creek",
-          "miles": 1.3,
-          "seconds": 1487,
-          "gain": 71,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 18,
-      "start_node": "BC083",
-      "end_node": "BC113",
-      "arcs": [
-        {
-          "from": "BC083",
-          "to": "TI065",
-          "edge_id": "149.0",
-          "trail": "Hazel Creek",
-          "miles": 1.3,
-          "seconds": 1744,
-          "gain": 290,
-          "is_deadhead": true,
-          "direction": "dh"
         },
         {
           "from": "TI065",
@@ -5924,7 +5902,7 @@
     {
       "day": 23,
       "start_node": "BC113",
-      "end_node": "BC076",
+      "end_node": "BC077",
       "arcs": [
         {
           "from": "BC113",
@@ -6079,7 +6057,14 @@
           "gain": 1029,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 24,
+      "start_node": "BC077",
+      "end_node": "BC023",
+      "arcs": [
         {
           "from": "BC077",
           "to": "TI064",
@@ -6101,14 +6086,7 @@
           "gain": 554,
           "is_deadhead": false,
           "direction": "rev"
-        }
-      ]
-    },
-    {
-      "day": 24,
-      "start_node": "BC076",
-      "end_node": "BC021",
-      "arcs": [
+        },
         {
           "from": "BC076",
           "to": "BC098",
@@ -6273,7 +6251,14 @@
           "gain": 140,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 25,
+      "start_node": "BC023",
+      "end_node": "BC019",
+      "arcs": [
         {
           "from": "BC023",
           "to": "TI108",
@@ -6306,14 +6291,7 @@
           "gain": 52,
           "is_deadhead": false,
           "direction": "rev"
-        }
-      ]
-    },
-    {
-      "day": 25,
-      "start_node": "BC021",
-      "end_node": "BC019",
-      "arcs": [
+        },
         {
           "from": "BC021",
           "to": "TI100",
@@ -6599,28 +6577,6 @@
           "gain": 75,
           "is_deadhead": false,
           "direction": "fwd"
-        },
-        {
-          "from": "BC019",
-          "to": "TI067",
-          "edge_id": "227.2",
-          "trail": "Meigs Mountain",
-          "miles": 1.4,
-          "seconds": 2106,
-          "gain": 205,
-          "is_deadhead": false,
-          "direction": "fwd"
-        },
-        {
-          "from": "TI067",
-          "to": "BC019",
-          "edge_id": "227.2",
-          "trail": "Meigs Mountain",
-          "miles": 1.4,
-          "seconds": 2457,
-          "gain": 658,
-          "is_deadhead": true,
-          "direction": "dh"
         }
       ]
     },
@@ -6637,8 +6593,8 @@
           "miles": 1.4,
           "seconds": 2106,
           "gain": 205,
-          "is_deadhead": true,
-          "direction": "dh"
+          "is_deadhead": false,
+          "direction": "fwd"
         },
         {
           "from": "TI067",
@@ -6821,7 +6777,7 @@
     {
       "day": 27,
       "start_node": "SH109",
-      "end_node": "SH104",
+      "end_node": "SH105",
       "arcs": [
         {
           "from": "SH109",
@@ -7064,7 +7020,14 @@
           "gain": 4,
           "is_deadhead": false,
           "direction": "fwd"
-        },
+        }
+      ]
+    },
+    {
+      "day": 28,
+      "start_node": "SH105",
+      "end_node": "BC038",
+      "arcs": [
         {
           "from": "SH105",
           "to": "TI187",
@@ -7086,35 +7049,6 @@
           "gain": 1734,
           "is_deadhead": false,
           "direction": "fwd"
-        },
-        {
-          "from": "TI205",
-          "to": "SH104",
-          "edge_id": "157.2",
-          "trail": "Hughes Ridge",
-          "miles": 0.4,
-          "seconds": 516,
-          "gain": 14,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 28,
-      "start_node": "SH104",
-      "end_node": "BC042",
-      "arcs": [
-        {
-          "from": "SH104",
-          "to": "TI205",
-          "edge_id": "157.2",
-          "trail": "Hughes Ridge",
-          "miles": 0.4,
-          "seconds": 678,
-          "gain": 236,
-          "is_deadhead": true,
-          "direction": "dh"
         },
         {
           "from": "TI205",
@@ -7225,7 +7159,14 @@
           "gain": 4279,
           "is_deadhead": false,
           "direction": "fwd"
-        },
+        }
+      ]
+    },
+    {
+      "day": 29,
+      "start_node": "BC038",
+      "end_node": "BC039",
+      "arcs": [
         {
           "from": "BC038",
           "to": "TI259",
@@ -7302,14 +7243,7 @@
           "gain": 744,
           "is_deadhead": true,
           "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 29,
-      "start_node": "BC042",
-      "end_node": "BC041",
-      "arcs": [
+        },
         {
           "from": "BC042",
           "to": "TH243",
@@ -7419,7 +7353,14 @@
           "gain": 106,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 30,
+      "start_node": "BC039",
+      "end_node": "TH245",
+      "arcs": [
         {
           "from": "BC039",
           "to": "TI258",
@@ -7551,57 +7492,6 @@
           "gain": 7,
           "is_deadhead": false,
           "direction": "fwd"
-        },
-        {
-          "from": "TI269",
-          "to": "TI260",
-          "edge_id": "72.0",
-          "trail": "Caldwell Fork",
-          "miles": 1.4,
-          "seconds": 1921,
-          "gain": 339,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI260",
-          "to": "BC041",
-          "edge_id": "73.1",
-          "trail": "Caldwell Fork",
-          "miles": 0.3,
-          "seconds": 198,
-          "gain": 12,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 30,
-      "start_node": "BC041",
-      "end_node": "TH245",
-      "arcs": [
-        {
-          "from": "BC041",
-          "to": "TI260",
-          "edge_id": "73.1",
-          "trail": "Caldwell Fork",
-          "miles": 0.3,
-          "seconds": 230,
-          "gain": 47,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI260",
-          "to": "TI269",
-          "edge_id": "72.0",
-          "trail": "Caldwell Fork",
-          "miles": 1.4,
-          "seconds": 1685,
-          "gain": 99,
-          "is_deadhead": true,
-          "direction": "dh"
         },
         {
           "from": "TI269",
