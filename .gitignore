@@ -1,2 +1,10 @@
 __pycache__/
 *.pyc
+
+# The solver writes its presets and itinerary next to the script, so anything
+# that runs it from solver/ -- the backend service, a local CLI run -- leaves
+# output here.  Published presets live in docs/data/ and are committed from
+# there; these are scratch.
+solver/docs/
+solver/smokies_itinerary_*.txt
+!solver/smokies_itinerary_12h.txt
