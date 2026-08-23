@@ -787,6 +787,97 @@ function renderPace() {
   return p;
 }
 
+// ── Start / finish ────────────────────────────────────────────────────────
+// 107 trailheads and frontcountry campgrounds.  A native <datalist> gives
+// substring type-ahead ("greenbrier" finds Porters Creek) without shipping a
+// combobox library; names are unique, so a name round-trips to exactly one id.
+let _startPoints = [];          // [{id, name, type, lat, lon}]
+const _byName = new Map();
+const _byId   = new Map();
+let _shownEnds = { start: null, end: null };
+
+async function loadStartPoints() {
+  try {
+    const r = await fetch('data/start_points.json');
+    if (!r.ok) return;
+    _startPoints = await r.json();
+  } catch { return; }
+  const dl = document.getElementById('startPointList');
+  if (!dl) return;
+  dl.innerHTML = '';
+  for (const p of _startPoints) {
+    _byName.set(p.name.toLowerCase(), p);
+    _byId.set(p.id, p);
+    const o = document.createElement('option');
+    o.value = p.name;
+    dl.appendChild(o);
+  }
+}
+
+// Blank means "solver chooses", which is a real answer and usually the best
+// one -- it is free to pick the pair that saves the most walking.
+function resolveEndpoint(el) {
+  const raw = el.value.trim();
+  if (!raw) { el.classList.remove('bad'); return { ok: true, id: null }; }
+  const hit = _byName.get(raw.toLowerCase())
+           || _byId.get(raw.toUpperCase());
+  el.classList.toggle('bad', !hit);
+  return hit ? { ok: true, id: hit.id } : { ok: false, id: null, raw };
+}
+
+function endpointsFromUI() {
+  const s = resolveEndpoint(document.getElementById('startNode'));
+  const e = resolveEndpoint(document.getElementById('endNode'));
+  return { start: s, end: e };
+}
+
+function renderEndpoints() {
+  const note = document.getElementById('endpointNote');
+  if (!note) return {};
+  const { start, end } = endpointsFromUI();
+  const closedEl = document.querySelector('input[name="circuit"][value="closed"]');
+
+  // Pinning a finish forces an open walk: a graph carrying a forced path
+  // cannot also carry a circuit.  Say so rather than letting the two controls
+  // silently contradict each other.
+  const forcesOpen = !!end.id;
+  if (closedEl) {
+    closedEl.disabled = forcesOpen;
+    closedEl.parentElement.style.opacity = forcesOpen ? 0.45 : '';
+    closedEl.parentElement.title = forcesOpen
+      ? 'A pinned finish means an open walk' : '';
+    if (forcesOpen && closedEl.checked) {
+      document.querySelector('input[name="circuit"][value="open"]').checked = true;
+    }
+  }
+
+  let msg, bad = false;
+  if (!start.ok || !end.ok) {
+    msg = `No trailhead or campground called "${(!start.ok ? start.raw : end.raw)}".`;
+    bad = true;
+  } else if (end.id && start.id && end.id === start.id) {
+    msg = 'Start and finish are the same place — that is a closed circuit. '
+        + 'Clear the finish, or pick a different one.';
+    bad = true;
+  } else if (end.id && !start.id) {
+    msg = 'A finish needs a start. Pick where you begin, or clear the finish.';
+    bad = true;
+  } else if (start.id || end.id) {
+    const stale = start.id !== _shownEnds.start || end.id !== _shownEnds.end;
+    msg = stale
+      ? 'Pinned endpoints mean a different circuit, not the same one re-cut. '
+        + 'Build to re-solve (about 10–25 s).'
+      : 'This itinerary was built between these points.';
+    bad = stale;
+  } else {
+    msg = 'Leave both blank and the solver picks the pair that saves the most '
+        + 'walking.';
+  }
+  note.classList.toggle('dirty', bad);
+  note.textContent = msg;
+  return { start, end };
+}
+
 // A pace belongs in the URL: it is reproducible, so a link to one is a link to
 // exactly one itinerary.
 function paceToQuery(p) {
@@ -813,6 +904,20 @@ function setSolveProgress(pct, label) {
   }
 }
 
+// An open walk skips the journey home, so it saves the cheapest way back from
+// finish to start.  That is the number a hiker weighs when picking endpoints:
+// distant pairs save hours, adjacent ones save minutes.
+function reportEndpointSaving(data) {
+  const note = document.getElementById('endpointNote');
+  const secs = data?.params?.saved_vs_loop_seconds;
+  if (!note || !data?.params?.endpoints_pinned || !secs) return;
+  const h = secs / 3600;
+  note.classList.remove('dirty');
+  note.textContent = `Built ${_byId.get(_shownEnds.start)?.name ?? _shownEnds.start}`
+    + ` → ${_byId.get(_shownEnds.end)?.name ?? _shownEnds.end}, saving `
+    + `${h.toFixed(1)} h against returning to the start.`;
+}
+
 async function solveCustom() {
   const seq = ++_loadSeq;
   const errEl = document.getElementById('presetError');
@@ -830,6 +935,15 @@ async function solveCustom() {
       hiked,
       time_budget: 45,
     };
+    const ends = endpointsFromUI();
+    if (!ends.start.ok || !ends.end.ok) {
+      throw new Error('That start or finish is not a trailhead or campground.');
+    }
+    if (ends.end.id && !ends.start.id) {
+      throw new Error('Pick a start as well as a finish, or clear the finish.');
+    }
+    if (ends.start.id) body.start_node = ends.start.id;
+    if (ends.end.id)   body.end_node   = ends.end.id;
     const pace = paceFromUI();
     if (!paceIsDefault(pace)) {
       body.tobler_v0 = pace.v0;
@@ -869,6 +983,9 @@ async function solveCustom() {
     if (!itinerary) throw new Error('solver found no valid itinerary for these settings');
     await renderItinerary(itinerary);
     _shownPace = pace;
+    _shownEnds = { start: ends.start.id, end: ends.end.id };
+    renderEndpoints();
+    reportEndpointSaving(result);
     renderPace();
   } catch (err) {
     if (seq === _loadSeq) {
@@ -1087,6 +1204,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (backendUrl()) {
     document.getElementById('customSolve').style.display = 'block';
     document.getElementById('btnSolve').addEventListener('click', solveCustom);
+    loadStartPoints().then(renderEndpoints);
+    for (const id of ['startNode', 'endNode']) {
+      const el = document.getElementById(id);
+      if (el) ['input', 'change'].forEach(ev =>
+        el.addEventListener(ev, renderEndpoints));
+    }
   }
 
   // Load the default preset on startup

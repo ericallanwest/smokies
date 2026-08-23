@@ -222,3 +222,31 @@ body.dark .leaflet-bar a { background: #1e2129; color: #e6e7ee; border-bottom-co
   margin: 10px 0 8px; min-height: 2.6em;
 }
 .pace-note.dirty { color: var(--accent); }
+
+/* Start / finish pickers.  A native <datalist> gives substring type-ahead over
+   107 trailheads without shipping a combobox library, and degrades to a plain
+   text field where it is unsupported. */
+.endpoint-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 3px 0;
+}
+.endpoint-row label {
+  flex: 0 0 42px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.endpoint-row input {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 11px;
+  padding: 3px 5px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+.endpoint-row input.bad {
+  border-color: #c2410c;
+}
