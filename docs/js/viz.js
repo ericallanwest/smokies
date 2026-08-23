@@ -778,8 +778,14 @@ function paceToQuery(p) {
     `&v0=${p.v0}&k=${p.k}&peak=${p.peak}`;
 }
 
+// The deployed solve service.  ?backend=<url> still overrides it (and
+// ?backend=off disables the panel entirely), so a local backend can be pointed
+// at without touching this, but visitors get the pace controls by default.
+const DEFAULT_BACKEND = 'https://smokies-solver-165021828782.us-east1.run.app';
+
 function backendUrl() {
-  return localStorage.getItem('smokiesBackend');
+  const stored = localStorage.getItem('smokiesBackend');
+  return stored === 'off' ? null : (stored || DEFAULT_BACKEND);
 }
 
 function setSolveProgress(pct, label) {
@@ -1046,7 +1052,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Custom solve panel (only with a configured backend) ──────────────────
   const bkParam = new URLSearchParams(location.search).get('backend');
-  if (bkParam === 'off')  localStorage.removeItem('smokiesBackend');
+  if (bkParam === 'off')  localStorage.setItem('smokiesBackend', 'off');
   else if (bkParam)       localStorage.setItem('smokiesBackend', bkParam);
   ['paceV0', 'paceK', 'pacePeak'].forEach(id =>
     document.getElementById(id).addEventListener('input', renderPace));
