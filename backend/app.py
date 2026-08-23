@@ -122,6 +122,10 @@ class SolveRequest(BaseModel):
     # the solver, which exits with a message if it is not a legal start.
     start_node: str | None = Field(None, min_length=2, max_length=8,
                                    pattern=r'^[A-Za-z]{2}[A-Za-z0-9]{1,6}$')
+    # Finish here instead of returning to the start.  Requires start_node;
+    # the solver rejects the pair if either is not a legal terminus.
+    end_node: str | None = Field(None, min_length=2, max_length=8,
+                                 pattern=r'^[A-Za-z]{2}[A-Za-z0-9]{1,6}$')
     town_nights: bool = False
     hiked: list[str] = Field(default_factory=list, max_length=1000)
     time_budget: float = Field(45.0, ge=5, le=120)
@@ -140,6 +144,7 @@ def _cache_key(req: SolveRequest) -> str:
         'max_hours': req.max_hours,
         'max_resupply_days': req.max_resupply_days,
         'start_node': (req.start_node or '').upper(),
+        'end_node': (req.end_node or '').upper(),
         'town_nights': req.town_nights,
         'hiked': sorted(req.hiked),
         'time_budget': req.time_budget,
@@ -161,6 +166,8 @@ async def _run_solver(req: SolveRequest, key: str):
         cmd += ['--max-resupply-days', str(req.max_resupply_days)]
     if req.start_node:
         cmd += ['--start-node', req.start_node.upper()]
+    if req.end_node:
+        cmd += ['--end-node', req.end_node.upper()]
     if req.town_nights:
         cmd += ['--town-nights']
     for flag, val in (('--tobler-v0', req.tobler_v0),

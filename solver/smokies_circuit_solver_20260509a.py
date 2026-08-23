@@ -34,6 +34,8 @@ _ap.add_argument('--profiles', type=str, default=None,
                       'edge list, then under docs/data/)')
 _ap.add_argument('--start-node', type=str, default=None,
                  help='Begin the itinerary at this trailhead or campground (e.g. TH252). Default: the highest-degree trailhead, which minimises repositioning.')
+_ap.add_argument('--end-node', type=str, default=None,
+                 help='Finish an open itinerary at this trailhead or campground. Requires --start-node. Omit both to let the solver choose the pair that saves the most walking.')
 _ap.add_argument('--balance-alpha', type=float, default=0.90,
                  help='Among itineraries tied on days and resupply stops, reject any whose shortest non-last day falls below this fraction of the best tied candidate, then take the least total walking (default: 0.90)')
 _ap.add_argument('--progress', action='store_true',
@@ -94,6 +96,12 @@ def envelope_base() -> dict:
             # they differ when nothing was pinned.
             "start_node_requested": _args.start_node,
             "start_node": globals().get('start_node'),
+            "end_node_requested": _args.end_node,
+            "endpoints_pinned": globals().get('PATH_CONSTRAINED', False),
+            # Seconds an open walk saves by not returning to its start.  This
+            # is the number to show beside an endpoint choice.
+            "saved_vs_loop_seconds": (globals().get('best_dh_cost')
+                                      if globals().get('open_circuit') else None),
             "time_budget": TIME_BUDGET,
             # globals().get: a complete-map or no-split run emits an envelope
             # before step 4 has set these.
@@ -367,6 +375,42 @@ for ntype, count in sorted(type_counts.items()):
 print(f"\nLegal overnight nodes : {len(overnight_nodes)}")
 print(f"Trailhead nodes       : {len(trailhead_nodes)}")
 progress(5, "Graph built")
+
+# ---------------------------------------------------------------------------
+# Pinned endpoints.  Resolved here because the CP-SAT balance constraints in
+# step 4 need them: forcing an Eulerian path S..E is a boundary condition on
+# the same degree-balancing problem, not a separate one.
+# ---------------------------------------------------------------------------
+def _resolve_pin(value, flag):
+    if not value:
+        return None
+    n = value.strip().upper()
+    if n not in G.nodes:
+        raise SystemExit(f"{flag} {n!r} is not a node in the network")
+    if G.nodes[n]['node_type'] not in VALID_CIRCUIT_ENDPOINTS:
+        raise SystemExit(f"{flag} {n!r} is a {G.nodes[n]['node_type']}; a hike "
+                         f"can only begin or end at a trailhead or campground")
+    return n
+
+PIN_START = _resolve_pin(_args.start_node, '--start-node')
+PIN_END   = _resolve_pin(_args.end_node, '--end-node')
+if PIN_END and not PIN_START:
+    raise SystemExit("--end-node requires --start-node")
+if PIN_START and PIN_END and PIN_START == PIN_END:
+    raise SystemExit(f"--start-node and --end-node are both {PIN_START}; a walk "
+                     f"that begins and ends in the same place is a closed "
+                     f"circuit -- drop --end-node")
+# Both pinned means the open walk is fully determined, and the same graph
+# cannot also carry a closed circuit: forcing a path leaves S and E unbalanced
+# on purpose.  Solving both would mean two CP-SAT runs for an answer the hiker
+# did not ask for.
+PATH_CONSTRAINED = bool(PIN_START and PIN_END)
+if PATH_CONSTRAINED:
+    print(f"\nEndpoints pinned: {PIN_START} -> {PIN_END}.  Building an open "
+          f"walk only; a closed circuit cannot share this graph.")
+elif PIN_START:
+    print(f"\nStart pinned: {PIN_START}.")
+
 
 # With every required edge already hiked there is nothing to solve.
 if n_required == 0:
@@ -760,6 +804,13 @@ def compute_imbalances(chosen: dict) -> dict[str, int]:
     for u, v, _ in chosen.values():
         imb[u] -= 1  # outgoing arc leaves u
         imb[v] += 1  # incoming arc arrives at v
+    if PATH_CONSTRAINED:
+        # The same phantom E->S the CP-SAT model uses, in vector form: it
+        # arrives at S and departs from E.  The flow then balances around it,
+        # leaving S one spare out-degree and E one spare in-degree once the
+        # phantom -- which is never added to the graph -- is forgotten.
+        imb[PIN_START] += 1
+        imb[PIN_END]   -= 1
     return dict(imb)
 
 
@@ -792,7 +843,7 @@ def solve_min_cost_flow(imbalance: dict) -> tuple[dict, int]:
 
 
 def solve_step4_cpsat(G, required_rows, MAX_DH=30, time_limit=120,
-                      forced_dirs=None):
+                      forced_dirs=None, path_start=None, path_end=None):
     """
     Exact direction assignment via OR-Tools CP-SAT.
 
@@ -853,9 +904,16 @@ def solve_step4_cpsat(G, required_rows, MAX_DH=30, time_limit=120,
                 out_exprs.append(dh)
 
         if in_exprs or out_exprs:
+            # A phantom zero-cost arc E->S, never added to the graph, expressed
+            # as a constant on each side.  Balancing everything *including* the
+            # phantom is exactly the Eulerian-path condition once it is removed:
+            # S keeps one spare out-degree, E one spare in-degree.  So forcing
+            # endpoints is a boundary condition on this same problem, not a
+            # harder one -- it costs one integer per node.
             model.Add(
-                cp_model.LinearExpr.Sum(in_exprs) ==
-                cp_model.LinearExpr.Sum(out_exprs)
+                cp_model.LinearExpr.Sum(in_exprs) + (1 if n == path_start else 0)
+                ==
+                cp_model.LinearExpr.Sum(out_exprs) + (1 if n == path_end else 0)
             )
 
     # Objective: minimize total traversal + deadhead cost (all integer seconds)
@@ -933,7 +991,9 @@ _cpsat_limit = (120 if TIME_BUDGET is None
                 else max(5, min(120, int(time_left() * 0.5))))
 cpsat_result = solve_step4_cpsat(G, required_rows, MAX_DH=30,
                                  time_limit=_cpsat_limit,
-                                 forced_dirs=budget_forced)
+                                 forced_dirs=budget_forced,
+                                 path_start=PIN_START if PATH_CONSTRAINED else None,
+                                 path_end=PIN_END if PATH_CONSTRAINED else None)
 progress(38, "Direction assignment complete")
 
 if cpsat_result is not None:
@@ -1164,7 +1224,13 @@ if len(wccs) > 1:
 else:
     print("\nG_euler is weakly connected.")
 
-assert nx.is_eulerian(G_euler), "G_euler still not Eulerian after bridge fixes"
+if PATH_CONSTRAINED:
+    # Unbalanced on purpose: S carries a spare out-degree and E a spare
+    # in-degree, which is what makes an Eulerian PATH exist between them.
+    assert nx.has_eulerian_path(G_euler, source=PIN_START), (
+        f"no Eulerian path {PIN_START} -> {PIN_END} after bridge fixes")
+else:
+    assert nx.is_eulerian(G_euler), "G_euler still not Eulerian after bridge fixes"
 
 # Select starting node: TH or CG with the highest degree in G_euler, unless
 # the hiker named one.  A closed circuit is a cycle, so its start is a free
@@ -1173,73 +1239,73 @@ assert nx.is_eulerian(G_euler), "G_euler still not Eulerian after bridge fixes"
 # split has to be redone, because day boundaries must land on campsites.
 valid_start_nodes = [n for n, d in G.nodes(data=True)
                      if d['node_type'] in VALID_CIRCUIT_ENDPOINTS and n in G_euler]
-if _args.start_node:
-    START_NODE_PINNED = _args.start_node.strip().upper()
-    if START_NODE_PINNED not in G.nodes:
-        raise SystemExit(f"--start-node {START_NODE_PINNED!r} is not a node in "
-                         f"the network")
-    if G.nodes[START_NODE_PINNED]['node_type'] not in VALID_CIRCUIT_ENDPOINTS:
-        raise SystemExit(f"--start-node {START_NODE_PINNED!r} is a "
-                         f"{G.nodes[START_NODE_PINNED]['node_type']}; a hike can "
-                         f"only begin at a trailhead or campground")
-    if START_NODE_PINNED not in G_euler:
-        raise SystemExit(f"--start-node {START_NODE_PINNED!r} is not on the "
-                         f"circuit, so the route never passes through it")
-    start_node = START_NODE_PINNED
+START_NODE_PINNED = PIN_START
+if PIN_START is not None:
+    if PIN_START not in G_euler:
+        raise SystemExit(f"--start-node {PIN_START!r} is not on the circuit, "
+                         f"so the route never passes through it")
+    start_node = PIN_START
 else:
-    START_NODE_PINNED = None
     start_node = max(valid_start_nodes, key=lambda n: G_euler.degree(n))
+if PIN_END is not None and PIN_END not in G_euler:
+    raise SystemExit(f"--end-node {PIN_END!r} is not on the circuit, so the "
+                     f"route never passes through it")
 print(f"\nStarting node : {start_node}  ({G.nodes[start_node]['node_type']}, "
       f"degree {G_euler.degree(start_node)} in G_euler)")
 
 # ---------------------------------------------------------------------------
 # 5A: Closed circuit
 # ---------------------------------------------------------------------------
-print("\nBuilding closed circuit (Hierholzer) ...")
+if PATH_CONSTRAINED:
+    print("\nClosed circuit: skipped -- endpoints are pinned, so this "
+          "graph carries an open walk only.")
+else:
+    print("\nBuilding closed circuit (Hierholzer) ...")
 t0 = time.time()
 
-circuit = [
+circuit = None if PATH_CONSTRAINED else [
     (u, v, k, G_euler[u][v][k])
     for u, v, k in nx.eulerian_circuit(G_euler, source=start_node, keys=True)
 ]
 
 elapsed = time.time() - t0
 
-# Sanity checks
-assert len(circuit) == G_euler.number_of_edges(), \
-    f"Arc count mismatch: {len(circuit)} vs {G_euler.number_of_edges()}"
-assert circuit[0][0] == start_node, "Circuit does not begin at chosen start node"
-assert circuit[-1][1] == start_node, "Circuit does not return to start node"
+if circuit is not None:
+    # Sanity checks
+    assert len(circuit) == G_euler.number_of_edges(), \
+        f"Arc count mismatch: {len(circuit)} vs {G_euler.number_of_edges()}"
+    assert circuit[0][0] == start_node, "Circuit does not begin at chosen start node"
+    assert circuit[-1][1] == start_node, "Circuit does not return to start node"
 
-total_s   = sum(d['weight'] for _, _, _, d in circuit)
-req_s     = sum(d['weight'] for _, _, _, d in circuit if not d['is_deadhead'])
-dh_s_time = sum(d['weight'] for _, _, _, d in circuit if d['is_deadhead'])
-n_dh_runs = sum(
-    1 for i, (_, _, _, d) in enumerate(circuit)
-    if d['is_deadhead'] and (i == 0 or not circuit[i-1][3]['is_deadhead'])
-)
+    total_s   = sum(d['weight'] for _, _, _, d in circuit)
+    req_s     = sum(d['weight'] for _, _, _, d in circuit if not d['is_deadhead'])
+    dh_s_time = sum(d['weight'] for _, _, _, d in circuit if d['is_deadhead'])
+    n_dh_runs = sum(
+        1 for i, (_, _, _, d) in enumerate(circuit)
+        if d['is_deadhead'] and (i == 0 or not circuit[i-1][3]['is_deadhead'])
+    )
 
-print(f"  Built in {elapsed:.2f}s")
-print()
-print("Closed circuit:")
-print(f"  Start / End  : {start_node}")
-print(f"  Total arcs   : {len(circuit)}  ({sum(1 for *_,d in circuit if not d['is_deadhead'])} required,"
-      f" {sum(1 for *_,d in circuit if d['is_deadhead'])} deadhead)")
-print(f"  Total time   : {total_s:>10,}s  ({total_s/3600:.1f}h)")
-print(f"  Required     : {req_s:>10,}s  ({req_s/3600:.1f}h)")
-print(f"  Deadhead     : {dh_s_time:>10,}s  ({dh_s_time/3600:.1f}h)  across {n_dh_runs} repositioning runs")
-print(f"  Lower bound days (no campsite constraint): {total_s/MAX_DAY_SECONDS:.1f}")
+    print(f"  Built in {elapsed:.2f}s")
+    print()
+    print("Closed circuit:")
+    print(f"  Start / End  : {start_node}")
+    print(f"  Total arcs   : {len(circuit)}  ({sum(1 for *_,d in circuit if not d['is_deadhead'])} required,"
+          f" {sum(1 for *_,d in circuit if d['is_deadhead'])} deadhead)")
+    print(f"  Total time   : {total_s:>10,}s  ({total_s/3600:.1f}h)")
+    print(f"  Required     : {req_s:>10,}s  ({req_s/3600:.1f}h)")
+    print(f"  Deadhead     : {dh_s_time:>10,}s  ({dh_s_time/3600:.1f}h)  across {n_dh_runs} repositioning runs")
+    print(f"  Lower bound days (no campsite constraint): {total_s/MAX_DAY_SECONDS:.1f}")
 
-# Arc preview
-print()
-print("First 5 arcs:")
-for u, v, k, d in circuit[:5]:
-    tag = "[DH]" if d['is_deadhead'] else "    "
-    print(f"  {tag} {u:<8} -> {v:<8}  {d.get('trail',''):<30}  {d['weight']:>6,}s")
-print("Last 5 arcs:")
-for u, v, k, d in circuit[-5:]:
-    tag = "[DH]" if d['is_deadhead'] else "    "
-    print(f"  {tag} {u:<8} -> {v:<8}  {d.get('trail',''):<30}  {d['weight']:>6,}s")
+    # Arc preview
+    print()
+    print("First 5 arcs:")
+    for u, v, k, d in circuit[:5]:
+        tag = "[DH]" if d['is_deadhead'] else "    "
+        print(f"  {tag} {u:<8} -> {v:<8}  {d.get('trail',''):<30}  {d['weight']:>6,}s")
+    print("Last 5 arcs:")
+    for u, v, k, d in circuit[-5:]:
+        tag = "[DH]" if d['is_deadhead'] else "    "
+        print(f"  {tag} {u:<8} -> {v:<8}  {d.get('trail',''):<30}  {d['weight']:>6,}s")
 
 # ---------------------------------------------------------------------------
 # 5B: Open circuit -- remove the most expensive deadhead flow path
@@ -1248,129 +1314,189 @@ for u, v, k, d in circuit[-5:]:
 # then find an Eulerian PATH from t to s.  This saves D[s][t] seconds and
 # converts the closed loop into a walk between two distinct trailheads.
 # ---------------------------------------------------------------------------
-if dh_arc_dict is not None:
-    # CP-SAT: remove one traversal of the heaviest deadhead arc whose endpoints
-    # are valid circuit start/end nodes (TH or CG).  Cascade to relaxed filters
-    # if no fully-valid arc exists.
-    def _arc_weight(uvk):
-        return G[uvk[0]][uvk[1]][uvk[2]]['weight']
-    def _endpoint_ok(u, v, require_both=True):
-        v_ok = G.nodes[v]['node_type'] in VALID_CIRCUIT_ENDPOINTS
-        u_ok = G.nodes[u]['node_type'] in VALID_CIRCUIT_ENDPOINTS
-        return (v_ok and u_ok) if require_both else v_ok
-
-    cands = [k for k in dh_arc_dict if _endpoint_ok(k[0], k[1], require_both=True)]
-    if not cands:
-        cands = [k for k in dh_arc_dict if _endpoint_ok(k[0], k[1], require_both=False)]
-    if not cands:
-        cands = list(dh_arc_dict.keys())
-
-    best_dh_u, best_dh_v, best_dh_k = max(cands, key=_arc_weight)
-    best_dh_cost    = G[best_dh_u][best_dh_v][best_dh_k]['weight']
-    open_walk_start = best_dh_v   # v loses an in-arc → excess out-degree
-    open_walk_end   = best_dh_u   # u loses an out-arc → excess in-degree
+if PATH_CONSTRAINED:
+    # Endpoints were pinned, so there is nothing to choose and nothing
+    # to remove: G_euler was built unbalanced at S and E on purpose and
+    # already IS the open walk graph.
+    open_walk_start, open_walk_end = PIN_START, PIN_END
+    G_euler_open = G_euler
+    # What the pin costs, stated the way a hiker would ask it: an open
+    # walk skips the journey home, so it saves the cheapest way back
+    # from the finish to the start.
+    best_dh_cost = D.get(PIN_END, {}).get(PIN_START, 0)
     print()
-    print(f"Open circuit: remove deadhead arc  {best_dh_u} -> {best_dh_v}"
-          f"  ({best_dh_cost:,}s = {best_dh_cost/3600:.2f}h)")
+    print(f"Open walk: endpoints pinned {PIN_START} -> {PIN_END}")
+    print(f"  Saved vs returning to the start: {best_dh_cost:,}s "
+          f"({best_dh_cost / 3600:.2f}h)")
 else:
-    def _flow_triples(require_both=True):
+    if dh_arc_dict is not None:
+        # CP-SAT: remove one traversal of the heaviest deadhead arc whose endpoints
+        # are valid circuit start/end nodes (TH or CG).  Cascade to relaxed filters
+        # if no fully-valid arc exists.
+        def _arc_weight(uvk):
+            return G[uvk[0]][uvk[1]][uvk[2]]['weight']
+        def _endpoint_ok(u, v, require_both=True):
+            v_ok = G.nodes[v]['node_type'] in VALID_CIRCUIT_ENDPOINTS
+            u_ok = G.nodes[u]['node_type'] in VALID_CIRCUIT_ENDPOINTS
+            return (v_ok and u_ok) if require_both else v_ok
+
+        cands = [k for k in dh_arc_dict if _endpoint_ok(k[0], k[1], require_both=True)]
+        if not cands:
+            cands = [k for k in dh_arc_dict if _endpoint_ok(k[0], k[1], require_both=False)]
+        if not cands:
+            cands = list(dh_arc_dict.keys())
+
+        best_dh_u, best_dh_v, best_dh_k = max(cands, key=_arc_weight)
+        best_dh_cost    = G[best_dh_u][best_dh_v][best_dh_k]['weight']
+        open_walk_start = best_dh_v   # v loses an in-arc → excess out-degree
+        open_walk_end   = best_dh_u   # u loses an out-arc → excess in-degree
+        print()
+        print(f"Open circuit: remove deadhead arc  {best_dh_u} -> {best_dh_v}"
+              f"  ({best_dh_cost:,}s = {best_dh_cost/3600:.2f}h)")
+    else:
+        def _flow_triples(require_both=True):
+            for s, targets in flow_dict.items():
+                for t, units in targets.items():
+                    if units <= 0:
+                        continue
+                    t_ok = G.nodes[t]['node_type'] in VALID_CIRCUIT_ENDPOINTS
+                    s_ok = G.nodes[s]['node_type'] in VALID_CIRCUIT_ENDPOINTS
+                    if require_both and t_ok and s_ok:
+                        yield D[s][t], s, t
+                    elif not require_both and t_ok:
+                        yield D[s][t], s, t
+
+        triples = list(_flow_triples(require_both=True))
+        if not triples:
+            triples = list(_flow_triples(require_both=False))
+        if not triples:
+            triples = [(D[s][t], s, t) for s, tgts in flow_dict.items()
+                       for t, u in tgts.items() if u > 0]
+
+        best_dh_cost, best_dh_s, best_dh_t = max(triples)
+        open_walk_start = best_dh_t   # removing flow s->t leaves t with excess out-degree
+        open_walk_end   = best_dh_s   # and s with excess in-degree
+        print()
+        print(f"Open circuit: remove deadhead flow  {best_dh_s} -> {best_dh_t}"
+              f"  ({best_dh_cost:,}s = {best_dh_cost/3600:.2f}h)")
+
+    s_type = G.nodes[open_walk_start]['node_type']
+    e_type = G.nodes[open_walk_end]['node_type']
+    print(f"  Walk start : {open_walk_start}  ({s_type})")
+    print(f"  Walk end   : {open_walk_end}  ({e_type})")
+    print(f"  Savings    : {best_dh_cost:,}s  ({best_dh_cost/3600:.2f}h)")
+    print(f"  Open lower bound: {(total_s - best_dh_cost)/MAX_DAY_SECONDS:.1f} days")
+
+    # Rebuild the open Eulerian graph with one fewer unit of the removed flow path
+    G_euler_open = nx.MultiDiGraph()
+    for node, data in G.nodes(data=True):
+        G_euler_open.add_node(node, **data)
+
+    for row_id, (u, v, k) in chosen.items():
+        arc_data = {**G[u][v][k], 'is_deadhead': False}
+        G_euler_open.add_edge(u, v, key=f"req_{k}", **arc_data)
+
+    dh_serial_open = 0
+    if dh_arc_dict is not None:
+        skip_arc = (best_dh_u, best_dh_v, best_dh_k)
+        for (u, v, k), count in dh_arc_dict.items():
+            n_to_add = count - (1 if (u, v, k) == skip_arc else 0)
+            for _ in range(n_to_add):
+                dh_serial_open += 1
+                G_euler_open.add_edge(u, v, key=f"dh_{dh_serial_open}",
+                                      **{**G[u][v][k], 'is_deadhead': True})
+    else:
         for s, targets in flow_dict.items():
-            for t, units in targets.items():
-                if units <= 0:
+            for t, flow_units in targets.items():
+                if flow_units <= 0:
                     continue
-                t_ok = G.nodes[t]['node_type'] in VALID_CIRCUIT_ENDPOINTS
-                s_ok = G.nodes[s]['node_type'] in VALID_CIRCUIT_ENDPOINTS
-                if require_both and t_ok and s_ok:
-                    yield D[s][t], s, t
-                elif not require_both and t_ok:
-                    yield D[s][t], s, t
+                node_path = P[s][t]
+                units_to_add = int(flow_units) - (
+                    1 if s == best_dh_s and t == best_dh_t else 0)
+                for _ in range(units_to_add):
+                    for hop_u, hop_v, hop_k, hop_data in edge_path(G, node_path):
+                        dh_serial_open += 1
+                        G_euler_open.add_edge(
+                            hop_u, hop_v,
+                            key=f"dh_{dh_serial_open}",
+                            **{**hop_data, 'is_deadhead': True},
+                        )
 
-    triples = list(_flow_triples(require_both=True))
-    if not triples:
-        triples = list(_flow_triples(require_both=False))
-    if not triples:
-        triples = [(D[s][t], s, t) for s, tgts in flow_dict.items()
-                   for t, u in tgts.items() if u > 0]
+    # Apply the same connectivity bridges — WCC structure is independent of which
+    # flow unit we remove, so the same (m, c) pairs are needed here too.
+    dh_conn_serial_open = 0
+    for path_s, path_t in bridge_pairs:
+        for hop_u, hop_v, hop_k, hop_data in edge_path(G, P[path_s][path_t]):
+            dh_conn_serial_open += 1
+            G_euler_open.add_edge(hop_u, hop_v, key=f"dh_conn_{dh_conn_serial_open}",
+                                  **{**hop_data, 'is_deadhead': True})
 
-    best_dh_cost, best_dh_s, best_dh_t = max(triples)
-    open_walk_start = best_dh_t   # removing flow s->t leaves t with excess out-degree
-    open_walk_end   = best_dh_s   # and s with excess in-degree
-    print()
-    print(f"Open circuit: remove deadhead flow  {best_dh_s} -> {best_dh_t}"
-          f"  ({best_dh_cost:,}s = {best_dh_cost/3600:.2f}h)")
+    # Remove isolated nodes from G_euler_open (same reason as G_euler)
+    isolated_open = [n for n in G_euler_open.nodes() if G_euler_open.degree(n) == 0]
+    G_euler_open.remove_nodes_from(isolated_open)
 
-s_type = G.nodes[open_walk_start]['node_type']
-e_type = G.nodes[open_walk_end]['node_type']
-print(f"  Walk start : {open_walk_start}  ({s_type})")
-print(f"  Walk end   : {open_walk_end}  ({e_type})")
-print(f"  Savings    : {best_dh_cost:,}s  ({best_dh_cost/3600:.2f}h)")
-print(f"  Open lower bound: {(total_s - best_dh_cost)/MAX_DAY_SECONDS:.1f} days")
-
-# Rebuild the open Eulerian graph with one fewer unit of the removed flow path
-G_euler_open = nx.MultiDiGraph()
-for node, data in G.nodes(data=True):
-    G_euler_open.add_node(node, **data)
-
-for row_id, (u, v, k) in chosen.items():
-    arc_data = {**G[u][v][k], 'is_deadhead': False}
-    G_euler_open.add_edge(u, v, key=f"req_{k}", **arc_data)
-
-dh_serial_open = 0
-if dh_arc_dict is not None:
-    skip_arc = (best_dh_u, best_dh_v, best_dh_k)
-    for (u, v, k), count in dh_arc_dict.items():
-        n_to_add = count - (1 if (u, v, k) == skip_arc else 0)
-        for _ in range(n_to_add):
-            dh_serial_open += 1
-            G_euler_open.add_edge(u, v, key=f"dh_{dh_serial_open}",
-                                  **{**G[u][v][k], 'is_deadhead': True})
-else:
-    for s, targets in flow_dict.items():
-        for t, flow_units in targets.items():
-            if flow_units <= 0:
-                continue
-            node_path = P[s][t]
-            units_to_add = int(flow_units) - (
-                1 if s == best_dh_s and t == best_dh_t else 0)
-            for _ in range(units_to_add):
-                for hop_u, hop_v, hop_k, hop_data in edge_path(G, node_path):
-                    dh_serial_open += 1
-                    G_euler_open.add_edge(
-                        hop_u, hop_v,
-                        key=f"dh_{dh_serial_open}",
-                        **{**hop_data, 'is_deadhead': True},
-                    )
-
-# Apply the same connectivity bridges — WCC structure is independent of which
-# flow unit we remove, so the same (m, c) pairs are needed here too.
-dh_conn_serial_open = 0
-for path_s, path_t in bridge_pairs:
-    for hop_u, hop_v, hop_k, hop_data in edge_path(G, P[path_s][path_t]):
-        dh_conn_serial_open += 1
-        G_euler_open.add_edge(hop_u, hop_v, key=f"dh_conn_{dh_conn_serial_open}",
-                              **{**hop_data, 'is_deadhead': True})
-
-# Remove isolated nodes from G_euler_open (same reason as G_euler)
-isolated_open = [n for n in G_euler_open.nodes() if G_euler_open.degree(n) == 0]
-G_euler_open.remove_nodes_from(isolated_open)
-
-# Verify exactly one source (open_walk_start) and one sink (open_walk_end)
-imb_open = {
-    n: G_euler_open.out_degree(n) - G_euler_open.in_degree(n)
-    for n in G_euler_open.nodes()
-    if G_euler_open.out_degree(n) != G_euler_open.in_degree(n)
-}
-if set(imb_open.keys()) == {open_walk_start, open_walk_end}:
-    print(f"  Degree check: OK  ({open_walk_start} out+1, {open_walk_end} in+1)")
-else:
-    print(f"  WARNING: unexpected imbalance: {imb_open}")
+    # Verify exactly one source (open_walk_start) and one sink (open_walk_end)
+    imb_open = {
+        n: G_euler_open.out_degree(n) - G_euler_open.in_degree(n)
+        for n in G_euler_open.nodes()
+        if G_euler_open.out_degree(n) != G_euler_open.in_degree(n)
+    }
+    if set(imb_open.keys()) == {open_walk_start, open_walk_end}:
+        print(f"  Degree check: OK  ({open_walk_start} out+1, {open_walk_end} in+1)")
+    else:
+        print(f"  WARNING: unexpected imbalance: {imb_open}")
 
 # Build Eulerian path
 print()
+def open_path_required_first(Gx, source):
+    """An Eulerian path from `source` whose FIRST arc is a required trail.
+
+    When the hiker pins the start we cannot trim a connector off the front --
+    that would move them to a different trailhead, which is the one thing they
+    chose.  So instead of removing the dead leg, put a real trail first.
+
+    nx.eulerian_path takes whichever arc it likes, and Hierholzer splices
+    cycles in afterwards, so biasing its adjacency order does not reliably fix
+    the first arc.  Do it by construction instead: lift a required arc S->v
+    out of the graph and ask for an Eulerian path from v.  Removing S->v costs
+    S one out-degree and v one in-degree, so S becomes balanced and v inherits
+    the spare out-degree -- exactly the source condition -- while the sink is
+    untouched.  If such a path exists, prepending the lifted arc gives a valid
+    walk that opens on trail.
+
+    Tries the longest required arc first, so the walk opens with real distance
+    rather than a token 0.2mi stub.  Returns None when the start has no
+    required arc at all (three do: CGBAL, CGCAD, TH130 are reached only by
+    road, so opening on a connector there is correct, not a defect).
+    """
+    cands = [(v, k, d) for _, v, k, d in Gx.out_edges(source, keys=True, data=True)
+             if not d.get('is_deadhead')]
+    if not cands:
+        print(f"  {source} has no required arc leaving it -- the walk must open "
+              f"on a connector")
+        return None
+    for v, k, d in sorted(cands, key=lambda t: (-t[2]['weight'], t[0], str(t[1]))):
+        H = Gx.copy()
+        H.remove_edge(source, v, k)
+        if H.number_of_edges() == 0:
+            return [(source, v, k, d)]
+        if not nx.has_eulerian_path(H, source=v):
+            continue
+        rest = [(a, b, kk, H[a][b][kk])
+                for a, b, kk in nx.eulerian_path(H, source=v, keys=True)]
+        print(f"  opening arc forced to {d.get('trail', '?')} "
+              f"({source} -> {v}, {d['weight']:,}s) so the walk starts on trail")
+        return [(source, v, k, d)] + rest
+    print(f"  no required arc at {source} can lead a complete walk -- opening "
+          f"on a connector")
+    return None
+
+
 print("Building open circuit (Eulerian path) ...")
 t0 = time.time()
 try:
-    open_circuit = [
+    open_circuit = (open_path_required_first(G_euler_open, open_walk_start)
+                    if PATH_CONSTRAINED else None) or [
         (u, v, k, G_euler_open[u][v][k])
         for u, v, k in nx.eulerian_path(G_euler_open, source=open_walk_start, keys=True)
     ]
@@ -1392,14 +1518,17 @@ except Exception as exc:
 # 5C: Side-by-side comparison
 # ---------------------------------------------------------------------------
 print()
-print("Closed vs Open comparison:")
-print(f"  {'':30}  {'Closed':>12}  {'Open':>12}")
-print(f"  {'Total time (h)':<30}  {total_s/3600:>12.1f}  "
-      f"{(open_total if open_circuit else float('nan'))/3600:>12.1f}")
-print(f"  {'Deadhead time (h)':<30}  {dh_s_time/3600:>12.1f}  "
-      f"{sum(d['weight'] for *_,d in open_circuit if d['is_deadhead'])/3600 if open_circuit else float('nan'):>12.1f}")
-print(f"  {'Lower bound days':<30}  {total_s/MAX_DAY_SECONDS:>12.1f}  "
-      f"{open_total/MAX_DAY_SECONDS if open_circuit else float('nan'):>12.1f}")
+if circuit is not None:
+    print("Closed vs Open comparison:")
+    print(f"  {'':30}  {'Closed':>12}  {'Open':>12}")
+    print(f"  {'Total time (h)':<30}  {total_s/3600:>12.1f}  "
+          f"{(open_total if open_circuit else float('nan'))/3600:>12.1f}")
+    print(f"  {'Deadhead time (h)':<30}  {dh_s_time/3600:>12.1f}  "
+          f"{sum(d['weight'] for *_,d in open_circuit if d['is_deadhead'])/3600 if open_circuit else float('nan'):>12.1f}")
+    print(f"  {'Lower bound days':<30}  {total_s/MAX_DAY_SECONDS:>12.1f}  "
+          f"{open_total/MAX_DAY_SECONDS if open_circuit else float('nan'):>12.1f}")
+else:
+    print("Open walk only (endpoints pinned); no closed circuit to compare against.")
 
 # ---------------------------------------------------------------------------
 # Step 6 -- Multi-Day Splitting (Hotel Selection)
@@ -2294,7 +2423,13 @@ circuit, open_circuit = retarget_termini_for_budget(circuit, open_circuit)
 
 # Env switch exists only so the batch below can measure trim placement
 # both ways; pre-split is the intended behaviour.
-if os.environ.get('SMOKIES_TRIM_PRESPLIT', '1') == '1':
+if PATH_CONSTRAINED:
+    # Trimming moves a terminus.  When the hiker named it, that is the
+    # one thing we must not do -- open_path_required_first has already
+    # put a real trail first without shifting the start.
+    print()
+    print(f"Open termini trim: skipped -- endpoints pinned {PIN_START} -> {PIN_END}")
+elif os.environ.get('SMOKIES_TRIM_PRESPLIT', '1') == '1':
     open_circuit = trim_open_arcs(open_circuit)
 
 # Run the balanced day split for closed and open circuits; campsite-detour
@@ -2518,7 +2653,7 @@ for base_label in ("Closed", "Open"):
               f"{_best_primary[0]} days / {_best_primary[1]} resupply stop(s); "
               f"{len(_tied) - _kept} cut by the {BALANCE_ALPHA:.0%} balance "
               f"floor, kept [{tag}] at {_total_walking(days) / 3600:.1f}h walking")
-    if base_label == "Open":
+    if base_label == "Open" and not PATH_CONSTRAINED:
         days = trim_open_termini(days)
     dp_results[base_label] = days
     if len(cands) > 1:
