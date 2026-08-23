@@ -47,6 +47,8 @@ _args = _ap.parse_args()
 _T0 = time.time()
 TIME_BUDGET = _args.time_budget
 BUDGET_TRUNCATED = False   # set True wherever the budget cuts a sweep short
+CPSAT_STATUS = None        # direction-assignment status, reported in the envelope
+CPSAT_ELAPSED = None
 
 
 def time_left() -> float:
@@ -85,6 +87,10 @@ def envelope_base() -> dict:
             "max_resupply_days": _args.max_resupply_days,
             "town_nights": _args.town_nights,
             "time_budget": TIME_BUDGET,
+            # globals().get: a complete-map or no-split run emits an envelope
+            # before step 4 has set these.
+            "cpsat": {"status": CPSAT_STATUS, "seconds": CPSAT_ELAPSED,
+                      "limit_seconds": globals().get('_cpsat_limit')},
         },
         "hiked_count": len(hiked_ids),
         "solve_seconds": round(time.time() - _T0, 2),
@@ -869,7 +875,19 @@ def solve_step4_cpsat(G, required_rows, MAX_DH=30, time_limit=120,
     status = solver.Solve(model)
 
     elapsed = time.time() - t0
-    print(f"  Status : {solver.StatusName(status)}  ({elapsed:.1f}s)")
+    global CPSAT_STATUS, CPSAT_ELAPSED, BUDGET_TRUNCATED
+    CPSAT_STATUS = solver.StatusName(status)
+    CPSAT_ELAPSED = round(elapsed, 1)
+    print(f"  Status : {CPSAT_STATUS}  ({elapsed:.1f}s)")
+    if status == cp_model.FEASIBLE:
+        # Feasible-not-optimal means the limit cut the search off, so the
+        # circuit is the best found rather than the best there is.  Callers
+        # read best_found to decide whether to trust a comparison against
+        # another solve, so it has to cover this stage too, not only the
+        # floor sweep.
+        BUDGET_TRUNCATED = True
+        print("  CP-SAT hit its time limit -- direction assignment is not proven "
+              "optimal; raise --time-budget for a reproducible circuit")
 
     if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         print("  No feasible solution found -- falling back to greedy+LS")
@@ -894,9 +912,15 @@ def solve_step4_cpsat(G, required_rows, MAX_DH=30, time_limit=120,
 # ---------------------------------------------------------------------------
 # 4A: Direction assignment — CP-SAT exact solver with greedy+LS fallback
 # ---------------------------------------------------------------------------
-# Under a wall-clock budget, cap CP-SAT well below it (the default 120 s
-# alone would blow a 45-60 s budget); the greedy+LS fallback covers timeouts.
-_cpsat_limit = 120 if TIME_BUDGET is None else max(1, min(10, int(time_left())))
+# Under a wall-clock budget CP-SAT cannot have the full 120 s default, but a
+# flat 10 s cap made the answer depend on how fast the machine is: direction
+# assignment reaches OPTIMAL in 6-8 s on a workstation and can exceed 10 s on a
+# smaller cloud vCPU, and a timed-out assignment is a different circuit.  The
+# service and the published presets then disagreed at identical parameters --
+# 42 days from the preset, 41 from the same request to the deployed solver.
+# Half the remaining budget scales with the budget instead of the hardware.
+_cpsat_limit = (120 if TIME_BUDGET is None
+                else max(5, min(120, int(time_left() * 0.5))))
 cpsat_result = solve_step4_cpsat(G, required_rows, MAX_DH=30,
                                  time_limit=_cpsat_limit,
                                  forced_dirs=budget_forced)
