@@ -512,6 +512,8 @@ const BASEMAPS = {
 
 // ── initViz: rebuild all data layers for a new preset ─────────────────────
 function initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, cov) {
+  const csvBtn = document.getElementById('btnCsv');
+  if (csvBtn) csvBtn.disabled = false;   // nothing to export until now
   META = meta; GEOM = geomDict; DAYS = daysData; BG = bgLayer; OPT = optLayer;
   ALL_NODES = allNodes; cumCov = cov;
 
@@ -785,6 +787,163 @@ function renderPace() {
       ? 'Published pace — this itinerary is pre-solved at these settings.'
       : 'This itinerary was built at this pace.';
   return p;
+}
+
+// ── CSV download ──────────────────────────────────────────────────────────
+// A 42-night trip is transcribed into the NPS permit system one campsite and
+// one date at a time, then carried on paper or a phone.  Everything printed
+// here is read off the same derived day objects the sidebar renders from, and
+// through the same formatters, so the file cannot quietly disagree with the
+// screen it came from.
+function csvCell(value) {
+  const text = value == null ? '' : String(value);
+  return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+}
+
+const csvRow = (...cells) => cells.map(csvCell).join(',');
+
+// Dates make the file useful to the permit system, but demanding one before a
+// hiker has even settled on a tier would be a toll gate on browsing.  Default
+// to tomorrow -- the earliest plausible start -- and let anyone who is really
+// planning override it.
+function defaultStartDate() {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().slice(0, 10);
+}
+
+function dayDate(dayNumber) {
+  const iso = document.getElementById('startDate')?.value || defaultStartDate();
+  const [y, m, d] = iso.split('-').map(Number);
+  // Built and read back in UTC.  A local-time Date would shift by a day across
+  // a DST boundary, and a six-week trip crosses one.
+  const t = new Date(Date.UTC(y, m - 1, d + (dayNumber - 1)));
+  const wd = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][t.getUTCDay()];
+  return wd + ' ' + t.toISOString().slice(0, 10);
+}
+
+function overnightType(nid) {
+  return nid.startsWith('BC') ? 'backcountry campsite'
+       : nid.startsWith('SH') ? 'shelter'
+       : nid.startsWith('CG') ? 'campground'
+       : nid.startsWith('TH') ? 'trailhead (trip end)'
+       : 'other';
+}
+
+function buildCsv() {
+  const pace = paceFromUI();
+  const walked = DAYS.reduce((a, d) => a + d.total_s, 0);
+  const miles  = DAYS.reduce((a, d) => a + d.miles, 0);
+  const gain   = DAYS.reduce((a, d) => a + d.gain, 0);
+  const loss   = DAYS.reduce((a, d) => a + d.loss, 0);
+  const maxDay = +document.querySelector('input[name="max_day"]:checked')?.value || 12;
+  const town   = document.querySelector('input[name="town"]:checked')?.value === 'yes';
+
+  const meta = [
+    ['Great Smokies Circuit Planner'],
+    ['Circuit', META.circuit],
+    ['Days', META.n_days],
+    ['Max hiking day', maxDay + ' h'],
+    ['Required trail miles', META.total_required_miles.toFixed(1)],
+    ['Distance walked', miles.toFixed(1) + ' mi'],
+    ['Time walking', fmtHM(walked)],
+    ['Elevation', gain.toLocaleString() + ' ft up / ' + loss.toLocaleString() + ' ft down'],
+    ['Resupply window', META.max_days_between_resupply
+      ? 'every ' + META.max_days_between_resupply + ' days' : 'none'],
+    ['Town nights', town ? 'yes' : 'no'],
+    ['Pace', paceIsDefault(pace)
+      ? 'published'
+      : levelSpeedMph(pace).toFixed(1) + ' mph flat, k ' + pace.k.toFixed(1)
+        + ', fastest ' + (pace.peak * 100).toFixed(0) + '%'],
+  ];
+  if (_shownEnds.start) meta.push(['Start pinned', nodeName(_shownEnds.start)]);
+  if (_shownEnds.end)   meta.push(['Finish pinned', nodeName(_shownEnds.end)]);
+  meta.push(['Day 1', dayDate(1)]);
+  meta.push(['Generated', new Date().toISOString()]);
+  meta.push(['Source', 'https://ericallanwest.github.io/smokies/']);
+
+  // Nights first: this is the section that gets typed into a permit.  The last
+  // day ends at a trailhead, not a campsite, so it is not a night.
+  const nights = [csvRow('day', 'date', 'night_at', 'name', 'type')];
+  DAYS.forEach((d, i) => {
+    if (i === DAYS.length - 1) return;
+    nights.push(csvRow(d.day, dayDate(d.day), d.end_node,
+                       nodeName(d.end_node), overnightType(d.end_node)));
+  });
+
+  const daily = [csvRow(
+    'day', 'date', 'from', 'from_name', 'to', 'to_name', 'miles', 'time',
+    'new_mi', 'repeat_mi', 'connector_mi', 'gain_ft', 'loss_ft',
+    'cum_required_mi', 'cum_pct')];
+  for (const d of DAYS) {
+    daily.push(csvRow(
+      d.day, dayDate(d.day), d.start_node, nodeName(d.start_node),
+      d.end_node, nodeName(d.end_node),
+      d.miles.toFixed(2), fmtHM(d.total_s),
+      d.req_miles.toFixed(2), d.rep_miles.toFixed(2), d.conn_miles.toFixed(2),
+      d.gain, d.loss, d.cum_req_miles.toFixed(1),
+      (d.cum_req_miles / META.total_required_miles * 100).toFixed(1)));
+  }
+
+  // Leg detail.  'type' is the walk-order category the map colours by -- first
+  // pass, repeat, or connector -- rather than the solver's Euler bookkeeping,
+  // because that is what the hiker actually experiences.
+  const legs = [csvRow(
+    'day', 'leg', 'trail', 'from', 'from_name', 'to', 'to_name', 'type',
+    'miles', 'minutes', 'gain_ft', 'loss_ft', 'cum_day_mi', 'cum_day_time')];
+  for (const d of DAYS) {
+    let cm = 0, cs = 0;
+    d.steps.forEach((s, i) => {
+      cm += s.miles; cs += s.seconds;
+      legs.push(csvRow(
+        d.day, i + 1, s.trail, s.from, nodeName(s.from), s.to, nodeName(s.to),
+        s.cat, s.miles.toFixed(2), (s.seconds / 60).toFixed(1),
+        s.gain, s.loss, cm.toFixed(2), fmtHM(cs)));
+    });
+  }
+
+  const out = [
+    ...meta.map(c => csvRow(...c)),
+    '', 'NIGHTS - one row per permit night', ...nights,
+    '', 'DAILY SUMMARY', ...daily,
+    '', 'LEG DETAIL', ...legs,
+  ];
+
+  if (META.resupply_plan && META.resupply_plan.length) {
+    out.push('', 'RESUPPLY - ' + META.resupply_plan.length + ' stops',
+      csvRow('day', 'date', 'place', 'in_park', 'days_since_last'));
+    for (const r of META.resupply_plan) {
+      out.push(csvRow(r.day, dayDate(r.day), r.name,
+                      r.in_park ? 'yes' : 'no - town miles not counted',
+                      r.days_since_last));
+    }
+  }
+  return out.join('\r\n');
+}
+
+function downloadCsv() {
+  if (!DAYS || !DAYS.length) return;
+  // The BOM is load-bearing: without it Excel on Windows reads the file in the
+  // local codepage and turns every trail name carrying an apostrophe or accent
+  // into mojibake.
+  const blob = new Blob(['﻿' + buildCsv()], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  const bits = [String(META.circuit).toLowerCase(),
+                (document.querySelector('input[name="max_day"]:checked')?.value || 12) + 'h'];
+  if (META.max_days_between_resupply) bits.push('r' + META.max_days_between_resupply);
+  if (document.querySelector('input[name="town"]:checked')?.value === 'yes') bits.push('town');
+  const p = paceFromUI();
+  if (!paceIsDefault(p)) bits.push('k' + p.k.toFixed(1));
+  if (_shownEnds.start) {
+    bits.push(_shownEnds.start + (_shownEnds.end ? '-' + _shownEnds.end : ''));
+  }
+  link.download = 'smokies_' + bits.join('_') + '.csv';
+  link.click();
+  // Revoked next tick rather than immediately: the click only starts the save,
+  // and a browser reading the blob asynchronously would hand back an empty file.
+  setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
 // ── Start / finish ────────────────────────────────────────────────────────
@@ -1205,6 +1364,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('customSolve').style.display = 'block';
     document.getElementById('btnSolve').addEventListener('click', solveCustom);
     loadStartPoints().then(renderEndpoints);
+    const dateEl = document.getElementById('startDate');
+    if (dateEl && !dateEl.value) dateEl.value = defaultStartDate();
+    document.getElementById('btnCsv')?.addEventListener('click', downloadCsv);
     for (const id of ['startNode', 'endNode']) {
       const el = document.getElementById(id);
       if (el) ['input', 'change'].forEach(ev =>

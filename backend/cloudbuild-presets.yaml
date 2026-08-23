@@ -1,0 +1,22 @@
+# Regenerate the published presets inside the deployed solver image, so the
+# site and the service agree on the route and not merely on its cost.
+#   gcloud builds submit --config backend/cloudbuild-presets.yaml .
+# Results land in gs://$PROJECT_ID_cloudbuild/presets/<BUILD_ID>/ .
+steps:
+  - name: us-east1-docker.pkg.dev/$PROJECT_ID/smokies/solver:latest
+    entrypoint: python
+    args: ['/workspace/tools/regen_presets.py']
+    env:
+      - 'REPO=/workspace'
+      - 'OUT=/workspace/out'
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud storage cp /workspace/out/preset_*.json /workspace/out/SUMMARY.txt \
+          gs://${PROJECT_ID}_cloudbuild/presets/${BUILD_ID}/
+# 60 configurations at roughly 10-30s each on a 2-vCPU builder.
+timeout: 5400s
+options:
+  machineType: E2_HIGHCPU_8
