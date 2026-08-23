@@ -1,0 +1,111 @@
+# Watch the deployed solve service.
+#
+# The pace controls on the public site depend on a Cloud Run service that
+# scales to zero and is deployed separately from this repo, so nothing here
+# fails when it breaks -- the first sign would be a hiker reporting that
+# "build itinerary" spun forever.  This closes that gap: a failing run emails
+# whoever owns the repo.
+#
+# It checks the three things that can independently break:
+#   1. the service answers at all (deployed, not crash-looping)
+#   2. a default-pace solve still matches the published preset -- the check
+#      that caught CP-SAT timing out on a slower vCPU and silently returning
+#      a different circuit
+#   3. a custom-pace solve works, which needs segment_profiles.json inside the
+#      image; it was missing from the first build and nothing but a real
+#      request would have noticed
+name: solver health
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'      # every six hours, off the hour to dodge the rush
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Service is up
+        run: |
+          set -euo pipefail
+          # First request of the day pays a cold start, so allow for it.
+          health=$(curl -sS --max-time 120 --retry 2 --retry-delay 10 \
+                   "$SOLVER_URL/health")
+          echo "health: $health"
+          echo "$health" | python -c "
+          import json, sys
+          h = json.load(sys.stdin)
+          assert h.get('ok') is True, h
+          assert 'queued' in h, 'old build: rate limiting is not deployed'
+          "
+        env:
+          SOLVER_URL: https://smokies-solver-165021828782.us-east1.run.app
+
+      - name: Default pace still agrees with the published preset
+        run: |
+          set -euo pipefail
+          curl -sS --max-time 240 -X POST "$SOLVER_URL/solve" \
+            -H 'Content-Type: application/json' \
+            -d '{"max_hours":12,"time_budget":90}' > result.ndjson
+          python - <<'PY'
+          import json
+          result = None
+          for line in open('result.ndjson'):
+              line = line.strip()
+              if not line:
+                  continue
+              obj = json.loads(line)
+              if obj['type'] == 'error':
+                  raise SystemExit(f"solver returned an error: {obj['message']}")
+              if obj['type'] == 'result':
+                  result = obj
+          assert result, 'stream ended without a result'
+
+          published = json.load(open('docs/data/preset_open_12h.json'))['n_days']
+          got = result['open']['n_days']
+          cpsat = result['params']['cpsat']
+          print(f"open {got} days (preset says {published}), cpsat {cpsat}")
+
+          # The service and the site must not disagree at identical settings.
+          assert got == published, (
+              f"service returns {got} days where the published preset has "
+              f"{published}; cpsat={cpsat}")
+          assert cpsat['status'] == 'OPTIMAL', (
+              f"direction assignment was cut short: {cpsat}")
+          assert result['best_found'] is False, 'solve was truncated'
+          PY
+        env:
+          SOLVER_URL: https://smokies-solver-165021828782.us-east1.run.app
+
+      - name: Custom pace works
+        run: |
+          set -euo pipefail
+          curl -sS --max-time 240 -X POST "$SOLVER_URL/solve" \
+            -H 'Content-Type: application/json' \
+            -d '{"max_hours":12,"time_budget":90,"tobler_k":4.2}' > pace.ndjson
+          python - <<'PY'
+          import json
+          result = None
+          for line in open('pace.ndjson'):
+              line = line.strip()
+              if not line:
+                  continue
+              obj = json.loads(line)
+              if obj['type'] == 'error':
+                  # The likely cause is segment_profiles.json missing from the
+                  # image, which the solver refuses rather than papering over.
+                  raise SystemExit(f"custom pace refused: {obj['message']}")
+              if obj['type'] == 'result':
+                  result = obj
+          assert result, 'stream ended without a result'
+          assert result['params']['tobler']['custom'] is True, result['params']
+          days = result['open']['n_days']
+          print(f"custom pace k=4.2: open {days} days")
+          # A harder pace cannot need fewer days than the default 42.
+          assert days > 42, f"k=4.2 gave {days} days, which is not slower"
+          PY
+        env:
+          SOLVER_URL: https://smokies-solver-165021828782.us-east1.run.app
