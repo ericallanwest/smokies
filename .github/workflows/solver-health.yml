@@ -73,6 +73,33 @@ jobs:
           assert got == published, (
               f"service returns {got} days where the published preset has "
               f"{published}; cpsat={cpsat}")
+
+          # Cost, not route.  CP-SAT is seeded and single-threaded, which makes
+          # it reproducible on one platform but not across two: the presets are
+          # generated on Windows and the service runs a manylinux wheel on
+          # different silicon, so the two pick different members of the same
+          # optimal set.  Observed: identical objective to the second
+          # (1,587,403s), identical 415 required arcs and 796.3 required miles,
+          # but different traversal directions on some edges -- 1,148,482s of
+          # required time against 1,147,189s.  Both answers are optimal; only
+          # the tie broke differently.
+          #
+          # So compare what is platform-independent.  A drift in total tour cost
+          # or in required coverage is a real regression; a different route at
+          # equal cost is not, and asserting on the route would fail every run.
+          closed = json.load(open('docs/data/preset_closed_12h.json'))
+          want = sum(a['seconds'] for d in closed['days'] for a in d['arcs'])
+          have = sum(a['seconds'] for d in result['closed']['days']
+                     for a in d['arcs'])
+          want_mi = closed['total_required_miles']
+          have_mi = result['closed']['total_required_miles']
+          print(f"closed tour {have:,}s (preset {want:,}s), "
+                f"required {have_mi:.1f} mi (preset {want_mi:.1f} mi)")
+          assert have == want, (
+              f"closed tour costs {have}s where the preset costs {want}s -- "
+              f"that is a cost regression, not a tie broken differently")
+          assert abs(have_mi - want_mi) < 0.05, (
+              f"required coverage is {have_mi} mi, preset says {want_mi}")
           assert cpsat['status'] == 'OPTIMAL', (
               f"direction assignment was cut short: {cpsat}")
           assert result['best_found'] is False, 'solve was truncated'
