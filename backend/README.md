@@ -109,7 +109,7 @@ gcloud run deploy smokies-solver \
   --image us-east1-docker.pkg.dev/$PROJECT_ID/smokies/solver:latest \
   --region us-east1 --allow-unauthenticated \
   --memory 1Gi --cpu 1 --min-instances 0 --max-instances 2 \
-  --timeout 180
+  --concurrency 2 --timeout 180
 ```
 
 Scale-to-zero keeps idle cost ≈ $0; the first request after idle pays a
@@ -117,8 +117,28 @@ Scale-to-zero keeps idle cost ≈ $0; the first request after idle pays a
 printed service URL via `?backend=https://...run.app`.
 
 Notes:
+- `--concurrency 2` is deliberate.  The Cloud Run default is 80, which fits
+  an I/O-bound web app whose requests mostly sit waiting on a database; this
+  service spends its entire request pegging one vCPU inside CP-SAT.  At 80,
+  eighty solves would share one core, each running ~80x slower, and all of
+  them would blow the 180 s timeout together.  The subtler damage is worse
+  than the timeouts: the CP-SAT budget is half the time remaining, so a
+  starved solve returns a *worse circuit* rather than an error — the same
+  silent degradation that once had the service answer 41 days where the
+  published preset says 42.  At 2, Cloud Run scales out instead of
+  oversubscribing, and a cheap `/health` request can still slip in alongside
+  a running solve rather than queueing behind it.
+  Measured on revision 00004: three concurrent solves (10h/14h/16h) all came
+  back OPTIMAL after 11.7–14.5 s of CP-SAT and matched their presets — the
+  same band as a solve running alone.
+- Capacity is therefore 4 concurrent solves (2 instances x 2 each); beyond
+  that Cloud Run queues.  Note that `MAX_QUEUE_DEPTH` cannot trip at this
+  concurrency — at most one caller per instance is ever waiting on the solve
+  lock — so it is now a backstop should `--concurrency` ever be raised, and
+  the per-IP `RATE_LIMIT_SOLVES` window is the limit doing live work.
 - The container is stateless; the in-memory result cache resets on cold
   start, which is fine (solves are ~5–15 s).
 - CORS allows `ericallanwest.github.io` and localhost only (see `app.py`).
-- No auth: the service is compute-only and rate-limited by
-  `--max-instances`; add an API key check in `app.py` if abuse ever shows up.
+- No auth: the service is compute-only.  `--max-instances 2` caps the bill
+  and the per-IP window caps abuse; add an API key check in `app.py` if that
+  stops being enough.

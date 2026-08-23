@@ -66,6 +66,12 @@ _cache: dict[str, dict] = {}
 # two of slack, which is the right trade for keeping the service stateless;
 # tightening it would mean a shared store for a service whose whole point is
 # that it holds nothing.
+#
+# One caveat since the service moved to --concurrency 2: at most two requests
+# reach an instance at once, so at most one caller is ever waiting on the
+# lock and MAX_QUEUE_DEPTH can no longer trip.  Cloud Run is the admission
+# control now.  The cap is kept as the backstop if concurrency is ever
+# raised; the per-IP window is the limit doing live work today.
 # Read from the environment so they can be retuned on a running service with
 # `gcloud run services update --set-env-vars`, without a rebuild.
 MAX_QUEUE_DEPTH = int(os.environ.get('MAX_QUEUE_DEPTH', 4))
