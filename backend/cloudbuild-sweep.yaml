@@ -1,0 +1,31 @@
+# Sweep every candidate start node for one configuration, inside the deployed
+# solver image so the numbers are the ones the service would produce.
+#   gcloud builds submit --config backend/cloudbuild-sweep.yaml . \
+#     --substitutions=_MAX_HOURS=12,_RESUPPLY=,_TOWN=
+# Results land in gs://$PROJECT_ID_cloudbuild/sweeps/<BUILD_ID>/ .
+substitutions:
+  _MAX_HOURS: '12'
+  _RESUPPLY: ''
+  _TOWN: ''
+steps:
+  - name: us-east1-docker.pkg.dev/$PROJECT_ID/smokies/solver:latest
+    entrypoint: python
+    args: ['/workspace/tools/sweep_starts.py']
+    env:
+      - 'REPO=/workspace'
+      - 'OUT=/workspace/out'
+      - 'MAX_HOURS=${_MAX_HOURS}'
+      - 'RESUPPLY=${_RESUPPLY}'
+      - 'TOWN=${_TOWN}'
+      - 'WORKERS=30'
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud storage cp /workspace/out/sweep_*.json \
+          gs://${PROJECT_ID}_cloudbuild/sweeps/${BUILD_ID}/
+# 108 solves at roughly 25s each, spread across 32 cores.
+timeout: 3600s
+options:
+  machineType: E2_HIGHCPU_32

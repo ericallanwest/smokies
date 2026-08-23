@@ -1346,6 +1346,23 @@ else:
         if not cands:
             cands = list(dh_arc_dict.keys())
 
+        # A start pinned without a finish used to be silently ignored here: it
+        # set the CLOSED circuit's start while the open walk went on choosing
+        # its own endpoints, so a hiker who pinned a trailhead and asked for an
+        # open route got an itinerary beginning somewhere else entirely.  The
+        # walk starts at the HEAD of whichever arc is removed, so honouring the
+        # pin means removing an arc that arrives at it.  Not every node has one
+        # -- say so and fall back rather than pretending the pin took effect.
+        if PIN_START is not None and not PATH_CONSTRAINED:
+            pinned = [k for k in cands if k[1] == PIN_START]
+            if pinned:
+                cands = pinned
+            else:
+                print(f"\n  note: no deadhead arc arrives at {PIN_START}, so the "
+                      f"open walk cannot start there without re-solving; the pin "
+                      f"applies to the closed circuit only.  Pin a finish as well "
+                      f"to force the open walk.")
+
         best_dh_u, best_dh_v, best_dh_k = max(cands, key=_arc_weight)
         best_dh_cost    = G[best_dh_u][best_dh_v][best_dh_k]['weight']
         open_walk_start = best_dh_v   # v loses an in-arc → excess out-degree
