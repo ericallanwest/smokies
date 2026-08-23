@@ -2103,6 +2103,78 @@ def retarget_termini_for_budget(circuit, open_circuit):
     return rotated, new_open
 
 
+def trim_open_termini(days):
+    """Drop deadhead arcs from the two ends of a split open itinerary.
+
+    An open walk that opens by hiking a connector road covers nothing on its
+    first leg and reads to a hiker as a mistake -- the default 12h itinerary
+    began with 0.9mi of Heintooga Ridge Road purely because the Eulerian path
+    happened to leave the source on that arc.  Nothing forces it: a leading
+    run of deadhead arcs can be dropped outright, since the walk still covers
+    every required arc and the hiker simply starts where those arcs ended.
+    The same holds for a trailing run.
+
+    The one real constraint is where a hiker can be dropped off or collected,
+    so trim only as deep as leaves the walk beginning and ending at a
+    trailhead or campground -- and take the deepest legal cut, since the
+    first one is not always the best.  That also repairs an illegal terminus:
+    retarget_termini_for_budget rotates the walk and drops an arc without
+    rechecking node type, which is how 8h came to finish at RI109, a road
+    intersection no one can be picked up from.
+
+    Deliberately applied to the SPLIT itinerary rather than to the arc
+    sequence before splitting.  Trimming first also works and lets the DP
+    spend the freed time elsewhere, which is tempting -- it saves a whole day
+    on four resupply configurations.  But the day-split chooser ranks on day
+    count, resupply stops and shortest non-last day, never on total walking,
+    so re-splitting reshuffles campsite detours blindly: measured over the
+    full preset set it saved 4 days but added up to 2.6h of walking to six
+    16h itineraries that saved nothing.  Trimming after the split cannot
+    perturb the day boundaries, so it is strictly an improvement everywhere.
+    Revisit if total walking time ever becomes a chooser tiebreaker.
+    """
+    if not days:
+        return days
+    arcs = [(di, a) for di, day in enumerate(days) for a in day]
+
+    def _ok(n):
+        return node_type(n) in VALID_CIRCUIT_ENDPOINTS
+
+    lead = 0
+    while lead < len(arcs) and arcs[lead][1][3].get('is_deadhead'):
+        lead += 1
+    # Dropping the first i arcs makes the head of arc i-1 the new start node.
+    cut_head = max((i for i in range(1, lead + 1) if _ok(arcs[i - 1][1][1])),
+                   default=0)
+
+    tail = 0
+    while (tail < len(arcs) - cut_head
+           and arcs[len(arcs) - 1 - tail][1][3].get('is_deadhead')):
+        tail += 1
+    # Dropping the last j arcs makes the tail of arc -j the new end node.
+    cut_tail = max((j for j in range(1, tail + 1) if _ok(arcs[len(arcs) - j][1][0])),
+                   default=0)
+
+    if not cut_head and not cut_tail:
+        return days
+
+    saved = (sum(a[3]['weight'] for _, a in arcs[:cut_head])
+             + sum(a[3]['weight'] for _, a in arcs[len(arcs) - cut_tail:]))
+    keep = arcs[cut_head:len(arcs) - cut_tail]
+    trimmed = [day for day in
+               ([a for di, a in keep if di == i] for i in range(len(days)))
+               if day]
+    dropped_days = len(days) - len(trimmed)
+    print(f"\nOpen termini trim: dropped {cut_head} leading + {cut_tail} "
+          f"trailing deadhead arc(s), {saved:,}s ({saved / 3600:.2f}h)")
+    print(f"  walk now runs {trimmed[0][0][0]} .. {trimmed[-1][-1][1]}, opening "
+          f"on {trimmed[0][0][3].get('trail', '?')} and closing on "
+          f"{trimmed[-1][-1][3].get('trail', '?')}")
+    if dropped_days:
+        print(f"  {dropped_days} day(s) were entirely deadhead and are gone")
+    return trimmed
+
+
 circuit, open_circuit = retarget_termini_for_budget(circuit, open_circuit)
 
 # Run the balanced day split for closed and open circuits; campsite-detour
@@ -2312,6 +2384,8 @@ for base_label in ("Closed", "Open"):
         continue
     days, tag = min(cands, key=lambda c: (len(c[0]), _n_resupply_stops(c[0]),
                                           -shortest_nonlast(c[0])))
+    if base_label == "Open":
+        days = trim_open_termini(days)
     dp_results[base_label] = days
     if len(cands) > 1:
         print(f"  {base_label}: kept [{tag}] variant -- {len(days)} days, "

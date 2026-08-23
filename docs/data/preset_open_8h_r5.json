@@ -9343,7 +9343,7 @@
     {
       "day": 73,
       "start_node": "BC023",
-      "end_node": "RI109",
+      "end_node": "TH110",
       "arcs": [
         {
           "from": "BC023",
@@ -9520,17 +9520,6 @@
           "gain": 167,
           "is_deadhead": false,
           "direction": "rev"
-        },
-        {
-          "from": "TH110",
-          "to": "RI109",
-          "edge_id": "448.0",
-          "trail": "Park Headquarters Road",
-          "miles": 0.3,
-          "seconds": 372,
-          "gain": 34,
-          "is_deadhead": true,
-          "direction": "dh"
         }
       ]
     }

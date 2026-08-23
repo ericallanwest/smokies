@@ -5,20 +5,9 @@
   "days": [
     {
       "day": 1,
-      "start_node": "TH250",
+      "start_node": "TH252",
       "end_node": "BC040",
       "arcs": [
-        {
-          "from": "TH250",
-          "to": "TH252",
-          "edge_id": "430.0",
-          "trail": "Heintooga Ridge Road",
-          "miles": 0.9,
-          "seconds": 1204,
-          "gain": 229,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
         {
           "from": "TH252",
           "to": "TI255",

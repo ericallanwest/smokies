@@ -389,6 +389,53 @@ for fp in files:
                                "nothing" % (dd['day'], mi, seq[i]))
                 break
 
+    # 2g. an open walk must not begin or end on a deadhead arc.  Its first leg
+    #     would cover nothing, and the hiker could simply have been dropped at
+    #     the far end of it -- the default 12h itinerary used to open with 0.9
+    #     mi of Heintooga Ridge Road for no reason at all.  Only a failure when
+    #     the trim was actually available, i.e. it would leave the walk on a
+    #     trailhead or campground: that is the same rule trim_open_termini
+    #     applies in the solver, so this cannot demand something impossible.
+    if circuit == 'open':
+        flat = [a for dd in days for a in dd['arcs']]
+        for where, run_arcs, node_of in (
+                ('begins', flat, lambda a: a['to']),
+                ('ends', flat[::-1], lambda a: a['from'])):
+            run = 0
+            while run < len(run_arcs) and run_arcs[run]['is_deadhead']:
+                run += 1
+            if not run:
+                continue
+            a0 = run_arcs[0]
+            trimmable = any(node_of(run_arcs[k])[:2] in ('TH', 'CG')
+                            for k in range(run))
+            where_msg = ("walk %s on %d deadhead arc(s), first %s->%s (%s), "
+                         "covering nothing"
+                         % (where, run, a0['from'], a0['to'], a0['trail']))
+            if trimmable:
+                fail(name, where_msg + " -- trimmable to a trailhead")
+            else:
+                warn(name, where_msg + " -- no trailhead inside the run, so it "
+                                       "cannot be trimmed away")
+
+    # 2h. a walk has to start and finish somewhere a hiker can actually be
+    #     dropped off or collected.  The solver states this rule itself as
+    #     VALID_CIRCUIT_ENDPOINTS = trailhead + campground, but only applies it
+    #     when picking the deadhead arc to remove; retarget_termini_for_budget
+    #     later rotates the walk and drops an arc without rechecking, which is
+    #     how the 8h open itinerary came to end at RI109, a road intersection.
+    ends = ([days[0]['start_node'], days[-1]['end_node']]
+            if circuit == 'open' else [days[0]['start_node']])
+    for node in ends:
+        if node[:2] not in ('TH', 'CG'):
+            fail(name, "walk terminus %s is a %s -- not a trailhead or "
+                       "campground, so there is no way to start or finish "
+                       "a hike there"
+                       % (node, {'TI': 'trail intersection',
+                                 'RI': 'road intersection',
+                                 'BC': 'backcountry campsite',
+                                 'SH': 'shelter'}.get(node[:2], 'unknown node')))
+
     if len(FAIL) == before:
         n_clean += 1
         if A.verbose:
