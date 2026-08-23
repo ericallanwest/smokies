@@ -678,7 +678,23 @@ async function loadPreset(filename) {
   try {
     await ensureBaseData();
     const itinerary = await fetch(`data/${filename}`)
-      .then(r => { if (!r.ok) throw new Error(`${filename} not found — has it been pre-computed?`); return r.json(); });
+      .then(r => {
+        if (!r.ok) {
+          // A missing preset usually is not an oversight: for the tightest
+          // combinations -- short days with a narrow resupply window -- the
+          // solver finds no legal itinerary at all, because days that must end
+          // at a campsite cover little ground while most resupply points sit
+          // outside the park.  "Has it been pre-computed?" reads like a broken
+          // link and sends people looking for a file; say what is actually
+          // true, and point at the control that can try for real.
+          throw new Error(
+            'No itinerary for this combination. Short hiking days with a '
+            + 'narrow resupply window may have no legal solution at all — '
+            + 'try a longer day, or more days between resupply. '
+            + (backendUrl() ? 'Or press Build itinerary to attempt it directly.' : ''));
+        }
+        return r.json();
+      });
     if (seq !== _loadSeq) return;   // superseded by a newer selection
     await renderItinerary(itinerary);
     _shownPace = { ...PACE_DEFAULT };   // presets are the published pace

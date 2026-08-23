@@ -2197,10 +2197,32 @@ for _job_i, (base_label, _tag, arc_seq) in enumerate(_split_jobs):
                                            MAX_DAY_SECONDS, 0,
                                            resupply_set, MAX_DAYS_BETWEEN_RESUPPLY)
         if refined is None and MAX_DAYS_BETWEEN_RESUPPLY is not None:
-            # The greedy heuristic is resupply-blind; drop candidates whose
-            # detour placement admits no resupply-feasible re-split.
-            print(f"    floor {frac:>5.0%}: no resupply-feasible split -- skipped")
-            continue
+            # The greedy heuristic is resupply-blind.  Resupply detours were
+            # planned into arc_seq before the sweep, but the greedy pass then
+            # inserts camp detours of its own, which stretch the walking time
+            # between resupply touches and can push a gap past the window --
+            # so every floor dies here and the configuration yields nothing at
+            # all.  Six of them did: 8h with r4/r7/r8, and three others.
+            #
+            # The augmented walk is still a valid walk, so re-plan resupply on
+            # it and try once more.  This is the same routine that seeded
+            # arc_seq, now applied to what the greedy actually produced.
+            repaired = insert_resupply_detours(aug, resupply_set,
+                                               MAX_DAYS_BETWEEN_RESUPPLY,
+                                               MAX_DAY_SECONDS,
+                                               f"{label} floor {frac:.0%}",
+                                               objective='fewest')
+            if repaired is not aug:
+                refined = day_split_dp_constrained(
+                    repaired, overnight_set, single_night, MAX_DAY_SECONDS, 0,
+                    resupply_set, MAX_DAYS_BETWEEN_RESUPPLY)
+                if refined is not None:
+                    aug = repaired
+                    print(f"    floor {frac:>5.0%}: resupply re-planned on the "
+                          f"augmented walk -> {len(refined)} days")
+            if refined is None:
+                print(f"    floor {frac:>5.0%}: no resupply-feasible split -- skipped")
+                continue
         n = len(refined) if refined is not None else len(cand)
         n_det = sum(1 for _, _, k, _ in aug if k.startswith("det_"))
         print(f"    floor {frac:>5.0%}: {n} days  ({n_det} detour arcs)")
