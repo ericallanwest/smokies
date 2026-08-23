@@ -21,9 +21,11 @@ import os
 import shutil
 import sys
 import tempfile
+import time
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
@@ -49,6 +51,50 @@ if PROFILES:
 # one core by default. Concurrent requests queue here (each solve is ~5-15 s).
 _solve_lock = asyncio.Lock()
 _cache: dict[str, dict] = {}
+
+# --- Abuse and overload limits -------------------------------------------
+# /solve is an unauthenticated CPU endpoint linked from a public page, and
+# --max-instances caps the bill, not the abuse: one client in a loop can hold
+# the solve lock indefinitely and lock everyone else out.
+#
+# The queue cap matters more than the per-IP cap.  Solves are serialised and
+# take 15-25 s, so without a depth limit the tenth caller waits three minutes
+# and times out anyway -- having queued behind nine solves that already
+# finished.  Refusing immediately is both cheaper and more honest.
+#
+# Both counters are per-instance.  With --max-instances 2 that is a factor of
+# two of slack, which is the right trade for keeping the service stateless;
+# tightening it would mean a shared store for a service whose whole point is
+# that it holds nothing.
+# Read from the environment so they can be retuned on a running service with
+# `gcloud run services update --set-env-vars`, without a rebuild.
+MAX_QUEUE_DEPTH = int(os.environ.get('MAX_QUEUE_DEPTH', 4))
+RATE_LIMIT_SOLVES = int(os.environ.get('RATE_LIMIT_SOLVES', 12))
+RATE_LIMIT_WINDOW = float(os.environ.get('RATE_LIMIT_WINDOW', 600))
+_waiting = 0
+_recent: dict[str, list[float]] = {}
+
+
+def _client_ip(request: Request) -> str:
+    # Cloud Run terminates TLS upstream, so request.client is the proxy; the
+    # original address is the first hop in X-Forwarded-For.
+    fwd = request.headers.get('x-forwarded-for', '')
+    return fwd.split(',')[0].strip() or (request.client.host if request.client else '?')
+
+
+def _rate_limited(ip: str) -> float:
+    """Seconds to wait before this client may solve again, 0 if allowed."""
+    now = time.monotonic()
+    hits = [t for t in _recent.get(ip, []) if now - t < RATE_LIMIT_WINDOW]
+    _recent[ip] = hits
+    if len(hits) >= RATE_LIMIT_SOLVES:
+        return round(RATE_LIMIT_WINDOW - (now - hits[0]), 1)
+    hits.append(now)
+    # Opportunistic sweep: without it the map grows with every distinct caller.
+    if len(_recent) > 2048:
+        for k in [k for k, v in _recent.items() if not v or now - v[-1] > RATE_LIMIT_WINDOW]:
+            _recent.pop(k, None)
+    return 0.0
 
 app = FastAPI(title='Smokies solve service')
 app.add_middleware(
@@ -167,25 +213,50 @@ async def _run_solver(req: SolveRequest, key: str):
 
 @app.get('/health')
 async def health():
-    return {'ok': True, 'cached': len(_cache)}
+    return {'ok': True, 'cached': len(_cache), 'queued': _waiting}
 
 
 @app.post('/solve')
-async def solve(req: SolveRequest):
+async def solve(req: SolveRequest, request: Request):
+    global _waiting
     key = _cache_key(req)
 
-    async def stream():
-        if key in _cache:
+    # A cache hit costs nothing, so it is served before either limit is
+    # consulted: repeating a solve someone already paid for is not abuse, and
+    # counting it would punish exactly the behaviour the cache rewards.
+    if key in _cache:
+        async def cached():
             yield _ndjson({'type': 'progress', 'pct': 100, 'label': 'Cached'})
             yield _ndjson({'type': 'result', **_cache[key]})
-            return
-        async with _solve_lock:
-            # Another request may have populated the cache while we queued.
-            if key in _cache:
-                yield _ndjson({'type': 'progress', 'pct': 100, 'label': 'Cached'})
-                yield _ndjson({'type': 'result', **_cache[key]})
-                return
-            async for chunk in _run_solver(req, key):
-                yield chunk
+        return StreamingResponse(cached(), media_type='application/x-ndjson')
+
+    if _waiting >= MAX_QUEUE_DEPTH:
+        return JSONResponse(status_code=503, headers={'Retry-After': '60'},
+                            content={'type': 'error', 'message':
+                                     'The solver is busy — several itineraries are '
+                                     'already being built. Try again in a minute.'})
+
+    wait = _rate_limited(_client_ip(request))
+    if wait:
+        return JSONResponse(status_code=429,
+                            headers={'Retry-After': str(int(wait) + 1)},
+                            content={'type': 'error', 'message':
+                                     f'Too many itineraries built from here. '
+                                     f'Try again in {int(wait / 60) + 1} minute(s).'})
+
+    async def stream():
+        global _waiting
+        _waiting += 1
+        try:
+            async with _solve_lock:
+                # Another request may have populated the cache while we queued.
+                if key in _cache:
+                    yield _ndjson({'type': 'progress', 'pct': 100, 'label': 'Cached'})
+                    yield _ndjson({'type': 'result', **_cache[key]})
+                    return
+                async for chunk in _run_solver(req, key):
+                    yield chunk
+        finally:
+            _waiting -= 1
 
     return StreamingResponse(stream(), media_type='application/x-ndjson')

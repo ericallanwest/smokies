@@ -70,6 +70,30 @@ conda run -n minispatial uvicorn app:app --port 8080
 Then in the app, open the site with `?backend=http://localhost:8080` to show
 the Custom Solve panel.
 
+## Limits
+
+`/solve` is an unauthenticated CPU endpoint linked from a public page, so two
+limits guard it. Both are per-instance and tunable without a rebuild
+(`gcloud run services update smokies-solver --set-env-vars KEY=VALUE`).
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `MAX_QUEUE_DEPTH` | 4 | callers allowed to wait on the solve lock; beyond it, `503` immediately |
+| `RATE_LIMIT_SOLVES` | 12 | solves per client per window |
+| `RATE_LIMIT_WINDOW` | 600 | window in seconds |
+
+The queue cap matters more than the per-client cap. Solves are serialised and
+take 15-25 s, so without a depth limit the tenth caller waits three minutes and
+times out anyway, having queued behind nine solves that already finished.
+Refusing at once is cheaper and more honest, and the response carries
+`Retry-After`.
+
+**Cache hits bypass both.** Repeating a solve someone already paid for costs
+nothing, and charging for it would punish exactly the behaviour the cache
+rewards. Only work that reaches the solver counts.
+
+`GET /health` reports `{"ok", "cached", "queued"}`.
+
 ## Deploy to Cloud Run
 
 One-time setup: install the gcloud CLI, `gcloud auth login`, create/pick a
