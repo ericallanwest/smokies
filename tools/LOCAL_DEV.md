@@ -75,14 +75,34 @@ SMOKIES_FINGERPRINT=1 python smokies_circuit_solver_20260509a.py \
   --max-hours 12 --json-out /tmp/x.json | grep '^FP '
 ```
 
-Expect `FP solution 54cc75dcab82d989`. If it matches, local runs are
-production runs: sweeps, preset regeneration and regression baselines can all
-happen on this machine for nothing, and Cloud Build is only needed to build
-the image that gets deployed.
+Confirmed working on 2026-08-24, on Ubuntu under WSL2:
 
-If it does not match, the remaining difference is CPU instruction set rather
-than OS, and the honest answer is that preset generation belongs in the
-container. `backend/cloudbuild-presets.yaml` already does that.
+```
+FP platform       Linux x86_64 py3.14.4 ortools9.15.6755 pandas3.0.5 networkx3.6.1
+FP model_proto    f1ab26d237ee6e4c (216125 bytes)
+FP objective      1450845
+FP solution       54cc75dcab82d989
+```
+
+Local runs are production runs. Sweeps, preset regeneration and regression
+baselines all happen on this machine for nothing, and Cloud Build is needed
+only to build the image that gets deployed.
+
+Note the Python version there: **3.14 on Linux gives the same answer as 3.12
+on Linux**, while 3.12 and 3.14 on Windows both gave the other one. That
+closes the question -- the operating system, or rather which wheel ortools
+ships for it, is the only variable. There is no need to match the image's
+Python version, only its platform.
+
+### Two things that bite during setup
+
+`Errno 2` from pip usually means the shell's working directory no longer
+exists -- `getcwd() failed` in the same session is the tell. `cd ~` and retry
+before suspecting the venv.
+
+The solver writes preset JSONs to `./docs/data` relative to the working
+directory, so `mkdir -p ~/gsmnp/docs/data` or an otherwise successful solve
+dies at the last step.
 
 ## Keeping it that way
 
