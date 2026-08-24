@@ -142,3 +142,35 @@ Notes:
 - No auth: the service is compute-only.  `--max-instances 2` caps the bill
   and the per-IP window caps abuse; add an API key check in `app.py` if that
   stops being enough.
+
+## Build hygiene
+
+Three settings keep build cost flat instead of climbing. None is expensive
+today -- the whole project's storage runs about eight cents a month -- but all
+three grow without bound if left alone.
+
+- `.gcloudignore` keeps rasters, archives, the QGIS project and the published
+  presets out of the uploaded tarball.  Every `builds submit` used to ship
+  ~78 MB that no build step opens, and one submit spent ten minutes uploading.
+  Now 15 MB.  It is a deny-list, not an allow-list: excluding a file a build
+  needs would break the build, so only demonstrably unused things are listed.
+
+- A lifecycle rule on `gs://<project>_cloudbuild` deletes `source/` objects
+  after 30 days.  Each build leaves its tarball there permanently otherwise;
+  nine builds had accumulated 699 MB.  Build outputs under `presets/` and
+  `sweeps/` are left alone -- they are small and worth keeping.
+
+- An Artifact Registry cleanup policy keeps the 5 most recent images and
+  deletes untagged ones older than 30 days.  Deliberately conservative on both
+  counts: Cloud Run revisions pin images by *digest*, so deleting one makes
+  that revision un-rollbackable, and `untagged` means the policy can never
+  remove an image something still points at by tag.  Five is one per existing
+  revision.
+
+Re-apply with:
+
+    gcloud storage buckets update gs://$PROJECT_ID_cloudbuild       --lifecycle-file=lifecycle.json
+    gcloud artifacts repositories set-cleanup-policies smokies       --location us-east1 --policy=cleanup.json --no-dry-run
+
+Both accept `--dry-run` first; the registry one logs its intentions to Cloud
+Logging rather than printing them.
