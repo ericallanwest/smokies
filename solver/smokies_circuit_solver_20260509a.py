@@ -2966,6 +2966,12 @@ def _build_preset(label, days):
         "circuit": label,
         "n_days": len(days),
         "total_required_miles": total_req_miles,
+        # Where this itinerary actually begins.  Published presets are built
+        # from a swept start rather than the default one, and the app shows
+        # this in the Start field so the hiker can see where they are being
+        # sent -- and so a live re-solve at the same settings reproduces the
+        # published day count instead of the default's, which is usually worse.
+        "start_node": days[0][0][0] if days and days[0] else None,
         "days": [],
     }
     if MAX_DAYS_BETWEEN_RESUPPLY is not None:
