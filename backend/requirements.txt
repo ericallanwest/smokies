@@ -1,5 +1,18 @@
-fastapi>=0.115
-uvicorn>=0.30
-pandas>=2.2
-networkx>=3.3
-ortools>=9.10
+# Pinned exactly, not floated.
+#
+# CP-SAT returns one of several equally optimal direction assignments, and
+# which one depends on the solver binary.  A seeded, single-threaded solve is
+# reproducible against a fixed build and not against a different one -- so an
+# unpinned `ortools>=9.10` meant the next rebuild could silently start
+# producing a different itinerary at the same cost, and the published presets
+# would drift out of agreement with the service with nothing to show for it.
+#
+# These are the versions the image resolved to on 2026-08-23 and that the
+# published presets were generated against.  Bumping any of them is a
+# deliberate act: rebuild, regenerate the presets, and check the fingerprint
+# (SMOKIES_FINGERPRINT=1) still matches what the service produces.
+fastapi==0.141.1
+uvicorn==0.52.4
+pandas==3.0.5
+networkx==3.6.1
+ortools==9.15.6755

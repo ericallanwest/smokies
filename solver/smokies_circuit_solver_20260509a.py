@@ -879,6 +879,26 @@ def solve_step4_cpsat(G, required_rows, MAX_DH=30, time_limit=120,
             model.Add(dir_vars[rid] == (0 if want == 'fwd' else 1))
 
     all_arcs = list(G.edges(keys=True))
+
+    # Fingerprint the model, not just its answer.  Windows and Linux return
+    # different members of the same optimal set at identical objective value,
+    # and the two explanations need different fixes: if the MODELS differ the
+    # input ordering is unstable and that is ours to repair, whereas identical
+    # models with different answers is solver tie-breaking we cannot reach.
+    if os.environ.get('SMOKIES_FINGERPRINT'):
+        import hashlib, platform
+        from importlib.metadata import version as _v
+        def _h(obj):
+            return hashlib.sha256(repr(obj).encode()).hexdigest()[:16]
+        print("FP platform      ", platform.system(), platform.machine(),
+              "py" + platform.python_version(),
+              "ortools" + _v('ortools'), "pandas" + _v('pandas'),
+              "networkx" + _v('networkx'))
+        print("FP required_order", _h(list(required_endpoints.items())))
+        print("FP arc_order     ", _h(all_arcs))
+        print("FP node_order    ", _h(list(G.nodes())))
+        print("FP arc_weights   ", _h([G[u][v][k]['weight'] for u, v, k in all_arcs]))
+        print("FP forced_dirs   ", _h(sorted((forced_dirs or {}).items())))
     dh_vars  = {(u, v, k): model.NewIntVar(0, MAX_DH, f'dh_{i}')
                 for i, (u, v, k) in enumerate(all_arcs)}
 
@@ -960,6 +980,18 @@ def solve_step4_cpsat(G, required_rows, MAX_DH=30, time_limit=120,
     if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         print("  No feasible solution found -- falling back to greedy+LS")
         return None
+
+    if os.environ.get('SMOKIES_FINGERPRINT'):
+        import hashlib
+        # ortools 9.15 returns a native CpModelProto without protobuf's
+        # SerializeToString; str() of it is stable and enough to compare.
+        proto = str(model.Proto()).encode()
+        print("FP model_proto   ", hashlib.sha256(proto).hexdigest()[:16],
+              f"({len(proto)} bytes)")
+        print("FP objective     ", int(solver.ObjectiveValue()))
+        print("FP solution      ", hashlib.sha256(
+            repr([solver.Value(dir_vars[r]) for r in required_endpoints]).encode()
+        ).hexdigest()[:16])
 
     new_chosen = {}
     for rid, (A, B) in required_endpoints.items():

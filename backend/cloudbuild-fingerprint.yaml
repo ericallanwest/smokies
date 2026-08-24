@@ -1,0 +1,13 @@
+# Fingerprint the CP-SAT model as the service builds it, so a local run can be
+# compared against it line for line.
+#   gcloud builds submit --config backend/cloudbuild-fingerprint.yaml .
+steps:
+  - name: us-east1-docker.pkg.dev/$PROJECT_ID/smokies/solver:latest
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        cd /workspace/solver
+        SMOKIES_FINGERPRINT=1 python smokies_circuit_solver_20260509a.py \
+          --max-hours 12 --json-out /workspace/fp.json 2>&1 | grep '^FP ' || true
+timeout: 900s
