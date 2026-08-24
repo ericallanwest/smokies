@@ -49,7 +49,7 @@ jobs:
           set -euo pipefail
           curl -sS --max-time 240 -X POST "$SOLVER_URL/solve" \
             -H 'Content-Type: application/json' \
-            -d '{"max_hours":12,"time_budget":90}' > result.ndjson
+            -d '{"max_hours":12,"time_budget":90,"start_node":"TH117"}' > result.ndjson
           python - <<'PY'
           import json
           result = None
@@ -64,7 +64,14 @@ jobs:
                   result = obj
           assert result, 'stream ended without a result'
 
-          published = json.load(open('docs/data/preset_open_12h.json'))['n_days']
+          # Pinned to the preset's own start.  Published presets are solved
+          # from a swept start rather than the default one, so an unpinned
+          # request would return the default's day count and disagree with the
+          # file for a reason that is not a fault.
+          pub = json.load(open('docs/data/preset_open_12h.json'))
+          assert pub['start_node'] == 'TH117', (
+              f"preset now starts at {pub['start_node']}; update the pin above")
+          published = pub['n_days']
           got = result['open']['n_days']
           cpsat = result['params']['cpsat']
           print(f"open {got} days (preset says {published}), cpsat {cpsat}")

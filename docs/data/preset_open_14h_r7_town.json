@@ -2,6 +2,7 @@
   "circuit": "Open",
   "n_days": 33,
   "total_required_miles": 796.3000000000001,
+  "start_node": "TH245",
   "days": [
     {
       "day": 1,

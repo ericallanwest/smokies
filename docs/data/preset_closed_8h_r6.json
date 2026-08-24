@@ -2,6 +2,7 @@
   "circuit": "Closed",
   "n_days": 71,
   "total_required_miles": 796.3000000000001,
+  "start_node": "TH106",
   "days": [
     {
       "day": 1,

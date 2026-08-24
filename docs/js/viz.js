@@ -662,6 +662,12 @@ async function renderItinerary(itinerary) {
   const meta = {
     circuit: itinerary.circuit,
     n_days:  itinerary.n_days,
+    // Where this itinerary begins.  Published presets are built from a swept
+    // start rather than the default one -- worth 120 days across the 114 --
+    // and the Start field is filled in from this so the hiker can see it, and
+    // so re-solving at the same settings returns the published day count
+    // rather than the default start's, which is usually worse.
+    start_node: itinerary.start_node || null,
     total_required_miles: itinerary.total_required_miles,
     // Present only on resupply presets: minimal stop schedule computed by
     // the solver (hiker starts fully supplied, stops as late as the window
@@ -700,6 +706,7 @@ async function loadPreset(filename) {
     if (seq !== _loadSeq) return;   // superseded by a newer selection
     await renderItinerary(itinerary);
     _shownPace = { ...PACE_DEFAULT };   // presets are the published pace
+    applyPresetStart();
     renderPace();
   } catch (err) {
     if (seq !== _loadSeq) return;
@@ -787,6 +794,20 @@ function renderPace() {
       ? 'Published pace — this itinerary is pre-solved at these settings.'
       : 'This itinerary was built at this pace.';
   return p;
+}
+
+// Published presets are solved from a chosen start, not the default one, so
+// the Start field is filled in from the itinerary on screen.  Left editable:
+// clearing it or typing another trailhead is a normal thing to want, and the
+// solver honours it either way.  Only ever overwrites a field the hiker has
+// not touched -- an explicit choice outranks ours.
+function applyPresetStart() {
+  const el = document.getElementById('startNode');
+  if (!el || !META || el.dataset.userEdited === '1') return;
+  const node = META.start_node;
+  el.value = node ? (_byId.get(node)?.name ?? node) : '';
+  _shownEnds = { start: node || null, end: null };
+  renderEndpoints();
 }
 
 // ── CSV download ──────────────────────────────────────────────────────────
@@ -1369,8 +1390,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnCsv')?.addEventListener('click', downloadCsv);
     for (const id of ['startNode', 'endNode']) {
       const el = document.getElementById(id);
-      if (el) ['input', 'change'].forEach(ev =>
-        el.addEventListener(ev, renderEndpoints));
+      if (el) ['input', 'change'].forEach(ev => el.addEventListener(ev, () => {
+        el.dataset.userEdited = '1';
+        renderEndpoints();
+      }));
     }
   }
 
