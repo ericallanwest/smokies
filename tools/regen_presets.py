@@ -18,7 +18,10 @@ import sys
 import time
 
 ROOT = os.environ.get('REPO', '/workspace')
-SOLVER = os.path.join(ROOT, 'solver', 'smokies_circuit_solver_20260509a.py')
+# SOLVER and STARTS can be pointed anywhere, so this runs against a working
+# copy laid out however suits, not only the repo layout Cloud Build uploads.
+SOLVER = os.environ.get('SOLVER') or os.path.join(
+    ROOT, 'solver', 'smokies_circuit_solver_20260509a.py')
 OUT = os.environ.get('OUT', os.path.join(ROOT, 'out'))
 os.makedirs(OUT, exist_ok=True)
 

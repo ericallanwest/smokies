@@ -23,10 +23,14 @@ import time
 from concurrent.futures import ProcessPoolExecutor
 
 ROOT = os.environ.get('REPO', '/workspace')
-SOLVER = os.path.join(ROOT, 'solver', 'smokies_circuit_solver_20260509a.py')
+# SOLVER and STARTS can be pointed anywhere, so this runs against a working
+# copy laid out however suits, not only the repo layout Cloud Build uploads.
+SOLVER = os.environ.get('SOLVER') or os.path.join(
+    ROOT, 'solver', 'smokies_circuit_solver_20260509a.py')
 SOLVER_DIR = os.path.dirname(SOLVER)
 OUT = os.environ.get('OUT', os.path.join(ROOT, 'out'))
-STARTS = os.path.join(ROOT, 'docs', 'data', 'start_points.json')
+STARTS = os.environ.get('STARTS') or os.path.join(
+    ROOT, 'docs', 'data', 'start_points.json')
 
 MAX_HOURS = os.environ.get('MAX_HOURS', '12')
 RESUPPLY = os.environ.get('RESUPPLY', '')          # '' or e.g. '6'
