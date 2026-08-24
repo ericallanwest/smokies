@@ -69,7 +69,8 @@ def main():
     # 47 of 57 -- needs only one.
     jobs = sorted({(cfg, k.get('start'))
                    for cfg, circuits in best.items()
-                   for k in circuits.values()})
+                   for k in circuits.values()},
+                  key=lambda j: (j[0], j[1] or ''))   # unpinned sorts first
     print(f"{len(jobs)} solves for {len(best)} configurations "
           f"on {WORKERS} workers", flush=True)
 
