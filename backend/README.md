@@ -32,9 +32,6 @@ value for both is how you ask for a closed circuit: the answer then arrives in
 `closed` rather than `open`, and `params.closed_from_equal_endpoints` says so.
 `end_node` requires `start_node`.
 
-`town_nights` is still accepted and ignored -- resupply points are always legal
-overnights now.
-
 ### Hiking pace
 
 `tobler_v0` (3000-9000 m/h), `tobler_k` (2.0-6.0) and `tobler_peak` (-0.20 to

@@ -10,10 +10,6 @@ _ap = argparse.ArgumentParser(description='GSMNP circuit solver')
 _ap.add_argument('--max-hours', type=float, default=12.0, help='Max hiking hours per day (default: 12)')
 _ap.add_argument('--max-resupply-days', type=int, default=None,
                  help='Max days between resupply visits (default: disabled)')
-_ap.add_argument('--town-nights', action='store_true',
-                 help='Accepted and ignored. Resupply points are always legal '
-                      'overnights now; the flag survives so a cached frontend '
-                      'cannot break mid-deploy.')
 _ap.add_argument('--hiked', type=str, default=None,
                  help='Comma-separated edge IDs already hiked (900-Miler input); '
                       'they become non-required but stay usable as connectors')
@@ -109,8 +105,6 @@ def envelope_base() -> dict:
             # The answer is then in "closed", not "open".
             "closed_from_equal_endpoints": globals().get(
                 'CLOSED_FROM_EQUAL_ENDPOINTS', False),
-            # Vestigial: resupply points are always legal overnights now.
-            "town_nights": True,
             # What the hiker asked for, and where the walk actually begins --
             # they differ when nothing was pinned.
             "start_node_requested": _args.start_node,
@@ -179,12 +173,11 @@ SUPPORTED = _args.style == 'supported'
 # Town nights: resupply points double as legal overnights (motel/hostel bed).
 # Town beds have no consecutive-night cap, unlike shelters (1) and BC sites (3).
 #
-# This used to be opt-in via --town-nights, defaulting off, which published
-# itineraries that walked past a bed to reach a backcountry site.  Two of the
-# ten resupply points are frontcountry campgrounds that could always end a day
-# anyway, and the other eight are places a hiker can demonstrably sleep, so
-# there was never a reason for the default to be the restrictive one.  The flag
-# is still accepted and ignored so a cached frontend cannot break mid-deploy.
+# This was opt-in via --town-nights until 2026-08-24, defaulting off, which
+# published itineraries that walked past a bed to reach a backcountry site.
+# Two of the ten resupply points are frontcountry campgrounds that could always
+# end a day anyway, and the other eight are places a hiker can demonstrably
+# sleep, so there was never a reason for the default to be the restrictive one.
 town_overnights: set = set(RESUPPLY_NODES)
 # Under Supported every legal day-break is a road the crew can drive to, so
 # none of them carry a consecutive-night cap either.

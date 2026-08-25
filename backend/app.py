@@ -132,9 +132,6 @@ class SolveRequest(BaseModel):
     # road and no resupply window applies.  A Literal rather than a bool so a
     # future multi-leg style is an added value, not a second flag.
     style: Literal['self-supported', 'supported'] = 'self-supported'
-    # Accepted and ignored: resupply points are always legal overnights now.
-    # Kept so a cached frontend cannot 422 during a rollout.
-    town_nights: bool = False
     hiked: list[str] = Field(default_factory=list, max_length=1000)
     time_budget: float = Field(45.0, ge=5, le=120)
     # Tobler's hiking function, W = v0 * exp(-k * |slope - peak|).  Omit all
@@ -154,8 +151,6 @@ def _cache_key(req: SolveRequest) -> str:
         'start_node': (req.start_node or '').upper(),
         'end_node': (req.end_node or '').upper(),
         'style': req.style,
-        # town_nights is deliberately absent: it no longer changes the answer,
-        # so including it would split the cache for nothing.
         'hiked': sorted(req.hiked),
         'time_budget': req.time_budget,
         'tobler': [req.tobler_v0, req.tobler_k, req.tobler_peak],
