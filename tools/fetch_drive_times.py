@@ -14,8 +14,12 @@ the pairs, prints what the call would cost at a rate you supply, and stops.
     python tools/fetch_drive_times.py --rate-per-1000 5.00
 
     # actually fetch, filling in only what the cache is missing
-    GOOGLE_MAPS_API_KEY=... python tools/fetch_drive_times.py \
-        --rate-per-1000 5.00 --confirm
+    python tools/fetch_drive_times.py --rate-per-1000 5.00 --free-calls 10000 \
+        --confirm
+
+The key comes from GOOGLE_MAPS_API_KEY, read from the environment or from a
+.env beside the repo root (.env is gitignored; .env.example shows the shape).
+It is never a command-line flag, which would put it in shell history.
 
 The rate is yours to supply from the Google Cloud console rather than baked in
 here: Maps pricing was restructured in 2025 and how Routes calls land against
@@ -28,11 +32,28 @@ not move, so this is paid once.
 import argparse
 import json
 import os
-import sys
 import time
 
 FERRY = {'TI051', 'TI053', 'TI064', 'BC090'}
 ENDPOINT = 'https://routes.googleapis.com/directions/v2:computeRoutes'
+
+
+def load_dotenv(path='.env'):
+    """Minimal .env reader: KEY=value lines, # comments, no export syntax.
+
+    Deliberately not python-dotenv -- one file, one variable, and the tool
+    should not need a dependency to be run once.  Environment wins over the
+    file, so a shell export can override without editing anything.
+    """
+    if not os.path.exists(path):
+        return
+    with open(path, encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+            k, v = line.split('=', 1)
+            os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
 
 
 def collectible(node):
@@ -122,11 +143,16 @@ def main():
                     help='default: <data>/drive_times.json')
     ap.add_argument('--rate-per-1000', type=float, required=True,
                     help='USD per 1000 Routes calls, from your own console')
+    ap.add_argument('--free-calls', type=int, default=0,
+                    help='calls still free this month on your plan (Routes '
+                         'Essentials currently allows 10000); billable is '
+                         'whatever the request exceeds it by')
     ap.add_argument('--confirm', action='store_true',
                     help='actually call the API; without this nothing is sent')
     ap.add_argument('--limit', type=int, default=None,
                     help='fetch at most N pairs this run')
     A = ap.parse_args()
+    load_dotenv()
     out_path = A.out or os.path.join(A.data, 'drive_times.json')
 
     pairs, walk = candidate_pairs(A.data)
@@ -154,11 +180,20 @@ def main():
     print(f"  already cached                      : {len(pairs) - len(missing) - len(unlocatable)}")
     print(f"  no coordinates, skipped             : {len(unlocatable)}")
     print(f"  would be requested                  : {len(missing)}")
-    cost = len(missing) * A.rate_per_1000 / 1000.0
-    print(f"\n  1 Routes call per pair, at ${A.rate_per_1000:.2f}/1000")
+    billable = max(0, len(missing) - A.free_calls)
+    cost = billable * A.rate_per_1000 / 1000.0
+    print()
+    print(f"  1 Routes call per pair, at ${A.rate_per_1000:.2f}/1000")
+    if A.free_calls:
+        print(f"  free calls declared this month      : {A.free_calls:,}")
+    print(f"  billable calls                      : {billable}")
     print(f"  ESTIMATED COST                      : ${cost:.2f}")
-    print("  (your account's free tier may absorb this -- check the console;"
-          "\n   this tool has no way to know and will not guess)")
+    if A.free_calls and not billable:
+        print("  (inside the allowance you declared -- this tool takes your "
+              "word for it and cannot verify it against the console)")
+    elif not A.free_calls:
+        print("  (a free tier may absorb this -- pass --free-calls to account "
+              "for it; this tool has no way to know and will not guess)")
 
     if missing[:10]:
         print("\nsample of what would be requested:")

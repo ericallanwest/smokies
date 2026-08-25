@@ -8,3 +8,7 @@ __pycache__/
 solver/docs/
 solver/smokies_itinerary_*.txt
 !solver/smokies_itinerary_12h.txt
+
+# API keys.  fetch_drive_times.py reads GOOGLE_MAPS_API_KEY from here; the file
+# itself must never be committed.  See .env.example for the shape.
+.env
