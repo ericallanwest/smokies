@@ -12,3 +12,7 @@ solver/smokies_itinerary_*.txt
 # API keys.  fetch_drive_times.py reads GOOGLE_MAPS_API_KEY from here; the file
 # itself must never be committed.  See .env.example for the shape.
 .env
+
+# CARP batch output.  tools/carp_supported.py writes day assignments, candidate
+# presets and its log here; only presets promoted into docs/data are committed.
+out/
