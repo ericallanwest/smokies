@@ -1,5 +1,5 @@
 {
- "note": "Driving seconds between crew pick-up points. Built by tools/fetch_drive_times.py; trailheads do not move, so this is fetched once and committed.",
+ "note": "Driving seconds between crew pick-up points. Built by tools/fetch_drive_times.py; trailheads do not move, so this is fetched once and committed. Entries carrying \"source\": \"local knowledge\" are estimates, not API measurements, and are kept because the road exists even though Google will not route on it.",
  "drive_seconds": {
   "CGABR|TH001": {
    "seconds": 136,
@@ -80,6 +80,18 @@
   "TH208|TH212": {
    "seconds": 321,
    "metres": 4051
+  },
+  "TH225|TH228": {
+   "seconds": 120,
+   "metres": null,
+   "source": "local knowledge",
+   "note": "Straight Fork (Round Bottom) Rd, seasonal gravel; the Routes API returns no route. ~2 min, driven in person."
+  },
+  "TH228|TH225": {
+   "seconds": 120,
+   "metres": null,
+   "source": "local knowledge",
+   "note": "Straight Fork (Round Bottom) Rd, seasonal gravel; the Routes API returns no route. ~2 min, driven in person."
   },
   "TH232|TH231": {
    "seconds": 24,

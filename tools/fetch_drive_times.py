@@ -28,6 +28,12 @@ worse than no number.
 
 Results are cached in docs/data/drive_times.json and committed.  Trailheads do
 not move, so this is paid once.
+
+A few entries carry "source": "local knowledge" -- roads that exist but that
+Google will not route on, Straight Fork between Beech Gap and Hyatt Ridge being
+the one that turned up.  They are cached like any other pair, so this tool
+leaves them alone rather than re-querying and re-failing, and they are labelled
+so nobody later mistakes an estimate for a measurement.
 """
 import argparse
 import json
