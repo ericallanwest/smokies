@@ -34,7 +34,7 @@ RESUPPLY = [4, 5, 6, 7, 8, None]       # None = unlimited, the slider's right ed
 # water where it is hours from tarmac -- and drop the floor to 9.36 h, which is
 # why supported starts at 10 h rather than 14.  tools/road_bound.py recomputes
 # both figures from the edge list if the network changes.
-SUPPORTED_MIN_HOURS = 10
+SUPPORTED_MIN_HOURS = 9
 SUPPORTED_REASON = (
     "A supported hiker sleeps in town every night, so every day has to both "
     "begin and end somewhere the crew can reach. Even using the Fontana Lake "
@@ -86,6 +86,9 @@ def main():
             # Which landings this itinerary depends on, so the app can say what
             # has to be booked before anyone commits to it.
             entry["ferry_landings"] = d.get('ferry_landings', [])
+            # Days no arrangement could fit inside the budget. The app has to
+            # show this before someone plans around a number they cannot walk.
+            entry["days_over_budget"] = len(d.get('days_over_budget', []))
         presets[key_for(style, hours, rmax)] = entry
 
     # Name every combination the sliders can reach, so a gap is a statement

@@ -111,6 +111,9 @@ def envelope_base() -> dict:
             # Ferry landings this solve was allowed to use, and the subset it
             # actually needed -- a hiker books off the second list, not the first.
             "shuttle_nodes_offered": sorted(SHUTTLE_NODES),
+            # True when the day budget could not be met at all and the solver
+            # minimised over-budget days instead of returning nothing.
+            "over_budget_allowed": globals().get('OVER_BUDGET_OK', False),
             # True when the caller pinned the same node as start and finish.
             # The answer is then in "closed", not "open".
             "closed_from_equal_endpoints": globals().get(
@@ -179,6 +182,12 @@ MAX_DAYS_BETWEEN_RESUPPLY = _args.max_resupply_days  # None = disabled
 # the gap between one day's end and the next day's start, and resupply stops
 # being a constraint at all.
 SUPPORTED = _args.style == 'supported'
+RELAX_CEILING = None       # set alongside OVER_BUDGET_OK when relaxing
+# Set by the driver when a strict split finds nothing: parts of the park cannot
+# be covered inside a short supported day at any day count, and an itinerary
+# that names the long days beats no itinerary at all.  Off for the first
+# attempt so a feasible configuration is never quietly relaxed.
+OVER_BUDGET_OK = False
 
 # Town nights: resupply points double as legal overnights (motel/hostel bed).
 # Town beds have no consecutive-night cap, unlike shelters (1) and BC sites (3).
@@ -1729,6 +1738,41 @@ if SUPPORTED:
     single_night = set()
     town_overnights = set(overnight_set)
 
+    # Is a fully in-budget split even possible?  Every required arc has to sit
+    # inside one day, and a supported day runs pick-up to pick-up, so the arc
+    # costs at least (nearest pick-up -> u) + the arc + (v -> nearest pick-up).
+    # The largest of those is a hard floor on the day length, independent of
+    # how the walk is cut -- so if it exceeds the budget, no arrangement of days
+    # can stay inside it and there is no point pretending otherwise.
+    #
+    # Relaxing here rather than after a failed attempt means the solver never
+    # quietly loosens a configuration that could have been solved strictly.
+    _INF = float('inf')
+    _out_of = {n: min((D[n].get(c, _INF) for c in overnight_set), default=_INF)
+               for n in G.nodes()}
+    _back_of = {n: min((D[c].get(n, _INF) for c in overnight_set), default=_INF)
+                for n in G.nodes()}
+    _floor, _worst = 0, None
+    for _u, _v, _k, _d in G.edges(keys=True, data=True):
+        if not _d.get('required'):
+            continue
+        _need = _back_of[_u] + _d['weight'] + _out_of[_v]
+        if _need < _INF and _need > _floor:
+            _floor, _worst = _need, (_d.get('trail', '?'), _u, _v)
+    if _floor > MAX_DAY_SECONDS:
+        OVER_BUDGET_OK = True
+        # The ceiling everything downstream works to once we accept overruns.
+        # Starting from the proven floor rather than a multiple of the budget
+        # keeps the overrun as small as the park allows; split_days_balanced
+        # raises it further only if the walk still cannot be cut.
+        RELAX_CEILING = int(_floor) + 1
+        print()
+        print(f"No supported itinerary fits inside {_args.max_hours:g}h: "
+              f"{_worst[0]} {_worst[1]}->{_worst[2]} needs {_floor / 3600:.2f}h "
+              f"pick-up to pick-up, whichever way the days are cut.")
+        print(f"  Building the itinerary with the fewest over-budget days "
+              f"instead of returning nothing.")
+
 
 def find_nearest_valid_overnight(from_node, D, overnight_nodes,
                                   last_on, consec, single_night):
@@ -1814,7 +1858,8 @@ def _supported_trim_tables(arc_seq):
 
 
 def day_split_dp_constrained(arc_seq, overnight_set, single_night, max_s, min_s,
-                              resupply_set=None, max_days_resupply=None):
+                              resupply_set=None, max_days_resupply=None,
+                              hard_s=None):
     """
     DP partition with max_s, min_s (last day exempt), and consecutive overnight
     constraints: single_night nodes cap at 1 consecutive night, other BC nodes at 3.
@@ -1826,11 +1871,31 @@ def day_split_dp_constrained(arc_seq, overnight_set, single_night, max_s, min_s,
     through a resupply node, not only when it ends at one.  The hiker starts
     already supplied (days_since_resupply=0), and the final day is exempt.
 
+    Under Supported the day budget is a preference, not a wall.  Parts of the
+    park cannot be covered road-to-road inside a short day at all -- the AT
+    between Hughes Ridge and Tricorner Knob needs 9.35 h however it is cut,
+    because the crew can only meet the hiker at either end of it -- and
+    returning nothing there tells the hiker less than an itinerary with three
+    long days does.  So the objective is lexicographic: fewest days that run
+    over budget, then the least total time by which they do, then fewest days.
+    The middle term is not decoration -- without it an over-budget day costs the
+    same however long it runs, and the split cheerfully builds a 24 h day to
+    save a day elsewhere.  When a fully in-budget split exists all three reduce
+    to today's answer.
+
     Recursion depth ~ number of days (~50-70), well within Python's limit.
     Returns list of day arc-lists, or None if infeasible.
     """
     N = len(arc_seq)
-    INF = float('inf')
+    INF = (float('inf'), float('inf'), float('inf'))
+    # How far a day may run past the budget.  Only Supported ever relaxes:
+    # self-supported sleeps where it stops, so a day that does not fit is a day
+    # that does not fit.  The caller escalates this until a split exists,
+    # because how far it has to give depends on how long the walk runs between
+    # points the crew can reach, which is a property of the route rather than
+    # something worth guessing at.
+    if hard_s is None:
+        hard_s = max_s
     memo: dict = {}
     back: dict = {}
     use_resupply = (max_days_resupply is not None and resupply_set is not None)
@@ -1869,7 +1934,7 @@ def day_split_dp_constrained(arc_seq, overnight_set, single_night, max_s, min_s,
 
     def dp(i, last_on, consec, days_since_resupply):
         if i == N:
-            return 0
+            return (0, 0, 0)
         key = (i, last_on, consec, days_since_resupply) if use_resupply \
               else (i, last_on, consec)
         if key in memo:
@@ -1880,11 +1945,12 @@ def day_split_dp_constrained(arc_seq, overnight_set, single_night, max_s, min_s,
             accum += arc_seq[j][3]['weight']
             is_last = (j == N - 1)
             cut_h = cut_t = 0
+            over = 0
             if SUPPORTED:
                 # accum still bounds the day from above once the deepest
                 # possible trim is allowed for, so it is still safe to stop
                 # extending -- just later than in the untrimmed case.
-                if accum - _max_run_s * 2 > max_s:
+                if accum - _max_run_s * 2 > hard_s:
                     break
                 cut = _cut(i, j)
                 if cut is None:
@@ -1892,9 +1958,12 @@ def day_split_dp_constrained(arc_seq, overnight_set, single_night, max_s, min_s,
                     # where a vehicle can reach, so it is not a day.
                     continue
                 cut_h, cut_t, walked = cut
-                if walked > max_s:
+                if walked > hard_s:
                     continue
-                if walked < min_s and not is_last:
+                over = max(0, walked - max_s)
+                # A floor is about packing days evenly; it has no business
+                # rejecting a day that is already over the ceiling.
+                if walked < min_s and not is_last and not over:
                     continue
                 to_node = arc_seq[j - cut_t][0] if cut_t else arc_seq[j][1]
             else:
@@ -1926,8 +1995,9 @@ def day_split_dp_constrained(arc_seq, overnight_set, single_night, max_s, min_s,
                 new_dsr = 0
 
             sub = dp(j + 1, new_on, new_consec, new_dsr)
-            if 1 + sub < best:
-                best      = 1 + sub
+            cand = ((1 if over else 0) + sub[0], over + sub[1], 1 + sub[2])
+            if cand < best:
+                best      = cand
                 best_data = (j + 1, new_on, new_consec, new_dsr, cut_h, cut_t)
         memo[key] = best
         if best < INF:
@@ -2062,6 +2132,12 @@ def shortest_nonlast(dd):
     return min(sum(d['weight'] for *_, d in day) for day in pool)
 
 
+def n_over_budget(dd):
+    """Days that run past the daily budget.  Always 0 for a strict split."""
+    return sum(1 for day in dd
+               if sum(d['weight'] for *_, d in day) > MAX_DAY_SECONDS)
+
+
 def _total_walking(dd):
     """Every second the hiker is moving, deadhead included."""
     return sum(d['weight'] for day in dd for *_, d in day)
@@ -2091,6 +2167,12 @@ def pick_itinerary(items, days_of=lambda x: x):
     # ranking it only across variants let the greedy floor sweep quietly buy a
     # town visit with 8.9h of walking, which is a trade the ranking says we do
     # not make.
+    # A day the hiker cannot finish outranks everything else here: it is a
+    # promise the itinerary cannot keep, where the rest of these are
+    # preferences.  Costs nothing on a strict split, where every count is 0.
+    best_over = min(n_over_budget(days_of(i)) for i in items)
+    items = [i for i in items
+             if n_over_budget(days_of(i)) == best_over] or items
     best_stops = min(_n_resupply_stops(days_of(i)) for i in items)
     items = [i for i in items
              if _n_resupply_stops(days_of(i)) == best_stops] or items
@@ -2152,16 +2234,30 @@ def split_days_balanced(arc_seq):
     base = day_split_dp_constrained(arc_seq, overnight_set, single_night,
                                     MAX_DAY_SECONDS, 0,
                                     resupply_set, MAX_DAYS_BETWEEN_RESUPPLY)
+    hard = MAX_DAY_SECONDS
+    if base is None and SUPPORTED and OVER_BUDGET_OK:
+        # Let the ceiling out a step at a time and stop at the first that
+        # works, so the itinerary overruns by as little as the route allows
+        # rather than by whatever a fixed multiplier happened to permit.
+        for _mult in (1.0, 1.25, 1.5, 2.0, 3.0):
+            hard = max(RELAX_CEILING, int(RELAX_CEILING * _mult))
+            base = day_split_dp_constrained(
+                arc_seq, overnight_set, single_night, MAX_DAY_SECONDS, 0,
+                resupply_set, MAX_DAYS_BETWEEN_RESUPPLY, hard_s=hard)
+            if base is not None:
+                break
     if base is None:
         return None, None
-    target = len(base)
+    # Hold both: a floor may not buy a shorter day by adding an over-budget one.
+    target = (n_over_budget(base), len(base))
     lo, hi, best = 0, MAX_DAY_SECONDS, base
     while hi - lo > 60:                      # 1-minute precision
         mid = (lo + hi) // 2
         trial = day_split_dp_constrained(arc_seq, overnight_set, single_night,
                                          MAX_DAY_SECONDS, mid,
-                                         resupply_set, MAX_DAYS_BETWEEN_RESUPPLY)
-        if trial is not None and len(trial) == target:
+                                         resupply_set, MAX_DAYS_BETWEEN_RESUPPLY,
+                                         hard_s=hard)
+        if trial is not None and (n_over_budget(trial), len(trial)) == target:
             best, lo = trial, mid
         else:
             hi = mid
@@ -2781,7 +2877,11 @@ for _job_i, (base_label, _tag, arc_seq) in enumerate(_split_jobs):
     # trailhead now, because overnight_set is the road-accessible set.
     # What the crew actually saves is deadhead the van can drive, road to road,
     # which is what the day-split trim deletes.
-    planned_seq = insert_overnight_detours(arc_seq, MAX_DAY_SECONDS, label)
+    # The detour planner has to work to the same ceiling as the split, or it
+    # stalls looking for a pick-up within a budget nothing can meet and the DP
+    # inherits a walk with unbreakable stretches in it.
+    planned_seq = insert_overnight_detours(
+        arc_seq, RELAX_CEILING if OVER_BUDGET_OK else MAX_DAY_SECONDS, label)
     if planned_seq is not None:
         days_plan, floor_plan = split_days_balanced(planned_seq)
         days_plan = _clean(days_plan, "campsite-detour plan")
@@ -2902,9 +3002,11 @@ for _job_i, (base_label, _tag, arc_seq) in enumerate(_split_jobs):
     if days_base is not None:
         _remedies.append((days_base, "DP (min days)"))
     if _remedies:
-        _fewest = min(len(r[0]) for r in _remedies)
+        # (over-budget days, days): a shorter itinerary that asks the hiker to
+        # walk past the budget is not the better one.
+        _fewest = min((n_over_budget(r[0]), len(r[0])) for r in _remedies)
         days, method = pick_itinerary([r for r in _remedies
-                                       if len(r[0]) == _fewest],
+                                       if (n_over_budget(r[0]), len(r[0])) == _fewest],
                                       days_of=lambda r: r[0])
 
     if days is None:
@@ -2930,7 +3032,7 @@ for base_label in ("Closed", "Open"):
     # detour, so nothing cheaper-to-measure may outrank it.  Everything still
     # tied then goes through the shared balance-floor / least-walking rule.
     def _primary(c):
-        return (len(c[0]), _n_resupply_stops(c[0]))
+        return (n_over_budget(c[0]), len(c[0]), _n_resupply_stops(c[0]))
     _best_primary = min(_primary(c) for c in cands)
     _tied = [c for c in cands if _primary(c) == _best_primary]
     days, tag = pick_itinerary(_tied, days_of=lambda c: c[0])
@@ -3219,6 +3321,15 @@ def _build_preset(label, days):
         "days": [],
     }
     if SUPPORTED:
+        _over = [(i + 1, sum(d['weight'] for *_, d in day))
+                 for i, day in enumerate(days)
+                 if sum(d['weight'] for *_, d in day) > MAX_DAY_SECONDS]
+        # Days the hiker cannot finish inside the budget they asked for.  Empty
+        # on any itinerary that fits; when it is not, the app has to say so
+        # rather than presenting these as ordinary days.
+        export["days_over_budget"] = [
+            {"day": _d, "seconds": _s, "over_by": _s - MAX_DAY_SECONDS}
+            for _d, _s in _over]
         # Which ferry landings this itinerary actually depends on -- not which
         # were offered.  A hiker has to book these, so the app and the CSV need
         # to name them, and deriving it here keeps one source of truth rather

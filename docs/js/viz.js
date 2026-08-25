@@ -457,10 +457,14 @@ function updateDay(d) {
   // A shuttled day did not walk here from yesterday's finish, so name where
   // the crew picked up.  Without this the two nodes read as a gap in the walk.
   const from = shuttledFrom(d - 1);
+  const overToday = (META.days_over_budget ?? []).find(x => x.day === d);
   document.getElementById('sbRoute').textContent =
     (from ? `(driven from ${nodeName(from)}) ` : '') +
     `${nodeName(day.start_node)} → ${nodeName(day.end_node)}` +
-    (rsStop ? ` · resupply: ${rsStop.name}` : '');
+    (rsStop ? ` · resupply: ${rsStop.name}` : '')
+    + (overToday
+        ? ` · ${(overToday.over_by / 3600).toFixed(1)} h over your daily limit`
+        : '');
   document.querySelectorAll('.rs-stop').forEach(row =>
     row.classList.toggle('active', +row.dataset.day === d));
   document.getElementById('sbTotal').textContent  = `${day.miles.toFixed(1)} mi / ${fmtHM(day.total_s)}`;
@@ -618,6 +622,11 @@ function initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, cov) {
     ((meta.ferry_landings ?? []).length
       ? `<div class="info-row"><span>Ferry needed</span> <span><b>${
           meta.ferry_landings.map(f => f.name).join(', ')}</b></span></div>` : '') +
+    ((meta.days_over_budget ?? []).length
+      ? `<div class="info-row"><span>Days over budget</span> <span><b>${
+          meta.days_over_budget.length} (to ${(Math.max(
+            ...meta.days_over_budget.map(x => x.seconds)) / 3600).toFixed(1)} h)`
+        + `</b></span></div>` : '') +
     `<div class="info-row"><span>Required miles</span> <span><b>${meta.total_required_miles.toFixed(1)}</b></span></div>`;
 
   renderResupplyPlan(meta);
@@ -701,6 +710,10 @@ async function renderItinerary(itinerary) {
     // Which ferry landings this itinerary depends on -- the solver records it,
     // because a hiker has to book them before committing to the trip.
     ferry_landings: itinerary.ferry_landings ?? [],
+    // Days that run past the requested budget. Non-empty only where no
+    // arrangement of days could stay inside it, so it is a fact about the park
+    // rather than a slack itinerary — but the hiker has to be told.
+    days_over_budget: itinerary.days_over_budget ?? [],
     n_days:  itinerary.n_days,
     // Where this itinerary begins.  Published presets are built from a swept
     // start rather than the default one -- worth 120 days across the 114 --
@@ -1032,6 +1045,12 @@ function buildCsv() {
     ['Distance walked', miles.toFixed(1) + ' mi'],
     ['Time walking', fmtHM(walked)],
     ['Elevation', gain.toLocaleString() + ' ft up / ' + loss.toLocaleString() + ' ft down'],
+    ...((META.days_over_budget ?? []).length
+      ? [['Days over budget',
+          META.days_over_budget.length + ' - no arrangement of days fits this '
+          + 'limit; see the daily summary'],
+         ['Longest day',
+          fmtHM(Math.max(...DAYS.map(d => d.total_s)))]] : []),
     ...(supported ? [['Ferry landings needed',
        (META.ferry_landings ?? []).map(f => f.name).join('; ')
        || 'none - every day reachable by road'],

@@ -332,10 +332,24 @@ for fp in files:
                    % (d.get('total_required_miles'), required_miles))
 
     # 2c. daily budget
+    # A supported preset may declare days that run over: parts of the park
+    # cannot be covered inside a short pick-up-to-pick-up day at any day count,
+    # and naming the long days beats publishing nothing.  Every such day has to
+    # be declared, though -- an undeclared one is a day the hiker is not warned
+    # about.
+    declared_over = {x['day'] for x in d.get('days_over_budget', [])}
     for dd in days:
         t = sum(a['seconds'] for a in dd['arcs'])
-        if t > budget:
-            fail(name, "day %s takes %.1fh, over the %dh budget"
+        if t > budget and dd['day'] not in declared_over:
+            fail(name, "day %s takes %.1fh, over the %dh budget, and is not "
+                       "declared in days_over_budget"
+                       % (dd['day'], t / 3600.0, hours))
+        elif t <= budget and dd['day'] in declared_over:
+            fail(name, "day %s is declared over budget but takes only %.1fh"
+                       % (dd['day'], t / 3600.0))
+        elif t > budget * 1.5:
+            fail(name, "day %s takes %.1fh, more than 1.5x the %dh budget -- "
+                       "that is not a day anyone can walk"
                        % (dd['day'], t / 3600.0, hours))
 
     # 2d. overnights: legal, and within the consecutive-stay caps.
