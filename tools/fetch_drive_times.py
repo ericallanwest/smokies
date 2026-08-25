@@ -225,7 +225,12 @@ def main():
             print(f"  [{i}/{len(missing)}] {u}->{v} FAILED: {exc}")
             continue
         if secs is None:
-            print(f"  [{i}/{len(missing)}] {u}->{v} no driving route")
+            # Usually a seasonal or unpaved park road Google will not route on
+            # -- Straight Fork between Beech Gap and Hyatt Ridge is 1.1 mi and
+            # comes back unroutable.  Leaving it out is the safe direction: the
+            # run gets walked, so no day is ever shorter than reality.
+            print(f"  [{i}/{len(missing)}] {u}->{v} no driving route "
+                  f"(seasonal or unpaved? the run stays walked)")
             continue
         cache[f"{u}|{v}"] = {'seconds': secs, 'metres': metres}
         got += 1

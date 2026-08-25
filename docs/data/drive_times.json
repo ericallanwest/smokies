@@ -1,0 +1,113 @@
+{
+ "note": "Driving seconds between crew pick-up points. Built by tools/fetch_drive_times.py; trailheads do not move, so this is fetched once and committed.",
+ "drive_seconds": {
+  "CGABR|TH001": {
+   "seconds": 136,
+   "metres": 732
+  },
+  "TH026|TH027": {
+   "seconds": 18,
+   "metres": 102
+  },
+  "TH031|TH033": {
+   "seconds": 1069,
+   "metres": 5966
+  },
+  "TH057|TH059": {
+   "seconds": 52,
+   "metres": 353
+  },
+  "TH061|TH060": {
+   "seconds": 35,
+   "metres": 194
+  },
+  "TH069|TH070": {
+   "seconds": 68,
+   "metres": 521
+  },
+  "TH071|TH072": {
+   "seconds": 16,
+   "metres": 191
+  },
+  "TH093|TH091": {
+   "seconds": 38,
+   "metres": 250
+  },
+  "TH110|TH106": {
+   "seconds": 91,
+   "metres": 1179
+  },
+  "TH113|TH114": {
+   "seconds": 7,
+   "metres": 104
+  },
+  "TH115|TH111": {
+   "seconds": 190,
+   "metres": 3116
+  },
+  "TH119|TH117": {
+   "seconds": 353,
+   "metres": 2279
+  },
+  "TH144|TH143": {
+   "seconds": 3203,
+   "metres": 17213
+  },
+  "TH170|TH157": {
+   "seconds": 1172,
+   "metres": 13594
+  },
+  "TH192|TH190": {
+   "seconds": 28,
+   "metres": 549
+  },
+  "TH194|TH183": {
+   "seconds": 395,
+   "metres": 2496
+  },
+  "TH199|CGSMO": {
+   "seconds": 176,
+   "metres": 880
+  },
+  "TH200|TH210": {
+   "seconds": 224,
+   "metres": 3147
+  },
+  "TH204|TH201": {
+   "seconds": 33,
+   "metres": 106
+  },
+  "TH208|TH212": {
+   "seconds": 321,
+   "metres": 4051
+  },
+  "TH232|TH231": {
+   "seconds": 24,
+   "metres": 372
+  },
+  "TH235|TH234": {
+   "seconds": 178,
+   "metres": 1198
+  },
+  "TH243|TH246": {
+   "seconds": 315,
+   "metres": 3935
+  },
+  "TH250|TH252": {
+   "seconds": 105,
+   "metres": 1388
+  },
+  "TH261|TH263": {
+   "seconds": 15,
+   "metres": 59
+  },
+  "TH265|CGBIG": {
+   "seconds": 15,
+   "metres": 79
+  },
+  "TH266|TH264": {
+   "seconds": 370,
+   "metres": 2335
+  }
+ }
+}
