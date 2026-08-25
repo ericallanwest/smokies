@@ -40,6 +40,10 @@ def warn(cat, msg): WARN.append((cat, msg))
 # Mirrors RESUPPLY_NODES in the solver and viz.js -- keep in sync.
 RESUPPLY = {'CGCAD', 'TH264', 'TH210', 'TH158', 'TH025',
             'RI058', 'TH117', 'TH119', 'TH220', 'CGSMO'}
+# Non-road places a supported hiker can be collected from.  Mirrors
+# SHUTTLE_NODES in the solver -- TI051 is the Hazel Creek landing on Fontana
+# Lake, and it is what lets supported itineraries exist below 13.7 h.
+SHUTTLE_NODES = {'TI051'}
 SINGLE_NIGHT_PREFIX = ('SH',)          # shelters: 1 consecutive night
 SINGLE_NIGHT_IDS    = {'BC113'}        # former shelter, same cap
 BC_CONSEC_CAP       = 3                # backcountry sites: 3 consecutive nights
@@ -427,17 +431,22 @@ for fp in files:
             warn(name, where_msg + " -- no trailhead inside the run, so it "
                                    "cannot be trimmed away")
 
-    # 2i. supported: every day is driven to and collected from, so both of its
-    #     ends have to be somewhere a vehicle can reach.  This is the rule that
-    #     replaces 2a's day-chaining and 2d's overnight legality for this style,
-    #     and it is the one that would catch a day-split trim cutting too deep.
+    # 2i. supported: every day is collected from, so both of its ends have to
+    #     be somewhere the crew can reach.  This is the rule that replaces 2a's
+    #     day-chaining and 2d's overnight legality for this style, and it is the
+    #     one that would catch a day-split trim cutting too deep.
+    #
+    #     Usually that means a road, but not always: TI051 is the Hazel Creek
+    #     landing on Fontana Lake, reachable by the boat shuttle, and it is what
+    #     lets supported itineraries exist below 13.7 h at all.  Mirrors
+    #     SHUTTLE_NODES in the solver -- keep in sync.
     if supported:
         for dd in days:
             for role, n in (('starts', dd['start_node']), ('ends', dd['end_node'])):
-                if n[:2] not in ('TH', 'CG'):
-                    fail(name, "day %s %s at %s, which no vehicle can reach -- "
-                               "a supported hiker cannot be dropped off or "
-                               "collected there" % (dd['day'], role, n))
+                if n[:2] not in ('TH', 'CG') and n not in SHUTTLE_NODES:
+                    fail(name, "day %s %s at %s, which no car or boat can "
+                               "reach -- a supported hiker cannot be dropped "
+                               "off or collected there" % (dd['day'], role, n))
         moved = sum(1 for k in range(len(days) - 1)
                     if days[k]['end_node'] != days[k + 1]['start_node'])
         if not moved:
@@ -452,7 +461,7 @@ for fp in files:
     #     how the 8h open itinerary came to end at RI109, a road intersection.
     ends = [days[0]['start_node'], days[-1]['end_node']]
     for node in ends:
-        if node[:2] not in ('TH', 'CG'):
+        if node[:2] not in ('TH', 'CG') and not (supported and node in SHUTTLE_NODES):
             fail(name, "walk terminus %s is a %s -- not a trailhead or "
                        "campground, so there is no way to start or finish "
                        "a hike there"

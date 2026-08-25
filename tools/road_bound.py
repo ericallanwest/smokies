@@ -5,12 +5,14 @@ fit inside one road-to-road day: (nearest road -> u) + the arc + (v -> nearest
 road).  The largest of those over all required arcs is a hard floor on
 --max-hours for --style supported, independent of how the walk is cut.
 
-It is 13.73 h, set by Lakeshore Trail between campsites 81 and 77, which is
-6.6 h from tarmac at either end.  That is why the supported presets start at
-14 h and why anything shorter reports no itinerary rather than a bad one.
+Road-only it is 13.73 h, set by Lakeshore Trail between campsites 81 and 77,
+which is 6.6 h from tarmac at either end.  Adding the Hazel Creek boat landing
+(TI051, served by the Fontana Lake shuttle) drops it to 9.90 h, because that
+landing is minutes from the very trail that was setting the floor -- which is
+why the supported presets start at 10 h rather than 14.
 
 Re-run this whenever the edge list changes and update SUPPORTED_MIN_HOURS in
-tools/build_presets_index.py to match.
+tools/build_presets_index.py and SHUTTLE_NODES in the solver to match.
 
     python tools/road_bound.py        # from the directory holding the edge list
 """

@@ -34,6 +34,12 @@ _ap.add_argument('--start-node', type=str, default=None,
                  help='Begin the itinerary at this trailhead or campground (e.g. TH252). Default: the highest-degree trailhead, which minimises repositioning.')
 _ap.add_argument('--end-node', type=str, default=None,
                  help='Finish an open itinerary at this trailhead or campground. Requires --start-node. Omit both to let the solver choose the pair that saves the most walking.')
+_ap.add_argument('--shuttle-nodes', type=str, default='TI051',
+                 help='Comma-separated nodes a supported hiker can be collected '
+                      'from by something other than a car -- by default TI051, '
+                      'the Hazel Creek landing served by the Fontana Lake boat '
+                      'shuttle. Ignored unless --style supported. Pass an empty '
+                      'string for road access only.')
 _ap.add_argument('--style', choices=['self-supported', 'supported'],
                  default='self-supported',
                  help='self-supported: the hiker carries everything and sleeps where '
@@ -310,15 +316,34 @@ def node_type(node_id: str) -> str:
 # rather than after the graph build because is_legal_overnight now needs it.
 VALID_CIRCUIT_ENDPOINTS = {'trailhead', 'campground'}   # TH + CG only
 
+# Places a supported hiker can be collected from that are not road-accessible.
+# TI051 is the Hazel Creek landing on Fontana Lake, served by the Fontana
+# Village boat shuttle, and it is the difference between supported being a
+# 14 h-and-up proposition and a 10 h one: the binding constraint is Lakeshore
+# Trail along the lake's north shore, which is 6.6 h from the nearest tarmac
+# but minutes from the water.
+SHUTTLE_NODES = {n.strip().upper() for n in _args.shuttle_nodes.split(',')
+                 if n.strip()}
+
+
+def can_be_collected(node_id: str) -> bool:
+    """Can a supported hiker start or finish a day here?
+
+    A car is the usual answer, a boat the interesting one.  Anything that can
+    deliver the hiker to a bed and return them in the morning counts, because
+    that -- not the surface it arrives on -- is what a day boundary needs.
+    """
+    return node_type(node_id) in VALID_CIRCUIT_ENDPOINTS or node_id in SHUTTLE_NODES
+
 
 def is_legal_overnight(node_id: str) -> bool:
     if SUPPORTED:
-        # The crew drives the hiker to a bed, so the only question a day-break
-        # has to answer is whether a vehicle can get there.  Routing the whole
+        # The crew brings the hiker to a bed, so the only question a day-break
+        # has to answer is whether they can be reached.  Routing the whole
         # style through this one predicate means everything built on it --
         # nearest_overnight, budget_forced_directions, overnight_set, the
         # detour planners -- follows without a second switch.
-        return node_type(node_id) in VALID_CIRCUIT_ENDPOINTS
+        return can_be_collected(node_id)
     return node_id.startswith(('BC', 'SH', 'CG')) or node_id in RESUPPLY_NODES
 
 # First pass: collect campsite flags and overnight-closure flags with OR logic
@@ -1728,7 +1753,7 @@ def _supported_trim_tables(arc_seq):
     N = len(arc_seq)
 
     def _ok(n):
-        return node_type(n) in VALID_CIRCUIT_ENDPOINTS
+        return can_be_collected(n)
 
     is_dh = [bool(a[3].get('is_deadhead')) for a in arc_seq]
 

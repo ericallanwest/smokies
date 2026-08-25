@@ -1,14 +1,14 @@
 {
   "circuit": "Open",
   "hiking_style": "supported",
-  "n_days": 32,
+  "n_days": 31,
   "total_required_miles": 796.3000000000001,
   "start_node": "TH245",
   "days": [
     {
       "day": 1,
       "start_node": "TH245",
-      "end_node": "TH276",
+      "end_node": "TH261",
       "arcs": [
         {
           "from": "TH245",
@@ -174,18 +174,14 @@
           "gain": 19,
           "is_deadhead": false,
           "direction": "rev"
-        },
-        {
-          "from": "TH261",
-          "to": "TH263",
-          "edge_id": "414.0",
-          "trail": "Cataloochee Entrance Road",
-          "miles": 0.8,
-          "seconds": 891,
-          "gain": 8,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "start_node": "TH263",
+      "end_node": "TH266",
+      "arcs": [
         {
           "from": "TH263",
           "to": "TI262",
@@ -218,14 +214,7 @@
           "gain": 224,
           "is_deadhead": true,
           "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 2,
-      "start_node": "TH276",
-      "end_node": "CGCOS",
-      "arcs": [
+        },
         {
           "from": "TH276",
           "to": "TI274",
@@ -390,29 +379,14 @@
           "gain": 35,
           "is_deadhead": false,
           "direction": "rev"
-        },
-        {
-          "from": "TH266",
-          "to": "RI268",
-          "edge_id": "409.0",
-          "trail": "Big Creek Entrance Road",
-          "miles": 0.3,
-          "seconds": 274,
-          "gain": 0,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "RI268",
-          "to": "TH264",
-          "edge_id": "440.0",
-          "trail": "Mount Sterling Road",
-          "miles": 1.0,
-          "seconds": 1920,
-          "gain": 545,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "start_node": "TH264",
+      "end_node": "TH230",
+      "arcs": [
         {
           "from": "TH264",
           "to": "SH101",
@@ -478,14 +452,7 @@
           "gain": 26,
           "is_deadhead": false,
           "direction": "rev"
-        }
-      ]
-    },
-    {
-      "day": 3,
-      "start_node": "CGCOS",
-      "end_node": "TH265",
-      "arcs": [
+        },
         {
           "from": "CGCOS",
           "to": "TI238",
@@ -694,7 +661,14 @@
           "gain": 40,
           "is_deadhead": true,
           "direction": "dh"
-        },
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "start_node": "TH230",
+      "end_node": "TH220",
+      "arcs": [
         {
           "from": "TH230",
           "to": "TI226",
@@ -791,101 +765,6 @@
           "miles": 4.1,
           "seconds": 4998,
           "gain": 190,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI247",
-          "to": "BC036",
-          "edge_id": "74.0",
-          "trail": "Camel Gap",
-          "miles": 0.6,
-          "seconds": 676,
-          "gain": 32,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC036",
-          "to": "BC037",
-          "edge_id": "49.0",
-          "trail": "Big Creek",
-          "miles": 0.4,
-          "seconds": 465,
-          "gain": 1,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC037",
-          "to": "TI251",
-          "edge_id": "48.0",
-          "trail": "Big Creek",
-          "miles": 0.2,
-          "seconds": 185,
-          "gain": 0,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI251",
-          "to": "TH265",
-          "edge_id": "47.0",
-          "trail": "Big Creek",
-          "miles": 5.1,
-          "seconds": 5584,
-          "gain": 121,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 4,
-      "start_node": "TH265",
-      "end_node": "TH220",
-      "arcs": [
-        {
-          "from": "TH265",
-          "to": "TI251",
-          "edge_id": "47.0",
-          "trail": "Big Creek",
-          "miles": 5.1,
-          "seconds": 7094,
-          "gain": 1361,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI251",
-          "to": "BC037",
-          "edge_id": "48.0",
-          "trail": "Big Creek",
-          "miles": 0.2,
-          "seconds": 232,
-          "gain": 34,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC037",
-          "to": "BC036",
-          "edge_id": "49.0",
-          "trail": "Big Creek",
-          "miles": 0.4,
-          "seconds": 569,
-          "gain": 74,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC036",
-          "to": "TI247",
-          "edge_id": "74.0",
-          "trail": "Camel Gap",
-          "miles": 0.6,
-          "seconds": 814,
-          "gain": 151,
           "is_deadhead": true,
           "direction": "dh"
         },
@@ -1780,7 +1659,7 @@
     {
       "day": 9,
       "start_node": "TH210",
-      "end_node": "TH199",
+      "end_node": "TH228",
       "arcs": [
         {
           "from": "TH210",
@@ -1990,18 +1869,14 @@
           "gain": 86,
           "is_deadhead": false,
           "direction": "rev"
-        },
-        {
-          "from": "TH228",
-          "to": "TH225",
-          "edge_id": "458.0",
-          "trail": "Straight Fork Road",
-          "miles": 1.3,
-          "seconds": 1411,
-          "gain": 4,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
+        }
+      ]
+    },
+    {
+      "day": 10,
+      "start_node": "TH225",
+      "end_node": "TH176",
+      "arcs": [
         {
           "from": "TH225",
           "to": "TI222",
@@ -2032,123 +1907,6 @@
           "miles": 2.6,
           "seconds": 4302,
           "gain": 1334,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI214",
-          "to": "TI216",
-          "edge_id": "155.0",
-          "trail": "Hughes Ridge",
-          "miles": 0.4,
-          "seconds": 506,
-          "gain": 14,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI216",
-          "to": "BC048",
-          "edge_id": "79.2",
-          "trail": "Chasteen Creek",
-          "miles": 1.6,
-          "seconds": 2321,
-          "gain": 9,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC048",
-          "to": "BC050",
-          "edge_id": "79.1",
-          "trail": "Chasteen Creek",
-          "miles": 2.4,
-          "seconds": 2665,
-          "gain": 18,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC050",
-          "to": "TI202",
-          "edge_id": "59.2",
-          "trail": "Bradley Fork",
-          "miles": 0.9,
-          "seconds": 1029,
-          "gain": 37,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI202",
-          "to": "TH199",
-          "edge_id": "59.1",
-          "trail": "Bradley Fork",
-          "miles": 0.3,
-          "seconds": 346,
-          "gain": 33,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 10,
-      "start_node": "TH199",
-      "end_node": "TH176",
-      "arcs": [
-        {
-          "from": "TH199",
-          "to": "TI202",
-          "edge_id": "59.1",
-          "trail": "Bradley Fork",
-          "miles": 0.3,
-          "seconds": 377,
-          "gain": 77,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI202",
-          "to": "BC050",
-          "edge_id": "59.2",
-          "trail": "Bradley Fork",
-          "miles": 0.9,
-          "seconds": 1134,
-          "gain": 117,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC050",
-          "to": "BC048",
-          "edge_id": "79.1",
-          "trail": "Chasteen Creek",
-          "miles": 2.4,
-          "seconds": 3638,
-          "gain": 1002,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC048",
-          "to": "TI216",
-          "edge_id": "79.2",
-          "trail": "Chasteen Creek",
-          "miles": 1.6,
-          "seconds": 3259,
-          "gain": 1316,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI216",
-          "to": "TI214",
-          "edge_id": "155.0",
-          "trail": "Hughes Ridge",
-          "miles": 0.4,
-          "seconds": 636,
-          "gain": 188,
           "is_deadhead": true,
           "direction": "dh"
         },
@@ -3721,7 +3479,7 @@
     {
       "day": 16,
       "start_node": "TH172",
-      "end_node": "TH114",
+      "end_node": "TH113",
       "arcs": [
         {
           "from": "TH172",
@@ -3975,18 +3733,14 @@
           "gain": 97,
           "is_deadhead": false,
           "direction": "rev"
-        },
-        {
-          "from": "TH113",
-          "to": "TH114",
-          "edge_id": "433.0",
-          "trail": "Lakeview Drive",
-          "miles": 0.1,
-          "seconds": 207,
-          "gain": 80,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
+        }
+      ]
+    },
+    {
+      "day": 17,
+      "start_node": "TH114",
+      "end_node": "TH126",
+      "arcs": [
         {
           "from": "TH114",
           "to": "TI116",
@@ -4008,14 +3762,29 @@
           "gain": 257,
           "is_deadhead": true,
           "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 17,
-      "start_node": "TH107",
-      "end_node": "TH107",
-      "arcs": [
+        },
+        {
+          "from": "TH114",
+          "to": "TH113",
+          "edge_id": "433.0",
+          "trail": "Lakeview Drive",
+          "miles": 0.1,
+          "seconds": 146,
+          "gain": 0,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "TH113",
+          "to": "TH107",
+          "edge_id": "432.0",
+          "trail": "Lakeview Drive",
+          "miles": 0.6,
+          "seconds": 1016,
+          "gain": 276,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
         {
           "from": "TH107",
           "to": "TI105",
@@ -4202,7 +3971,14 @@
           "gain": 116,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 18,
+      "start_node": "TH126",
+      "end_node": "TI051",
+      "arcs": [
         {
           "from": "TH126",
           "to": "TI122",
@@ -4312,145 +4088,6 @@
           "gain": 52,
           "is_deadhead": false,
           "direction": "fwd"
-        },
-        {
-          "from": "BC070",
-          "to": "BC071",
-          "edge_id": "122.0",
-          "trail": "Forney Creek",
-          "miles": 1.2,
-          "seconds": 1566,
-          "gain": 148,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC071",
-          "to": "TI098",
-          "edge_id": "123.0",
-          "trail": "Forney Creek",
-          "miles": 1.3,
-          "seconds": 1609,
-          "gain": 146,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI098",
-          "to": "TI099",
-          "edge_id": "324.0",
-          "trail": "Whiteoak Branch",
-          "miles": 1.8,
-          "seconds": 2417,
-          "gain": 398,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI099",
-          "to": "TI102",
-          "edge_id": "181.0",
-          "trail": "Lakeshore",
-          "miles": 1.2,
-          "seconds": 1870,
-          "gain": 399,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI102",
-          "to": "TI103",
-          "edge_id": "180.0",
-          "trail": "Lakeshore",
-          "miles": 0.1,
-          "seconds": 93,
-          "gain": 23,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI103",
-          "to": "TH107",
-          "edge_id": "179.0",
-          "trail": "Lakeshore",
-          "miles": 0.6,
-          "seconds": 1732,
-          "gain": 302,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 18,
-      "start_node": "TH107",
-      "end_node": "TH107",
-      "arcs": [
-        {
-          "from": "TH107",
-          "to": "TI103",
-          "edge_id": "179.0",
-          "trail": "Lakeshore",
-          "miles": 0.6,
-          "seconds": 1823,
-          "gain": 383,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI103",
-          "to": "TI102",
-          "edge_id": "180.0",
-          "trail": "Lakeshore",
-          "miles": 0.1,
-          "seconds": 79,
-          "gain": 5,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI102",
-          "to": "TI099",
-          "edge_id": "181.0",
-          "trail": "Lakeshore",
-          "miles": 1.2,
-          "seconds": 1770,
-          "gain": 268,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI099",
-          "to": "TI098",
-          "edge_id": "324.0",
-          "trail": "Whiteoak Branch",
-          "miles": 1.8,
-          "seconds": 2414,
-          "gain": 417,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI098",
-          "to": "BC071",
-          "edge_id": "123.0",
-          "trail": "Forney Creek",
-          "miles": 1.3,
-          "seconds": 1786,
-          "gain": 287,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC071",
-          "to": "BC070",
-          "edge_id": "122.0",
-          "trail": "Forney Creek",
-          "miles": 1.2,
-          "seconds": 1806,
-          "gain": 384,
-          "is_deadhead": true,
-          "direction": "dh"
         },
         {
           "from": "BC070",
@@ -4575,211 +4212,6 @@
         },
         {
           "from": "TI079",
-          "to": "TI081",
-          "edge_id": "321.0",
-          "trail": "Welch Ridge",
-          "miles": 0.6,
-          "seconds": 1281,
-          "gain": 487,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI081",
-          "to": "TI082",
-          "edge_id": "320.0",
-          "trail": "Welch Ridge",
-          "miles": 0.3,
-          "seconds": 326,
-          "gain": 8,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI082",
-          "to": "BC075",
-          "edge_id": "42.2",
-          "trail": "Bear Creek",
-          "miles": 3.1,
-          "seconds": 4097,
-          "gain": 19,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC075",
-          "to": "TI096",
-          "edge_id": "42.1",
-          "trail": "Bear Creek",
-          "miles": 2.8,
-          "seconds": 3126,
-          "gain": 57,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI096",
-          "to": "BC074",
-          "edge_id": "125.0",
-          "trail": "Forney Creek",
-          "miles": 0.4,
-          "seconds": 384,
-          "gain": 11,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC074",
-          "to": "TI099",
-          "edge_id": "182.0",
-          "trail": "Lakeshore",
-          "miles": 1.0,
-          "seconds": 1544,
-          "gain": 379,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI099",
-          "to": "TI102",
-          "edge_id": "181.0",
-          "trail": "Lakeshore",
-          "miles": 1.2,
-          "seconds": 1870,
-          "gain": 399,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI102",
-          "to": "TI103",
-          "edge_id": "180.0",
-          "trail": "Lakeshore",
-          "miles": 0.1,
-          "seconds": 93,
-          "gain": 23,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI103",
-          "to": "TH107",
-          "edge_id": "179.0",
-          "trail": "Lakeshore",
-          "miles": 0.6,
-          "seconds": 1732,
-          "gain": 302,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 19,
-      "start_node": "TH107",
-      "end_node": "TH010",
-      "arcs": [
-        {
-          "from": "TH107",
-          "to": "TI103",
-          "edge_id": "179.0",
-          "trail": "Lakeshore",
-          "miles": 0.6,
-          "seconds": 1823,
-          "gain": 383,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI103",
-          "to": "TI102",
-          "edge_id": "180.0",
-          "trail": "Lakeshore",
-          "miles": 0.1,
-          "seconds": 79,
-          "gain": 5,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI102",
-          "to": "TI099",
-          "edge_id": "181.0",
-          "trail": "Lakeshore",
-          "miles": 1.2,
-          "seconds": 1770,
-          "gain": 268,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI099",
-          "to": "BC074",
-          "edge_id": "182.0",
-          "trail": "Lakeshore",
-          "miles": 1.0,
-          "seconds": 1333,
-          "gain": 118,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC074",
-          "to": "TI096",
-          "edge_id": "125.0",
-          "trail": "Forney Creek",
-          "miles": 0.4,
-          "seconds": 457,
-          "gain": 66,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI096",
-          "to": "BC075",
-          "edge_id": "42.1",
-          "trail": "Bear Creek",
-          "miles": 2.8,
-          "seconds": 4129,
-          "gain": 1059,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC075",
-          "to": "TI082",
-          "edge_id": "42.2",
-          "trail": "Bear Creek",
-          "miles": 3.1,
-          "seconds": 5691,
-          "gain": 2093,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI082",
-          "to": "TI081",
-          "edge_id": "320.0",
-          "trail": "Welch Ridge",
-          "miles": 0.3,
-          "seconds": 405,
-          "gain": 77,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI081",
-          "to": "TI079",
-          "edge_id": "321.0",
-          "trail": "Welch Ridge",
-          "miles": 0.6,
-          "seconds": 917,
-          "gain": 5,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI079",
           "to": "TI065",
           "edge_id": "86.0",
           "trail": "Cold Spring Gap",
@@ -4876,7 +4308,14 @@
           "gain": 11,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 19,
+      "start_node": "TI051",
+      "end_node": "TH016",
+      "arcs": [
         {
           "from": "TI051",
           "to": "BC086",
@@ -5008,14 +4447,7 @@
           "gain": 21,
           "is_deadhead": false,
           "direction": "rev"
-        }
-      ]
-    },
-    {
-      "day": 20,
-      "start_node": "TH010",
-      "end_node": "TH007",
-      "arcs": [
+        },
         {
           "from": "TH010",
           "to": "TI011",
@@ -5092,7 +4524,14 @@
           "gain": 125,
           "is_deadhead": true,
           "direction": "dh"
-        },
+        }
+      ]
+    },
+    {
+      "day": 20,
+      "start_node": "TH016",
+      "end_node": "TH007",
+      "arcs": [
         {
           "from": "TH016",
           "to": "BC012",
@@ -5900,7 +5339,7 @@
     {
       "day": 24,
       "start_node": "TH025",
-      "end_node": "TH041",
+      "end_node": "TI051",
       "arcs": [
         {
           "from": "TH025",
@@ -5923,50 +5362,6 @@
           "gain": 263,
           "is_deadhead": false,
           "direction": "fwd"
-        },
-        {
-          "from": "BC113",
-          "to": "TI024",
-          "edge_id": "10.1",
-          "trail": "Appalachian",
-          "miles": 0.9,
-          "seconds": 1266,
-          "gain": 195,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI024",
-          "to": "TH025",
-          "edge_id": "9.0",
-          "trail": "Appalachian",
-          "miles": 3.7,
-          "seconds": 5535,
-          "gain": 457,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TH025",
-          "to": "TI024",
-          "edge_id": "9.0",
-          "trail": "Appalachian",
-          "miles": 3.7,
-          "seconds": 6766,
-          "gain": 2241,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI024",
-          "to": "BC113",
-          "edge_id": "10.1",
-          "trail": "Appalachian",
-          "miles": 0.9,
-          "seconds": 1346,
-          "gain": 263,
-          "is_deadhead": true,
-          "direction": "dh"
         },
         {
           "from": "BC113",
@@ -6022,79 +5417,6 @@
           "gain": 0,
           "is_deadhead": false,
           "direction": "fwd"
-        },
-        {
-          "from": "TI047",
-          "to": "TI044",
-          "edge_id": "57.0",
-          "trail": "Bote Mountain",
-          "miles": 1.7,
-          "seconds": 2249,
-          "gain": 8,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI044",
-          "to": "TI046",
-          "edge_id": "56.0",
-          "trail": "Bote Mountain",
-          "miles": 1.2,
-          "seconds": 1638,
-          "gain": 34,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI046",
-          "to": "TH041",
-          "edge_id": "193.0",
-          "trail": "Lead Cove",
-          "miles": 1.8,
-          "seconds": 2417,
-          "gain": 25,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 25,
-      "start_node": "TH041",
-      "end_node": "TH025",
-      "arcs": [
-        {
-          "from": "TH041",
-          "to": "TI046",
-          "edge_id": "193.0",
-          "trail": "Lead Cove",
-          "miles": 1.8,
-          "seconds": 3311,
-          "gain": 1215,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI046",
-          "to": "TI044",
-          "edge_id": "56.0",
-          "trail": "Bote Mountain",
-          "miles": 1.2,
-          "seconds": 2220,
-          "gain": 774,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI044",
-          "to": "TI047",
-          "edge_id": "57.0",
-          "trail": "Bote Mountain",
-          "miles": 1.7,
-          "seconds": 3116,
-          "gain": 1135,
-          "is_deadhead": true,
-          "direction": "dh"
         },
         {
           "from": "TI047",
@@ -6208,118 +5530,52 @@
         },
         {
           "from": "TI052",
-          "to": "BC088",
-          "edge_id": "187.1",
-          "trail": "Lakeshore",
-          "miles": 1.4,
-          "seconds": 1960,
-          "gain": 324,
+          "to": "BC086",
+          "edge_id": "151.2",
+          "trail": "Hazel Creek Access",
+          "miles": 0.2,
+          "seconds": 222,
+          "gain": 11,
           "is_deadhead": true,
           "direction": "dh"
         },
         {
-          "from": "BC088",
-          "to": "TI032",
-          "edge_id": "187.2",
-          "trail": "Lakeshore",
-          "miles": 3.0,
-          "seconds": 4479,
-          "gain": 812,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI032",
-          "to": "BC090",
-          "edge_id": "188.0",
-          "trail": "Lakeshore",
+          "from": "BC086",
+          "to": "TI051",
+          "edge_id": "151.1",
+          "trail": "Hazel Creek Access",
           "miles": 0.5,
-          "seconds": 615,
-          "gain": 58,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC090",
-          "to": "TI030",
-          "edge_id": "189.0",
-          "trail": "Lakeshore",
-          "miles": 0.3,
-          "seconds": 510,
-          "gain": 119,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI030",
-          "to": "TH025",
-          "edge_id": "190.0",
-          "trail": "Lakeshore",
-          "miles": 5.2,
-          "seconds": 7461,
-          "gain": 1266,
+          "seconds": 640,
+          "gain": 11,
           "is_deadhead": true,
           "direction": "dh"
         }
       ]
     },
     {
-      "day": 26,
-      "start_node": "TH025",
+      "day": 25,
+      "start_node": "TI051",
       "end_node": "TH107",
       "arcs": [
         {
-          "from": "TH025",
-          "to": "TI030",
-          "edge_id": "190.0",
-          "trail": "Lakeshore",
-          "miles": 5.2,
-          "seconds": 7454,
-          "gain": 1219,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI030",
-          "to": "BC090",
-          "edge_id": "189.0",
-          "trail": "Lakeshore",
-          "miles": 0.3,
-          "seconds": 405,
-          "gain": 15,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC090",
-          "to": "TI032",
-          "edge_id": "188.0",
-          "trail": "Lakeshore",
+          "from": "TI051",
+          "to": "BC086",
+          "edge_id": "151.1",
+          "trail": "Hazel Creek Access",
           "miles": 0.5,
-          "seconds": 621,
-          "gain": 54,
+          "seconds": 711,
+          "gain": 68,
           "is_deadhead": true,
           "direction": "dh"
         },
         {
-          "from": "TI032",
-          "to": "BC088",
-          "edge_id": "187.2",
-          "trail": "Lakeshore",
-          "miles": 3.0,
-          "seconds": 4557,
-          "gain": 981,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC088",
+          "from": "BC086",
           "to": "TI052",
-          "edge_id": "187.1",
-          "trail": "Lakeshore",
-          "miles": 1.4,
-          "seconds": 1746,
-          "gain": 148,
+          "edge_id": "151.2",
+          "trail": "Hazel Creek Access",
+          "miles": 0.2,
+          "seconds": 221,
+          "gain": 11,
           "is_deadhead": true,
           "direction": "dh"
         },
@@ -6457,6 +5713,28 @@
         },
         {
           "from": "TI096",
+          "to": "BC075",
+          "edge_id": "42.1",
+          "trail": "Bear Creek",
+          "miles": 2.8,
+          "seconds": 4129,
+          "gain": 1059,
+          "is_deadhead": false,
+          "direction": "fwd"
+        },
+        {
+          "from": "BC075",
+          "to": "TI096",
+          "edge_id": "42.1",
+          "trail": "Bear Creek",
+          "miles": 2.8,
+          "seconds": 3126,
+          "gain": 57,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "TI096",
           "to": "BC074",
           "edge_id": "125.0",
           "trail": "Forney Creek",
@@ -6513,7 +5791,7 @@
       ]
     },
     {
-      "day": 27,
+      "day": 26,
       "start_node": "TH107",
       "end_node": "TH132",
       "arcs": [
@@ -6580,8 +5858,8 @@
           "miles": 2.8,
           "seconds": 4129,
           "gain": 1059,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "BC075",
@@ -6784,7 +6062,7 @@
       ]
     },
     {
-      "day": 28,
+      "day": 27,
       "start_node": "TH130",
       "end_node": "TH050",
       "arcs": [
@@ -7066,7 +6344,7 @@
       ]
     },
     {
-      "day": 29,
+      "day": 28,
       "start_node": "TH050",
       "end_node": "TH141",
       "arcs": [
@@ -7326,7 +6604,7 @@
       ]
     },
     {
-      "day": 30,
+      "day": 29,
       "start_node": "TH141",
       "end_node": "TH265",
       "arcs": [
@@ -7509,7 +6787,7 @@
       ]
     },
     {
-      "day": 31,
+      "day": 30,
       "start_node": "CGBIG",
       "end_node": "TH227",
       "arcs": [
@@ -7659,7 +6937,7 @@
       ]
     },
     {
-      "day": 32,
+      "day": 31,
       "start_node": "TH227",
       "end_node": "TH252",
       "arcs": [

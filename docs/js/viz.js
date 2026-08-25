@@ -807,12 +807,13 @@ function renderParamControls() {
   if (supported && min && hours < min) {
     // Not a missing preset: the park itself rules this out.  Say so here, at
     // the control, rather than waiting for the load to fail.
-    note.textContent = `Needs ${min} h or longer — the remotest required trail `
-      + `is 6.6 h from the nearest road at each end.`;
+    note.textContent = `Needs ${min} h or longer — even by boat, the far end of `
+      + `Lakeshore Trail is 9.9 h from the nearest pick-up and back.`;
     note.classList.add('warn');
   } else if (supported) {
-    note.textContent = 'A crew drives you to a bed each night, so every day '
-      + 'starts and ends at a road. Expect more days than self-supported.';
+    note.textContent = 'A crew meets you each night, so every day starts and '
+      + 'ends at a road — or at the Hazel Creek boat landing, which these '
+      + 'itineraries assume you can use. Expect more days than self-supported.';
     note.classList.remove('warn');
   } else {
     note.textContent = '';
@@ -943,11 +944,21 @@ function dayDate(dayNumber) {
   return wd + ' ' + t.toISOString().slice(0, 10);
 }
 
+// Places the crew reaches by water rather than road.  Mirrors SHUTTLE_NODES in
+// the solver -- TI051 is the Hazel Creek landing on Fontana Lake.
+const SHUTTLE_NODES = new Set(['TI051']);
+
 function overnightType(nid) {
   // Under Supported the hiker sleeps in town wherever the crew books a bed;
   // the node is only where they were collected, so naming it as lodging would
   // be wrong.
-  if (META?.hiking_style === 'supported') return 'crew pick-up (bed in town)';
+  if (META?.hiking_style === 'supported') {
+    // Worth calling out separately: this one is a boat, and it has to be
+    // booked.
+    return SHUTTLE_NODES.has(nid)
+      ? 'boat pick-up, Fontana Lake shuttle (bed in town)'
+      : 'crew pick-up (bed in town)';
+  }
   return nid.startsWith('BC') ? 'backcountry campsite'
        : nid.startsWith('SH') ? 'shelter'
        : nid.startsWith('CG') ? 'campground'
@@ -974,6 +985,10 @@ function buildCsv() {
     ['Distance walked', miles.toFixed(1) + ' mi'],
     ['Time walking', fmtHM(walked)],
     ['Elevation', gain.toLocaleString() + ' ft up / ' + loss.toLocaleString() + ' ft down'],
+    ...(supported ? [['Boat shuttle days',
+       DAYS.filter(d => SHUTTLE_NODES.has(d.start_node)
+                     || SHUTTLE_NODES.has(d.end_node)).length
+       + ' (Fontana Lake, Hazel Creek landing - book ahead)']] : []),
     ['Resupply window', supported ? 'n/a - the crew resupplies you'
       : (META.max_days_between_resupply
          ? 'every ' + META.max_days_between_resupply + ' days' : 'none')],

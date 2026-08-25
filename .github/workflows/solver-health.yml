@@ -168,20 +168,31 @@ jobs:
           assert result, 'stream ended without a result'
           assert result['params']['hiking_style'] == 'supported', result['params']
           o = result['open']
-          # The whole point of the style: a crew can only meet the hiker where a
-          # vehicle can go, so every day has to start and finish at a trailhead
-          # or a frontcountry campground.
+          # The whole point of the style: a crew can only meet the hiker where
+          # they can be reached, so every day has to start and finish at a
+          # trailhead, a frontcountry campground, or the Hazel Creek boat
+          # landing (TI051) that the Fontana Lake shuttle serves.
+          REACHABLE = ('TH', 'CG')
+          SHUTTLE = {'TI051'}
+          def ok(n):
+              return n[:2] in REACHABLE or n in SHUTTLE
           bad = [(d['day'], d['start_node'], d['end_node']) for d in o['days']
-                 if d['start_node'][:2] not in ('TH', 'CG')
-                 or d['end_node'][:2] not in ('TH', 'CG')]
-          assert not bad, f"days not anchored at a road: {bad[:3]}"
+                 if not ok(d['start_node']) or not ok(d['end_node'])]
+          assert not bad, f"days the crew cannot reach: {bad[:3]}"
           # And at least one day must actually be repositioned, or the crew is
           # buying the hiker nothing and the day split silently fell back to a
           # plain contiguous walk.
           moved = sum(1 for k in range(len(o['days']) - 1)
                       if o['days'][k]['end_node'] != o['days'][k + 1]['start_node'])
-          print(f"supported 16h: {o['n_days']} days, {moved} crew shuttles")
+          boat = sum(1 for d in o['days']
+                     if d['start_node'] in SHUTTLE or d['end_node'] in SHUTTLE)
+          print(f"supported 16h: {o['n_days']} days, {moved} crew shuttles, "
+                f"{boat} boat days")
           assert moved > 0, 'no day is repositioned; free repositioning did not fire'
+          # The boat is what makes supported reach below 13.7 h at all, so a
+          # build that quietly stopped using it is worth catching here rather
+          # than in a preset regeneration months later.
+          assert boat > 0, 'no day uses the Hazel Creek landing; --shuttle-nodes lost?'
           PY
         env:
           SOLVER_URL: https://smokies-solver-165021828782.us-east1.run.app

@@ -38,7 +38,7 @@
    "resupply": [
     null
    ],
-   "min_hours": 14
+   "min_hours": 10
   }
  },
  "presets": {
@@ -367,43 +367,59 @@
    "start_node": "TH107"
   },
   "supported_10h": {
-   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end at a road. The remotest required trail -- Lakeshore, between campsites 81 and 77 -- is 6.6 h from the nearest road at each end, which makes the shortest possible supported day 13.7 h. Choose 14 h or longer, or switch to self-supported to sleep out there."
+   "file": "preset_supported_10h.json",
+   "days": 59,
+   "walk_hours": 479.2,
+   "start_node": "TH245",
+   "shuttles": 15
   },
   "supported_11h": {
-   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end at a road. The remotest required trail -- Lakeshore, between campsites 81 and 77 -- is 6.6 h from the nearest road at each end, which makes the shortest possible supported day 13.7 h. Choose 14 h or longer, or switch to self-supported to sleep out there."
-  },
-  "supported_12h": {
-   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end at a road. The remotest required trail -- Lakeshore, between campsites 81 and 77 -- is 6.6 h from the nearest road at each end, which makes the shortest possible supported day 13.7 h. Choose 14 h or longer, or switch to self-supported to sleep out there."
-  },
-  "supported_13h": {
-   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end at a road. The remotest required trail -- Lakeshore, between campsites 81 and 77 -- is 6.6 h from the nearest road at each end, which makes the shortest possible supported day 13.7 h. Choose 14 h or longer, or switch to self-supported to sleep out there."
-  },
-  "supported_14h": {
-   "file": "preset_supported_14h.json",
-   "days": 38,
-   "walk_hours": 464.7,
-   "start_node": "TH245",
-   "shuttles": 10
-  },
-  "supported_15h": {
-   "file": "preset_supported_15h.json",
-   "days": 35,
-   "walk_hours": 443.2,
+   "file": "preset_supported_11h.json",
+   "days": 47,
+   "walk_hours": 444.6,
    "start_node": "TH245",
    "shuttles": 11
   },
+  "supported_12h": {
+   "file": "preset_supported_12h.json",
+   "days": 42,
+   "walk_hours": 435.5,
+   "start_node": "TH245",
+   "shuttles": 13
+  },
+  "supported_13h": {
+   "file": "preset_supported_13h.json",
+   "days": 40,
+   "walk_hours": 426.9,
+   "start_node": "TH245",
+   "shuttles": 14
+  },
+  "supported_14h": {
+   "file": "preset_supported_14h.json",
+   "days": 37,
+   "walk_hours": 451.9,
+   "start_node": "TH245",
+   "shuttles": 12
+  },
+  "supported_15h": {
+   "file": "preset_supported_15h.json",
+   "days": 34,
+   "walk_hours": 438.5,
+   "start_node": "TH245",
+   "shuttles": 12
+  },
   "supported_16h": {
    "file": "preset_supported_16h.json",
-   "days": 32,
-   "walk_hours": 458.2,
+   "days": 31,
+   "walk_hours": 420.5,
    "start_node": "TH245",
-   "shuttles": 6
+   "shuttles": 9
   },
   "supported_8h": {
-   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end at a road. The remotest required trail -- Lakeshore, between campsites 81 and 77 -- is 6.6 h from the nearest road at each end, which makes the shortest possible supported day 13.7 h. Choose 14 h or longer, or switch to self-supported to sleep out there."
+   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end somewhere the crew can reach. Even using the Fontana Lake boat shuttle, the shortest possible supported day is 9.9 h -- set by Lakeshore Trail along the lake's north shore. Choose 10 h or longer, or switch to self-supported to sleep out there."
   },
   "supported_9h": {
-   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end at a road. The remotest required trail -- Lakeshore, between campsites 81 and 77 -- is 6.6 h from the nearest road at each end, which makes the shortest possible supported day 13.7 h. Choose 14 h or longer, or switch to self-supported to sleep out there."
+   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end somewhere the crew can reach. Even using the Fontana Lake boat shuttle, the shortest possible supported day is 9.9 h -- set by Lakeshore Trail along the lake's north shore. Choose 10 h or longer, or switch to self-supported to sleep out there."
   }
  }
 }

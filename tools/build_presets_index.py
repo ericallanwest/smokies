@@ -24,18 +24,24 @@ PAT = re.compile(r'^preset_(selfsup|supported)_(\d+)h(?:_r(\d+))?\.json$')
 HOURS    = list(range(8, 17))          # 8..16, the slider's range
 RESUPPLY = [4, 5, 6, 7, 8, None]       # None = unlimited, the slider's right edge
 
-# Measured, not guessed: the remotest required trail (Lakeshore, BC081<->BC077)
-# sits 6.6 h from the nearest road at each end, so covering it road-to-road
-# takes 13.73 h.  Below that no supported itinerary can exist at any day count,
-# however the walk is cut.  tools/road_bound.py recomputes this from the edge
+# Measured, not guessed.  Every day of a supported trip has to both begin and
+# end where the hiker can be collected, so the binding constraint is whichever
+# required trail is furthest from a pick-up point.  That is Lakeshore, along
+# Fontana Lake's north shore: 6.6 h from the nearest road at each end, making a
+# road-only supported day 13.73 h at minimum.
+#
+# The Fontana Lake boat shuttle to the Hazel Creek landing (TI051) attacks
+# exactly that trail -- minutes from the water where it is hours from tarmac --
+# and drops the floor to 9.90 h, which is why supported now starts at 10 h
+# rather than 14.  tools/road_bound.py recomputes both figures from the edge
 # list if the network changes.
-SUPPORTED_MIN_HOURS = 14
+SUPPORTED_MIN_HOURS = 10
 SUPPORTED_REASON = (
     "A supported hiker sleeps in town every night, so every day has to both "
-    "begin and end at a road. The remotest required trail -- Lakeshore, between "
-    "campsites 81 and 77 -- is 6.6 h from the nearest road at each end, which "
-    "makes the shortest possible supported day 13.7 h. Choose 14 h or longer, "
-    "or switch to self-supported to sleep out there."
+    "begin and end somewhere the crew can reach. Even using the Fontana Lake "
+    "boat shuttle, the shortest possible supported day is 9.9 h -- set by "
+    "Lakeshore Trail along the lake's north shore. Choose 10 h or longer, or "
+    "switch to self-supported to sleep out there."
 )
 
 
