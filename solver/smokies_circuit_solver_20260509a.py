@@ -34,12 +34,13 @@ _ap.add_argument('--start-node', type=str, default=None,
                  help='Begin the itinerary at this trailhead or campground (e.g. TH252). Default: the highest-degree trailhead, which minimises repositioning.')
 _ap.add_argument('--end-node', type=str, default=None,
                  help='Finish an open itinerary at this trailhead or campground. Requires --start-node. Omit both to let the solver choose the pair that saves the most walking.')
-_ap.add_argument('--shuttle-nodes', type=str, default='TI051',
-                 help='Comma-separated nodes a supported hiker can be collected '
-                      'from by something other than a car -- by default TI051, '
-                      'the Hazel Creek landing served by the Fontana Lake boat '
-                      'shuttle. Ignored unless --style supported. Pass an empty '
-                      'string for road access only.')
+_ap.add_argument('--shuttle-nodes', type=str, default='',
+                 help='Comma-separated Fontana Lake ferry landings a supported '
+                      'hiker may also be collected from (TI051 Hazel Creek, '
+                      'TI053 Ollie Cove, TI064 Pilkey Creek, BC090 Campsite 90). '
+                      'Empty by default: a ferry costs money and has to be '
+                      'scheduled, so it is opted into rather than assumed. '
+                      'Ignored unless --style supported.')
 _ap.add_argument('--style', choices=['self-supported', 'supported'],
                  default='self-supported',
                  help='self-supported: the hiker carries everything and sleeps where '
@@ -107,6 +108,9 @@ def envelope_base() -> dict:
                        "peak_slope": TOBLER_PARAMS[2], "custom": TOBLER_CUSTOM},
             "max_resupply_days": _args.max_resupply_days,
             "hiking_style": _args.style,
+            # Ferry landings this solve was allowed to use, and the subset it
+            # actually needed -- a hiker books off the second list, not the first.
+            "shuttle_nodes_offered": sorted(SHUTTLE_NODES),
             # True when the caller pinned the same node as start and finish.
             # The answer is then in "closed", not "open".
             "closed_from_equal_endpoints": globals().get(
@@ -316,20 +320,40 @@ def node_type(node_id: str) -> str:
 # rather than after the graph build because is_legal_overnight now needs it.
 VALID_CIRCUIT_ENDPOINTS = {'trailhead', 'campground'}   # TH + CG only
 
-# Places a supported hiker can be collected from that are not road-accessible.
-# TI051 is the Hazel Creek landing on Fontana Lake, served by the Fontana
-# Village boat shuttle, and it is the difference between supported being a
-# 14 h-and-up proposition and a 10 h one: the binding constraint is Lakeshore
-# Trail along the lake's north shore, which is 6.6 h from the nearest tarmac
-# but minutes from the water.
+# Fontana Lake ferry landings: places a supported hiker can be collected from
+# that no road reaches.  Names mirror the picker in docs/js/viz.js -- keep in
+# sync.
+#
+# These are what make supported possible below 13.7 h at all.  The road-only
+# constraint is Lakeshore Trail along the lake's north shore, hours from the
+# nearest tarmac and minutes from the water; with all four landings the binding
+# arc is no longer on Lakeshore at all, and the floor falls from 13.73 h to
+# 9.36 h.  TI051 and TI064 alone reach the same floor -- the other two overlap
+# ground those already cover.
+#
+# They are opt-in rather than default because a ferry is an expense and a
+# schedule.  Published presets use them only where the alternative is no
+# itinerary at all; see tools/regen_presets.py.
+FERRY_LANDINGS = {
+    'TI051': 'Hazel Creek Access',
+    'TI053': 'Ollie Cove',
+    'TI064': 'Pilkey Creek',
+    'BC090': 'Campsite 90',
+}
 SHUTTLE_NODES = {n.strip().upper() for n in _args.shuttle_nodes.split(',')
                  if n.strip()}
+_unknown = SHUTTLE_NODES - set(FERRY_LANDINGS)
+if _unknown:
+    raise SystemExit(f"--shuttle-nodes: {', '.join(sorted(_unknown))} "
+                     f"{'is' if len(_unknown) == 1 else 'are'} not a Fontana "
+                     f"Lake ferry landing. Choose from: "
+                     f"{', '.join(sorted(FERRY_LANDINGS))}")
 
 
 def can_be_collected(node_id: str) -> bool:
     """Can a supported hiker start or finish a day here?
 
-    A car is the usual answer, a boat the interesting one.  Anything that can
+    A car is the usual answer, a ferry the interesting one.  Anything that can
     deliver the hiker to a bed and return them in the morning counts, because
     that -- not the surface it arrives on -- is what a day boundary needs.
     """
@@ -3194,6 +3218,15 @@ def _build_preset(label, days):
         "start_node": days[0][0][0] if days and days[0] else None,
         "days": [],
     }
+    if SUPPORTED:
+        # Which ferry landings this itinerary actually depends on -- not which
+        # were offered.  A hiker has to book these, so the app and the CSV need
+        # to name them, and deriving it here keeps one source of truth rather
+        # than asking the frontend to re-detect it from node ids.
+        _used = sorted({n for day in days for n in (day[0][0], day[-1][1])
+                        if n in FERRY_LANDINGS})
+        export["ferry_landings"] = [{"node": n, "name": FERRY_LANDINGS[n]}
+                                    for n in _used]
     if MAX_DAYS_BETWEEN_RESUPPLY is not None:
         _sched = planned_resupply_schedule(days, resupply_set,
                                            MAX_DAYS_BETWEEN_RESUPPLY)

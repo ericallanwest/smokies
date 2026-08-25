@@ -14,6 +14,7 @@ pre-solved presets in `docs/data/`.
   "max_hours": 12,
   "max_resupply_days": null,
   "style": "self-supported",
+  "shuttle_nodes": [],
   "start_node": null,
   "end_node": null,
   "hiked": ["2.0", "8.1"],
@@ -24,8 +25,13 @@ pre-solved presets in `docs/data/`.
 }
 ```
 
-`style` is `self-supported` or `supported`; supported needs `max_hours` of 14 or
-more, because the remotest required trail is 6.6 h from a road at each end.
+`style` is `self-supported` or `supported`. Supported needs `max_hours` of 14 or
+more on roads alone, because the remotest required trail is 6.6 h from tarmac at
+each end; `shuttle_nodes` offers Fontana Lake ferry landings (`TI051`, `TI053`,
+`TI064`, `BC090`) and brings that floor down to 10 h. Empty means roads only.
+The response reports which landings were offered in
+`params.shuttle_nodes_offered` and which the itinerary actually needs in
+`open.ferry_landings` — a hiker books off the second list.
 
 `start_node` and `end_node` name a trailhead or campground. Passing the same
 value for both is how you ask for a closed circuit: the answer then arrives in

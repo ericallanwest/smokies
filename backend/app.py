@@ -132,6 +132,12 @@ class SolveRequest(BaseModel):
     # road and no resupply window applies.  A Literal rather than a bool so a
     # future multi-leg style is an added value, not a second flag.
     style: Literal['self-supported', 'supported'] = 'self-supported'
+    # Fontana Lake ferry landings the hiker is willing to book.  Empty means
+    # roads only, which is what published presets use wherever roads suffice --
+    # a ferry is an expense and a timetable, so it is opted into. The solver
+    # rejects anything that is not a real landing.
+    shuttle_nodes: list[Literal['TI051', 'TI053', 'TI064', 'BC090']] = Field(
+        default_factory=list, max_length=4)
     hiked: list[str] = Field(default_factory=list, max_length=1000)
     time_budget: float = Field(45.0, ge=5, le=120)
     # Tobler's hiking function, W = v0 * exp(-k * |slope - peak|).  Omit all
@@ -151,6 +157,7 @@ def _cache_key(req: SolveRequest) -> str:
         'start_node': (req.start_node or '').upper(),
         'end_node': (req.end_node or '').upper(),
         'style': req.style,
+        'shuttle_nodes': sorted(set(req.shuttle_nodes)),
         'hiked': sorted(req.hiked),
         'time_budget': req.time_budget,
         'tobler': [req.tobler_v0, req.tobler_k, req.tobler_peak],
@@ -166,6 +173,7 @@ async def _run_solver(req: SolveRequest, key: str):
     cmd = [sys.executable, SOLVER_PY,
            '--max-hours', str(req.max_hours),
            '--style', req.style,
+           '--shuttle-nodes', ','.join(sorted(set(req.shuttle_nodes))),
            '--time-budget', str(req.time_budget),
            '--progress', '--json-out', '-']
     if req.max_resupply_days is not None:

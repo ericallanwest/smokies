@@ -5414,7 +5414,7 @@
     {
       "day": 30,
       "start_node": "TH025",
-      "end_node": "TI051",
+      "end_node": "TI053",
       "arcs": [
         {
           "from": "TH025",
@@ -5558,7 +5558,14 @@
           "gain": 1,
           "is_deadhead": true,
           "direction": "dh"
-        },
+        }
+      ]
+    },
+    {
+      "day": 31,
+      "start_node": "TI053",
+      "end_node": "TH107",
+      "arcs": [
         {
           "from": "TI053",
           "to": "TI054",
@@ -5569,79 +5576,6 @@
           "gain": 202,
           "is_deadhead": false,
           "direction": "fwd"
-        },
-        {
-          "from": "TI054",
-          "to": "TI052",
-          "edge_id": "186.0",
-          "trail": "Lakeshore",
-          "miles": 0.7,
-          "seconds": 927,
-          "gain": 67,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI052",
-          "to": "BC086",
-          "edge_id": "151.2",
-          "trail": "Hazel Creek Access",
-          "miles": 0.2,
-          "seconds": 222,
-          "gain": 11,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC086",
-          "to": "TI051",
-          "edge_id": "151.1",
-          "trail": "Hazel Creek Access",
-          "miles": 0.5,
-          "seconds": 640,
-          "gain": 11,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 31,
-      "start_node": "TI051",
-      "end_node": "TH107",
-      "arcs": [
-        {
-          "from": "TI051",
-          "to": "BC086",
-          "edge_id": "151.1",
-          "trail": "Hazel Creek Access",
-          "miles": 0.5,
-          "seconds": 711,
-          "gain": 68,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC086",
-          "to": "TI052",
-          "edge_id": "151.2",
-          "trail": "Hazel Creek Access",
-          "miles": 0.2,
-          "seconds": 221,
-          "gain": 11,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI052",
-          "to": "TI054",
-          "edge_id": "186.0",
-          "trail": "Lakeshore",
-          "miles": 0.7,
-          "seconds": 1091,
-          "gain": 252,
-          "is_deadhead": true,
-          "direction": "dh"
         },
         {
           "from": "TI054",
@@ -7423,6 +7357,16 @@
           "direction": "rev"
         }
       ]
+    }
+  ],
+  "ferry_landings": [
+    {
+      "node": "TI051",
+      "name": "Hazel Creek Access"
+    },
+    {
+      "node": "TI053",
+      "name": "Ollie Cove"
     }
   ]
 }

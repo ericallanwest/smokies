@@ -72,6 +72,14 @@
     <p class="pace-note" id="endpointNote">Leave both blank and the solver picks
       the pair that saves the most walking. Name the same place twice for a loop.</p>
 
+    <!-- Supported only: which Fontana Lake ferry landings the hiker is willing
+         to book.  Populated from presets_index.json. -->
+    <div id="ferryGroup" style="display:none">
+      <div class="param-label" style="margin-top:0">Ferry landings</div>
+      <div class="param-options" id="ferryOptions"></div>
+      <p class="pace-note" id="ferryNote"></p>
+    </div>
+
     <div class="pace-tiers" id="paceTiers">
       <button type="button" data-v0="5400" data-k="4.2" data-peak="-0.05">Heavy pack</button>
       <button type="button" data-v0="6000" data-k="3.5" data-peak="-0.05" class="on">Standard</button>

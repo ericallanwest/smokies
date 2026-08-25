@@ -615,6 +615,9 @@ function initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, cov) {
     `<div class="info-row"><span>Days</span>           <span><b>${meta.n_days}</b></span></div>` +
     (shuttles
       ? `<div class="info-row"><span>Crew shuttles</span> <span><b>${shuttles}</b></span></div>` : '') +
+    ((meta.ferry_landings ?? []).length
+      ? `<div class="info-row"><span>Ferry needed</span> <span><b>${
+          meta.ferry_landings.map(f => f.name).join(', ')}</b></span></div>` : '') +
     `<div class="info-row"><span>Required miles</span> <span><b>${meta.total_required_miles.toFixed(1)}</b></span></div>`;
 
   renderResupplyPlan(meta);
@@ -695,6 +698,9 @@ async function renderItinerary(itinerary) {
     // 'supported' means the crew repositions the hiker between days, so the
     // days need not chain -- which the map and the CSV both have to say.
     hiking_style: itinerary.hiking_style || 'self-supported',
+    // Which ferry landings this itinerary depends on -- the solver records it,
+    // because a hiker has to book them before committing to the trip.
+    ferry_landings: itinerary.ferry_landings ?? [],
     n_days:  itinerary.n_days,
     // Where this itinerary begins.  Published presets are built from a swept
     // start rather than the default one -- worth 120 days across the 114 --
@@ -783,6 +789,7 @@ function resupplyFromUI() {
 // the controls.  Called on every input event, so it must stay cheap and must
 // not touch the map.
 function renderParamControls() {
+  renderFerryPicker();
   const style = styleFromUI();
   const hours = maxDayFromUI();
   const out   = document.getElementById('maxDayOut');
@@ -819,6 +826,41 @@ function renderParamControls() {
     note.textContent = '';
     note.classList.remove('warn');
   }
+}
+
+// The custom-solve ferry picker.  Published presets take a landing only where
+// roads alone give no itinerary; here the hiker decides for themselves, because
+// whether a ferry is worth its cost and timetable is not ours to assume.
+function renderFerryPicker() {
+  const grp = document.getElementById('ferryGroup');
+  if (!grp) return;
+  const supported = styleFromUI() === 'supported';
+  grp.style.display = supported ? 'block' : 'none';
+  if (!supported) return;
+
+  const box = document.getElementById('ferryOptions');
+  if (box && !box.children.length) {
+    for (const f of ferryLandings()) {
+      const lab = document.createElement('label');
+      lab.innerHTML = `<input type="checkbox" name="ferry" value="${f.node}"> ${f.name}`;
+      box.appendChild(lab);
+    }
+    box.addEventListener('change', renderFerryPicker);
+  }
+  const n = document.querySelectorAll('input[name="ferry"]:checked').length;
+  const note = document.getElementById('ferryNote');
+  if (note) {
+    note.textContent = n
+      ? `${n} landing${n > 1 ? 's' : ''} offered. Each is a boat you have to `
+        + `book and pay for.`
+      : 'Roads only. Below 14 h there is no supported itinerary without a '
+        + 'ferry — tick one or more and build.';
+  }
+}
+
+function ferryFromUI() {
+  return [...document.querySelectorAll('input[name="ferry"]:checked')]
+    .map(el => el.value);
 }
 
 function currentPresetKey() {
@@ -944,9 +986,14 @@ function dayDate(dayNumber) {
   return wd + ' ' + t.toISOString().slice(0, 10);
 }
 
-// Places the crew reaches by water rather than road.  Mirrors SHUTTLE_NODES in
-// the solver -- TI051 is the Hazel Creek landing on Fontana Lake.
-const SHUTTLE_NODES = new Set(['TI051']);
+// Fontana Lake ferry landings, from presets_index.json rather than a second
+// hardcoded copy of the solver's list.
+function ferryLandings() {
+  return _index?.styles?.supported?.ferry_landings ?? [];
+}
+function isFerryNode(nid) {
+  return ferryLandings().some(f => f.node === nid);
+}
 
 function overnightType(nid) {
   // Under Supported the hiker sleeps in town wherever the crew books a bed;
@@ -955,8 +1002,8 @@ function overnightType(nid) {
   if (META?.hiking_style === 'supported') {
     // Worth calling out separately: this one is a boat, and it has to be
     // booked.
-    return SHUTTLE_NODES.has(nid)
-      ? 'boat pick-up, Fontana Lake shuttle (bed in town)'
+    return isFerryNode(nid)
+      ? 'ferry pick-up, Fontana Lake (bed in town)'
       : 'crew pick-up (bed in town)';
   }
   return nid.startsWith('BC') ? 'backcountry campsite'
@@ -985,10 +1032,12 @@ function buildCsv() {
     ['Distance walked', miles.toFixed(1) + ' mi'],
     ['Time walking', fmtHM(walked)],
     ['Elevation', gain.toLocaleString() + ' ft up / ' + loss.toLocaleString() + ' ft down'],
-    ...(supported ? [['Boat shuttle days',
-       DAYS.filter(d => SHUTTLE_NODES.has(d.start_node)
-                     || SHUTTLE_NODES.has(d.end_node)).length
-       + ' (Fontana Lake, Hazel Creek landing - book ahead)']] : []),
+    ...(supported ? [['Ferry landings needed',
+       (META.ferry_landings ?? []).map(f => f.name).join('; ')
+       || 'none - every day reachable by road'],
+      ['Ferry days',
+       DAYS.filter(d => isFerryNode(d.start_node) || isFerryNode(d.end_node)).length
+       + ((META.ferry_landings ?? []).length ? ' (Fontana Lake - book ahead)' : '')]] : []),
     ['Resupply window', supported ? 'n/a - the crew resupplies you'
       : (META.max_days_between_resupply
          ? 'every ' + META.max_days_between_resupply + ' days' : 'none')],
@@ -1223,6 +1272,7 @@ async function solveCustom() {
       max_hours: maxDayFromUI(),
       max_resupply_days: resupplyFromUI(),
       style: styleFromUI() === 'supported' ? 'supported' : 'self-supported',
+      shuttle_nodes: styleFromUI() === 'supported' ? ferryFromUI() : [],
       hiked,
       time_budget: 45,
     };

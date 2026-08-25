@@ -5889,7 +5889,7 @@
     {
       "day": 35,
       "start_node": "TH041",
-      "end_node": "TI051",
+      "end_node": "TI064",
       "arcs": [
         {
           "from": "TH041",
@@ -6014,101 +6014,6 @@
         },
         {
           "from": "BC081",
-          "to": "TI054",
-          "edge_id": "185.3",
-          "trail": "Lakeshore",
-          "miles": 2.7,
-          "seconds": 3864,
-          "gain": 778,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI054",
-          "to": "TI052",
-          "edge_id": "186.0",
-          "trail": "Lakeshore",
-          "miles": 0.7,
-          "seconds": 927,
-          "gain": 67,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI052",
-          "to": "BC086",
-          "edge_id": "151.2",
-          "trail": "Hazel Creek Access",
-          "miles": 0.2,
-          "seconds": 222,
-          "gain": 11,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC086",
-          "to": "TI051",
-          "edge_id": "151.1",
-          "trail": "Hazel Creek Access",
-          "miles": 0.5,
-          "seconds": 640,
-          "gain": 11,
-          "is_deadhead": true,
-          "direction": "dh"
-        }
-      ]
-    },
-    {
-      "day": 36,
-      "start_node": "TI051",
-      "end_node": "TH107",
-      "arcs": [
-        {
-          "from": "TI051",
-          "to": "BC086",
-          "edge_id": "151.1",
-          "trail": "Hazel Creek Access",
-          "miles": 0.5,
-          "seconds": 711,
-          "gain": 68,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC086",
-          "to": "TI052",
-          "edge_id": "151.2",
-          "trail": "Hazel Creek Access",
-          "miles": 0.2,
-          "seconds": 221,
-          "gain": 11,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI052",
-          "to": "TI054",
-          "edge_id": "186.0",
-          "trail": "Lakeshore",
-          "miles": 0.7,
-          "seconds": 1091,
-          "gain": 252,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "TI054",
-          "to": "BC081",
-          "edge_id": "185.3",
-          "trail": "Lakeshore",
-          "miles": 2.7,
-          "seconds": 3792,
-          "gain": 677,
-          "is_deadhead": true,
-          "direction": "dh"
-        },
-        {
-          "from": "BC081",
           "to": "BC077",
           "edge_id": "185.2",
           "trail": "Lakeshore",
@@ -6128,7 +6033,14 @@
           "gain": 89,
           "is_deadhead": false,
           "direction": "rev"
-        },
+        }
+      ]
+    },
+    {
+      "day": 36,
+      "start_node": "TI064",
+      "end_node": "TH107",
+      "arcs": [
         {
           "from": "TI064",
           "to": "BC076",
@@ -6194,6 +6106,72 @@
           "gain": 379,
           "is_deadhead": false,
           "direction": "rev"
+        },
+        {
+          "from": "TI099",
+          "to": "TI098",
+          "edge_id": "324.0",
+          "trail": "Whiteoak Branch",
+          "miles": 1.8,
+          "seconds": 2414,
+          "gain": 417,
+          "is_deadhead": false,
+          "direction": "fwd"
+        },
+        {
+          "from": "TI098",
+          "to": "TI096",
+          "edge_id": "124.0",
+          "trail": "Forney Creek",
+          "miles": 1.1,
+          "seconds": 1280,
+          "gain": 51,
+          "is_deadhead": false,
+          "direction": "fwd"
+        },
+        {
+          "from": "TI096",
+          "to": "BC075",
+          "edge_id": "42.1",
+          "trail": "Bear Creek",
+          "miles": 2.8,
+          "seconds": 4129,
+          "gain": 1059,
+          "is_deadhead": false,
+          "direction": "fwd"
+        },
+        {
+          "from": "BC075",
+          "to": "TI096",
+          "edge_id": "42.1",
+          "trail": "Bear Creek",
+          "miles": 2.8,
+          "seconds": 3126,
+          "gain": 57,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "TI096",
+          "to": "BC074",
+          "edge_id": "125.0",
+          "trail": "Forney Creek",
+          "miles": 0.4,
+          "seconds": 384,
+          "gain": 11,
+          "is_deadhead": true,
+          "direction": "dh"
+        },
+        {
+          "from": "BC074",
+          "to": "TI099",
+          "edge_id": "182.0",
+          "trail": "Lakeshore",
+          "miles": 1.0,
+          "seconds": 1544,
+          "gain": 379,
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI099",
@@ -6270,25 +6248,25 @@
         },
         {
           "from": "TI099",
-          "to": "TI098",
-          "edge_id": "324.0",
-          "trail": "Whiteoak Branch",
-          "miles": 1.8,
-          "seconds": 2414,
-          "gain": 417,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "to": "BC074",
+          "edge_id": "182.0",
+          "trail": "Lakeshore",
+          "miles": 1.0,
+          "seconds": 1333,
+          "gain": 118,
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
-          "from": "TI098",
+          "from": "BC074",
           "to": "TI096",
-          "edge_id": "124.0",
+          "edge_id": "125.0",
           "trail": "Forney Creek",
-          "miles": 1.1,
-          "seconds": 1280,
-          "gain": 51,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "miles": 0.4,
+          "seconds": 457,
+          "gain": 66,
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "TI096",
@@ -6298,8 +6276,8 @@
           "miles": 2.8,
           "seconds": 4129,
           "gain": 1059,
-          "is_deadhead": false,
-          "direction": "fwd"
+          "is_deadhead": true,
+          "direction": "dh"
         },
         {
           "from": "BC075",
@@ -7923,6 +7901,16 @@
           "direction": "rev"
         }
       ]
+    }
+  ],
+  "ferry_landings": [
+    {
+      "node": "TI051",
+      "name": "Hazel Creek Access"
+    },
+    {
+      "node": "TI064",
+      "name": "Pilkey Creek"
     }
   ]
 }

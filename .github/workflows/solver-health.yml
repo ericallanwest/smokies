@@ -173,7 +173,7 @@ jobs:
           # trailhead, a frontcountry campground, or the Hazel Creek boat
           # landing (TI051) that the Fontana Lake shuttle serves.
           REACHABLE = ('TH', 'CG')
-          SHUTTLE = {'TI051'}
+          SHUTTLE = {'TI051', 'TI053', 'TI064', 'BC090'}
           def ok(n):
               return n[:2] in REACHABLE or n in SHUTTLE
           bad = [(d['day'], d['start_node'], d['end_node']) for d in o['days']
@@ -184,15 +184,17 @@ jobs:
           # plain contiguous walk.
           moved = sum(1 for k in range(len(o['days']) - 1)
                       if o['days'][k]['end_node'] != o['days'][k + 1]['start_node'])
-          boat = sum(1 for d in o['days']
-                     if d['start_node'] in SHUTTLE or d['end_node'] in SHUTTLE)
+          ferry = sum(1 for d in o['days']
+                      if d['start_node'] in SHUTTLE or d['end_node'] in SHUTTLE)
           print(f"supported 16h: {o['n_days']} days, {moved} crew shuttles, "
-                f"{boat} boat days")
+                f"{ferry} ferry days")
           assert moved > 0, 'no day is repositioned; free repositioning did not fire'
-          # The boat is what makes supported reach below 13.7 h at all, so a
-          # build that quietly stopped using it is worth catching here rather
-          # than in a preset regeneration months later.
-          assert boat > 0, 'no day uses the Hazel Creek landing; --shuttle-nodes lost?'
+          # This request offers no landings, and 16 h does not need any.  A
+          # ferry day here would mean the solver reached for one it was never
+          # given, which is the failure worth catching: a published preset that
+          # quietly depends on a boat nobody booked.
+          assert ferry == 0, 'used a ferry landing without being offered one'
+          assert result['params']['shuttle_nodes_offered'] == [], result['params']
           PY
         env:
           SOLVER_URL: https://smokies-solver-165021828782.us-east1.run.app

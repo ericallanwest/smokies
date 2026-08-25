@@ -6,13 +6,14 @@ road).  The largest of those over all required arcs is a hard floor on
 --max-hours for --style supported, independent of how the walk is cut.
 
 Road-only it is 13.73 h, set by Lakeshore Trail between campsites 81 and 77,
-which is 6.6 h from tarmac at either end.  Adding the Hazel Creek boat landing
-(TI051, served by the Fontana Lake shuttle) drops it to 9.90 h, because that
-landing is minutes from the very trail that was setting the floor -- which is
-why the supported presets start at 10 h rather than 14.
+which is 6.6 h from tarmac at either end.  The four Fontana Lake ferry landings
+(TI051 Hazel Creek, TI053 Ollie Cove, TI064 Pilkey Creek, BC090 Campsite 90)
+drop it to 9.36 h, because they sit on the very trail that was setting the
+floor -- which is why supported starts at 10 h rather than 14.  TI051 and TI064
+alone reach the same floor.
 
 Re-run this whenever the edge list changes and update SUPPORTED_MIN_HOURS in
-tools/build_presets_index.py and SHUTTLE_NODES in the solver to match.
+tools/build_presets_index.py and FERRY_LANDINGS in the solver to match.
 
     python tools/road_bound.py        # from the directory holding the edge list
 """

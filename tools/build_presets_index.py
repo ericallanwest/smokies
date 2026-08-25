@@ -30,19 +30,27 @@ RESUPPLY = [4, 5, 6, 7, 8, None]       # None = unlimited, the slider's right ed
 # Fontana Lake's north shore: 6.6 h from the nearest road at each end, making a
 # road-only supported day 13.73 h at minimum.
 #
-# The Fontana Lake boat shuttle to the Hazel Creek landing (TI051) attacks
-# exactly that trail -- minutes from the water where it is hours from tarmac --
-# and drops the floor to 9.90 h, which is why supported now starts at 10 h
-# rather than 14.  tools/road_bound.py recomputes both figures from the edge
-# list if the network changes.
+# The Fontana Lake ferry landings attack exactly that trail -- minutes from the
+# water where it is hours from tarmac -- and drop the floor to 9.36 h, which is
+# why supported starts at 10 h rather than 14.  tools/road_bound.py recomputes
+# both figures from the edge list if the network changes.
 SUPPORTED_MIN_HOURS = 10
 SUPPORTED_REASON = (
     "A supported hiker sleeps in town every night, so every day has to both "
     "begin and end somewhere the crew can reach. Even using the Fontana Lake "
-    "boat shuttle, the shortest possible supported day is 9.9 h -- set by "
-    "Lakeshore Trail along the lake's north shore. Choose 10 h or longer, or "
-    "switch to self-supported to sleep out there."
+    "ferry, the shortest possible supported day is 9.4 h -- set by Lakeshore "
+    "Trail along the lake's north shore. Choose 10 h or longer, or switch to "
+    "self-supported to sleep out there."
 )
+
+# Mirrors FERRY_LANDINGS in the solver.  Published so the custom-solve picker
+# can offer them without a second hardcoded copy in the frontend.
+FERRY_LANDINGS = [
+    {"node": "TI051", "name": "Hazel Creek Access"},
+    {"node": "TI053", "name": "Ollie Cove"},
+    {"node": "TI064", "name": "Pilkey Creek"},
+    {"node": "BC090", "name": "Campsite 90"},
+]
 
 
 def key_for(style, hours, rmax):
@@ -75,6 +83,9 @@ def main():
             entry["shuttles"] = sum(
                 1 for k in range(len(d['days']) - 1)
                 if d['days'][k]['end_node'] != d['days'][k + 1]['start_node'])
+            # Which landings this itinerary depends on, so the app can say what
+            # has to be booked before anyone commits to it.
+            entry["ferry_landings"] = d.get('ferry_landings', [])
         presets[key_for(style, hours, rmax)] = entry
 
     # Name every combination the sliders can reach, so a gap is a statement
@@ -102,6 +113,10 @@ def main():
                 "hours": HOURS,
                 "resupply": [None],
                 "min_hours": SUPPORTED_MIN_HOURS,
+                # Offered in the custom-solve panel.  The published presets take
+                # them only where roads alone give no itinerary, since a ferry
+                # is an expense and a schedule.
+                "ferry_landings": FERRY_LANDINGS,
             },
         },
         "presets": dict(sorted(presets.items())),

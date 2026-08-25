@@ -38,7 +38,25 @@
    "resupply": [
     null
    ],
-   "min_hours": 10
+   "min_hours": 10,
+   "ferry_landings": [
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    },
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    }
+   ]
   }
  },
  "presets": {
@@ -368,58 +386,109 @@
   },
   "supported_10h": {
    "file": "preset_supported_10h.json",
-   "days": 59,
-   "walk_hours": 479.2,
+   "days": 57,
+   "walk_hours": 469.5,
    "start_node": "TH245",
-   "shuttles": 15
+   "shuttles": 15,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ]
   },
   "supported_11h": {
    "file": "preset_supported_11h.json",
    "days": 47,
-   "walk_hours": 444.6,
+   "walk_hours": 444.5,
    "start_node": "TH245",
-   "shuttles": 11
+   "shuttles": 11,
+   "ferry_landings": [
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ]
   },
   "supported_12h": {
    "file": "preset_supported_12h.json",
    "days": 42,
-   "walk_hours": 435.5,
+   "walk_hours": 434.4,
    "start_node": "TH245",
-   "shuttles": 13
+   "shuttles": 13,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ]
   },
   "supported_13h": {
    "file": "preset_supported_13h.json",
    "days": 40,
-   "walk_hours": 426.9,
+   "walk_hours": 425.8,
    "start_node": "TH245",
-   "shuttles": 14
+   "shuttles": 14,
+   "ferry_landings": [
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ]
   },
   "supported_14h": {
    "file": "preset_supported_14h.json",
-   "days": 37,
-   "walk_hours": 451.9,
+   "days": 38,
+   "walk_hours": 464.7,
    "start_node": "TH245",
-   "shuttles": 12
+   "shuttles": 10,
+   "ferry_landings": []
   },
   "supported_15h": {
    "file": "preset_supported_15h.json",
-   "days": 34,
-   "walk_hours": 438.5,
+   "days": 35,
+   "walk_hours": 443.2,
    "start_node": "TH245",
-   "shuttles": 12
+   "shuttles": 11,
+   "ferry_landings": []
   },
   "supported_16h": {
    "file": "preset_supported_16h.json",
-   "days": 31,
-   "walk_hours": 420.5,
+   "days": 32,
+   "walk_hours": 458.2,
    "start_node": "TH245",
-   "shuttles": 9
+   "shuttles": 6,
+   "ferry_landings": []
   },
   "supported_8h": {
-   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end somewhere the crew can reach. Even using the Fontana Lake boat shuttle, the shortest possible supported day is 9.9 h -- set by Lakeshore Trail along the lake's north shore. Choose 10 h or longer, or switch to self-supported to sleep out there."
+   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end somewhere the crew can reach. Even using the Fontana Lake ferry, the shortest possible supported day is 9.4 h -- set by Lakeshore Trail along the lake's north shore. Choose 10 h or longer, or switch to self-supported to sleep out there."
   },
   "supported_9h": {
-   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end somewhere the crew can reach. Even using the Fontana Lake boat shuttle, the shortest possible supported day is 9.9 h -- set by Lakeshore Trail along the lake's north shore. Choose 10 h or longer, or switch to self-supported to sleep out there."
+   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end somewhere the crew can reach. Even using the Fontana Lake ferry, the shortest possible supported day is 9.4 h -- set by Lakeshore Trail along the lake's north shore. Choose 10 h or longer, or switch to self-supported to sleep out there."
   }
  }
 }

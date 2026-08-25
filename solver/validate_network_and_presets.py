@@ -40,10 +40,11 @@ def warn(cat, msg): WARN.append((cat, msg))
 # Mirrors RESUPPLY_NODES in the solver and viz.js -- keep in sync.
 RESUPPLY = {'CGCAD', 'TH264', 'TH210', 'TH158', 'TH025',
             'RI058', 'TH117', 'TH119', 'TH220', 'CGSMO'}
-# Non-road places a supported hiker can be collected from.  Mirrors
-# SHUTTLE_NODES in the solver -- TI051 is the Hazel Creek landing on Fontana
-# Lake, and it is what lets supported itineraries exist below 13.7 h.
-SHUTTLE_NODES = {'TI051'}
+# Fontana Lake ferry landings a supported hiker can be collected from.  Mirrors
+# FERRY_LANDINGS in the solver -- these are what let supported itineraries exist
+# below 13.7 h at all, and they are opt-in because a ferry costs money and runs
+# to a timetable.
+SHUTTLE_NODES = {'TI051', 'TI053', 'TI064', 'BC090'}
 SINGLE_NIGHT_PREFIX = ('SH',)          # shelters: 1 consecutive night
 SINGLE_NIGHT_IDS    = {'BC113'}        # former shelter, same cap
 BC_CONSEC_CAP       = 3                # backcountry sites: 3 consecutive nights
@@ -452,6 +453,16 @@ for fp in files:
         if not moved:
             warn(name, "no day is repositioned by the crew, so this itinerary "
                        "gains nothing from being supported")
+
+        # The declared ferry dependency has to match the itinerary: a hiker
+        # books off this list, so a landing the walk uses but the preset does
+        # not name is a trip that strands them at the water.
+        used = {n for dd in days for n in (dd['start_node'], dd['end_node'])
+                if n in SHUTTLE_NODES}
+        declared = {f['node'] for f in d.get('ferry_landings', [])}
+        if used != declared:
+            fail(name, "uses ferry landings %s but declares %s"
+                       % (sorted(used) or 'none', sorted(declared) or 'none'))
 
     # 2h. a walk has to start and finish somewhere a hiker can actually be
     #     dropped off or collected.  The solver states this rule itself as

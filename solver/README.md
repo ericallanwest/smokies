@@ -62,20 +62,24 @@ Filenames are `preset_selfsup_<h>h[_r<N>].json` and `preset_supported_<h>h.json`
 
 A supported hiker is collected each night, so every day has to both begin and end somewhere the crew can reach. The binding constraint is whichever required trail is furthest from a pick-up point, and that is Lakeshore along Fontana Lake's north shore — 6.6 h from the nearest road at each end, making a road-only supported day 13.73 h at minimum.
 
-The Fontana Lake boat shuttle to the Hazel Creek landing (TI051) attacks exactly that trail: minutes from the water where it is hours from tarmac. It drops the floor to **9.90 h**, which is why supported starts at 10 h. The published presets assume the boat; `--shuttle-nodes ""` gives road-only, and `--shuttle-nodes TI051,TH025` would add another landing. `tools/road_bound.py` recomputes both figures.
+The Fontana Lake ferry attacks exactly that trail: minutes from the water where it is hours from tarmac. Four landings are modelled — `TI051` Hazel Creek Access, `TI053` Ollie Cove, `TI064` Pilkey Creek, `BC090` Campsite 90 — and together they drop the floor to **9.36 h**, which is why supported starts at 10 h. `TI051` and `TI064` alone reach the same floor; the other two overlap ground those already cover.
 
-| Max day | Road only | With the boat |
-|---------|-----------|---------------|
-| 9 h | impossible | impossible |
-| 10 h | impossible | 59 days |
-| 11 h | impossible | 47 days |
-| 12 h | impossible | 42 days |
-| 13 h | impossible | 40 days |
-| 14 h | 38 days | 37 days |
-| 15 h | 35 days | 34 days |
-| 16 h | 32 days | 31 days |
+A ferry is an expense and a timetable, and a hiker fit enough for a 16 h day has no reason to want one. So `--shuttle-nodes` is **empty by default**, and the published presets take a landing only where roads alone give no itinerary at all:
 
-Supported is still not the faster option — at 16 h it needs 31 days against self-supported's 28, and walks ~40 h more, because exiting to a pick-up nightly costs more than skipping connectors saves. What it buys is a bed and a light pack.
+| Max day | Road only | With the ferry | Published |
+|---------|-----------|----------------|-----------|
+| 9 h | impossible | impossible | — |
+| 10 h | impossible | 57 days | ferry |
+| 11 h | impossible | 47 days | ferry |
+| 12 h | impossible | 42 days | ferry |
+| 13 h | impossible | 40 days | ferry |
+| 14 h | 38 days | 37 days | **road only** |
+| 15 h | 35 days | 34 days | **road only** |
+| 16 h | 32 days | 31 days | **road only** |
+
+The ferry would save a day at 14–16 h, and the published grid declines it — that day is not worth a boat booking to someone already walking 14 h. A custom solve lets the hiker decide, and each preset records the landings it actually depends on in `ferry_landings`, so the app can name what has to be booked.
+
+Supported is still not the faster option — at 16 h it needs 32 days against self-supported's 28, because exiting to a pick-up nightly costs more than skipping connectors saves. What it buys is a bed and a light pack.
 
 ## Results so far
 
