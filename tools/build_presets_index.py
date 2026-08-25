@@ -36,11 +36,13 @@ RESUPPLY = [4, 5, 6, 7, 8, None]       # None = unlimited, the slider's right ed
 # both figures from the edge list if the network changes.
 SUPPORTED_MIN_HOURS = 9
 SUPPORTED_REASON = (
-    "A supported hiker sleeps in town every night, so every day has to both "
-    "begin and end somewhere the crew can reach. Even using the Fontana Lake "
-    "ferry, the shortest possible supported day is 9.4 h -- set by Lakeshore "
-    "Trail along the lake's north shore. Choose 10 h or longer, or switch to "
-    "self-supported to sleep out there."
+    "Not possible at this day length. A supported hiker has to both begin and "
+    "end every day where the crew can reach them, and the Appalachian Trail "
+    "between Hughes Ridge and Tricorner Knob is about 4 h from a pick-up at "
+    "either end -- 9.4 h to cross, however the days are cut. Below 9 h the "
+    "route has stretches no crew can reach at all, and the best any schedule "
+    "manages is a 36-hour day. Try 9 h instead: seven days run over there, "
+    "and the longest is 9.4 h."
 )
 
 # Mirrors FERRY_LANDINGS in the solver.  Published so the custom-solve picker

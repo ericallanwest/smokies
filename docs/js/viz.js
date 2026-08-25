@@ -758,6 +758,9 @@ async function loadPreset(key) {
     await renderItinerary(itinerary);
     _shownPace = { ...PACE_DEFAULT };   // presets are the published pace
     applyPresetStart();
+    // Again now META is loaded: the style note reports this itinerary's
+    // over-budget days, which are not known until it arrives.
+    renderParamControls();
     renderPace();
   } catch (err) {
     if (seq !== _loadSeq) return;
@@ -827,13 +830,24 @@ function renderParamControls() {
   if (supported && min && hours < min) {
     // Not a missing preset: the park itself rules this out.  Say so here, at
     // the control, rather than waiting for the load to fail.
-    note.textContent = `Needs ${min} h or longer — even by boat, the far end of `
-      + `Lakeshore Trail is 9.9 h from the nearest pick-up and back.`;
+    note.textContent = `Not possible below ${min} h. Try ${min} h — a few days `
+      + `run slightly over there, the longest 9.4 h.`;
     note.classList.add('warn');
   } else if (supported) {
-    note.textContent = 'A crew meets you each night, so every day starts and '
-      + 'ends at a road — or at the Hazel Creek boat landing, which these '
-      + 'itineraries assume you can use. Expect more days than self-supported.';
+    // Where days run over, say by how little. "7 days over budget" reads as a
+    // broken itinerary; "7 days reach 9.4 h against your 9 h" reads as the
+    // trade-off it actually is, and the hiker can judge it.
+    const ob = META?.days_over_budget ?? [];
+    if (ob.length && META?.hiking_style === 'supported') {
+      const worst = Math.max(...ob.map(x => x.seconds)) / 3600;
+      note.textContent = `${ob.length} of these days run past ${hours} h — the `
+        + `longest is ${worst.toFixed(1)} h. Nothing shorter is possible: the `
+        + `remotest trail takes 9.4 h to cross pick-up to pick-up.`;
+    } else {
+      note.textContent = 'A crew meets you each night, so every day starts and '
+        + 'ends at a road — or at a Fontana Lake ferry landing where these '
+        + 'itineraries need one. Expect more days than self-supported.';
+    }
     note.classList.remove('warn');
   } else {
     note.textContent = '';
