@@ -1,0 +1,409 @@
+{
+ "styles": {
+  "selfsup": {
+   "label": "Self-supported",
+   "hours": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+   ],
+   "resupply": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    null
+   ]
+  },
+  "supported": {
+   "label": "Supported",
+   "hours": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+   ],
+   "resupply": [
+    null
+   ],
+   "min_hours": 14
+  }
+ },
+ "presets": {
+  "selfsup_10h": {
+   "file": "preset_selfsup_10h.json",
+   "days": 48,
+   "walk_hours": 420.9,
+   "start_node": "TH072"
+  },
+  "selfsup_10h_r4": {
+   "file": "preset_selfsup_10h_r4.json",
+   "days": 52,
+   "walk_hours": 432.6,
+   "start_node": "TH107"
+  },
+  "selfsup_10h_r5": {
+   "file": "preset_selfsup_10h_r5.json",
+   "days": 49,
+   "walk_hours": 425.4,
+   "start_node": "TH190"
+  },
+  "selfsup_10h_r6": {
+   "file": "preset_selfsup_10h_r6.json",
+   "days": 49,
+   "walk_hours": 421.0,
+   "start_node": "TH246"
+  },
+  "selfsup_10h_r7": {
+   "file": "preset_selfsup_10h_r7.json",
+   "days": 49,
+   "walk_hours": 420.5,
+   "start_node": "TH246"
+  },
+  "selfsup_10h_r8": {
+   "file": "preset_selfsup_10h_r8.json",
+   "days": 49,
+   "walk_hours": 420.0,
+   "start_node": "TH143"
+  },
+  "selfsup_11h": {
+   "file": "preset_selfsup_11h.json",
+   "days": 44,
+   "walk_hours": 428.5,
+   "start_node": "TH143"
+  },
+  "selfsup_11h_r4": {
+   "file": "preset_selfsup_11h_r4.json",
+   "days": 45,
+   "walk_hours": 443.3,
+   "start_node": "TH190"
+  },
+  "selfsup_11h_r5": {
+   "file": "preset_selfsup_11h_r5.json",
+   "days": 45,
+   "walk_hours": 430.2,
+   "start_node": "TH143"
+  },
+  "selfsup_11h_r6": {
+   "file": "preset_selfsup_11h_r6.json",
+   "days": 45,
+   "walk_hours": 429.3,
+   "start_node": "TH107"
+  },
+  "selfsup_11h_r7": {
+   "file": "preset_selfsup_11h_r7.json",
+   "days": 45,
+   "walk_hours": 423.0,
+   "start_node": "TH143"
+  },
+  "selfsup_11h_r8": {
+   "file": "preset_selfsup_11h_r8.json",
+   "days": 44,
+   "walk_hours": 428.5,
+   "start_node": "TH143"
+  },
+  "selfsup_12h": {
+   "file": "preset_selfsup_12h.json",
+   "days": 40,
+   "walk_hours": 414.9,
+   "start_node": "TH001"
+  },
+  "selfsup_12h_r4": {
+   "file": "preset_selfsup_12h_r4.json",
+   "days": 40,
+   "walk_hours": 424.3,
+   "start_node": "TH225"
+  },
+  "selfsup_12h_r5": {
+   "file": "preset_selfsup_12h_r5.json",
+   "days": 40,
+   "walk_hours": 424.0,
+   "start_node": "TH225"
+  },
+  "selfsup_12h_r6": {
+   "file": "preset_selfsup_12h_r6.json",
+   "days": 40,
+   "walk_hours": 424.0,
+   "start_node": "TH225"
+  },
+  "selfsup_12h_r7": {
+   "file": "preset_selfsup_12h_r7.json",
+   "days": 40,
+   "walk_hours": 417.6,
+   "start_node": "TH225"
+  },
+  "selfsup_12h_r8": {
+   "file": "preset_selfsup_12h_r8.json",
+   "days": 40,
+   "walk_hours": 415.3,
+   "start_node": "TH001"
+  },
+  "selfsup_13h": {
+   "file": "preset_selfsup_13h.json",
+   "days": 36,
+   "walk_hours": 416.0,
+   "start_node": "TH245"
+  },
+  "selfsup_13h_r4": {
+   "file": "preset_selfsup_13h_r4.json",
+   "days": 36,
+   "walk_hours": 422.5,
+   "start_node": "TH245"
+  },
+  "selfsup_13h_r5": {
+   "file": "preset_selfsup_13h_r5.json",
+   "days": 36,
+   "walk_hours": 414.2,
+   "start_node": "TH190"
+  },
+  "selfsup_13h_r6": {
+   "file": "preset_selfsup_13h_r6.json",
+   "days": 36,
+   "walk_hours": 419.5,
+   "start_node": "TH245"
+  },
+  "selfsup_13h_r7": {
+   "file": "preset_selfsup_13h_r7.json",
+   "days": 36,
+   "walk_hours": 416.1,
+   "start_node": "TH245"
+  },
+  "selfsup_13h_r8": {
+   "file": "preset_selfsup_13h_r8.json",
+   "days": 36,
+   "walk_hours": 416.0,
+   "start_node": "TH245"
+  },
+  "selfsup_14h": {
+   "file": "preset_selfsup_14h.json",
+   "days": 33,
+   "walk_hours": 408.0,
+   "start_node": "TH245"
+  },
+  "selfsup_14h_r4": {
+   "file": "preset_selfsup_14h_r4.json",
+   "days": 33,
+   "walk_hours": 421.6,
+   "start_node": "CGSMO"
+  },
+  "selfsup_14h_r5": {
+   "file": "preset_selfsup_14h_r5.json",
+   "days": 33,
+   "walk_hours": 415.4,
+   "start_node": "TH245"
+  },
+  "selfsup_14h_r6": {
+   "file": "preset_selfsup_14h_r6.json",
+   "days": 33,
+   "walk_hours": 413.4,
+   "start_node": "CGBIG"
+  },
+  "selfsup_14h_r7": {
+   "file": "preset_selfsup_14h_r7.json",
+   "days": 33,
+   "walk_hours": 408.0,
+   "start_node": "TH245"
+  },
+  "selfsup_14h_r8": {
+   "file": "preset_selfsup_14h_r8.json",
+   "days": 33,
+   "walk_hours": 408.0,
+   "start_node": "TH245"
+  },
+  "selfsup_15h": {
+   "file": "preset_selfsup_15h.json",
+   "days": 30,
+   "walk_hours": 414.1,
+   "start_node": "TH183"
+  },
+  "selfsup_15h_r4": {
+   "file": "preset_selfsup_15h_r4.json",
+   "days": 30,
+   "walk_hours": 424.7,
+   "start_node": "TH246"
+  },
+  "selfsup_15h_r5": {
+   "file": "preset_selfsup_15h_r5.json",
+   "days": 30,
+   "walk_hours": 424.3,
+   "start_node": "TH246"
+  },
+  "selfsup_15h_r6": {
+   "file": "preset_selfsup_15h_r6.json",
+   "days": 30,
+   "walk_hours": 414.1,
+   "start_node": "TH183"
+  },
+  "selfsup_15h_r7": {
+   "file": "preset_selfsup_15h_r7.json",
+   "days": 30,
+   "walk_hours": 414.1,
+   "start_node": "TH183"
+  },
+  "selfsup_15h_r8": {
+   "file": "preset_selfsup_15h_r8.json",
+   "days": 30,
+   "walk_hours": 414.1,
+   "start_node": "TH183"
+  },
+  "selfsup_16h": {
+   "file": "preset_selfsup_16h.json",
+   "days": 28,
+   "walk_hours": 417.5,
+   "start_node": "TH033"
+  },
+  "selfsup_16h_r4": {
+   "file": "preset_selfsup_16h_r4.json",
+   "days": 29,
+   "walk_hours": 408.7,
+   "start_node": "TH060"
+  },
+  "selfsup_16h_r5": {
+   "file": "preset_selfsup_16h_r5.json",
+   "days": 29,
+   "walk_hours": 407.2,
+   "start_node": "TH060"
+  },
+  "selfsup_16h_r6": {
+   "file": "preset_selfsup_16h_r6.json",
+   "days": 28,
+   "walk_hours": 417.7,
+   "start_node": "TH033"
+  },
+  "selfsup_16h_r7": {
+   "file": "preset_selfsup_16h_r7.json",
+   "days": 28,
+   "walk_hours": 417.5,
+   "start_node": "TH033"
+  },
+  "selfsup_16h_r8": {
+   "file": "preset_selfsup_16h_r8.json",
+   "days": 28,
+   "walk_hours": 417.5,
+   "start_node": "TH033"
+  },
+  "selfsup_8h": {
+   "file": "preset_selfsup_8h.json",
+   "days": 65,
+   "walk_hours": 432.4,
+   "start_node": "TH072"
+  },
+  "selfsup_8h_r4": {
+   "file": "preset_selfsup_8h_r4.json",
+   "days": 72,
+   "walk_hours": 495.1,
+   "start_node": "TH107"
+  },
+  "selfsup_8h_r5": {
+   "file": "preset_selfsup_8h_r5.json",
+   "days": 70,
+   "walk_hours": 457.9,
+   "start_node": "TH183"
+  },
+  "selfsup_8h_r6": {
+   "file": "preset_selfsup_8h_r6.json",
+   "days": 66,
+   "walk_hours": 440.3,
+   "start_node": "TH183"
+  },
+  "selfsup_8h_r7": {
+   "file": "preset_selfsup_8h_r7.json",
+   "days": 66,
+   "walk_hours": 429.4,
+   "start_node": "TH183"
+  },
+  "selfsup_8h_r8": {
+   "file": "preset_selfsup_8h_r8.json",
+   "days": 66,
+   "walk_hours": 438.5,
+   "start_node": "TH183"
+  },
+  "selfsup_9h": {
+   "file": "preset_selfsup_9h.json",
+   "days": 54,
+   "walk_hours": 429.1,
+   "start_node": "CGBIG"
+  },
+  "selfsup_9h_r4": {
+   "file": "preset_selfsup_9h_r4.json",
+   "days": 58,
+   "walk_hours": 449.5,
+   "start_node": "TH245"
+  },
+  "selfsup_9h_r5": {
+   "file": "preset_selfsup_9h_r5.json",
+   "days": 56,
+   "walk_hours": 448.1,
+   "start_node": "TH060"
+  },
+  "selfsup_9h_r6": {
+   "file": "preset_selfsup_9h_r6.json",
+   "days": 55,
+   "walk_hours": 445.0,
+   "start_node": "TH060"
+  },
+  "selfsup_9h_r7": {
+   "file": "preset_selfsup_9h_r7.json",
+   "days": 55,
+   "walk_hours": 438.8,
+   "start_node": "CGBIG"
+  },
+  "selfsup_9h_r8": {
+   "file": "preset_selfsup_9h_r8.json",
+   "days": 55,
+   "walk_hours": 430.0,
+   "start_node": "TH107"
+  },
+  "supported_10h": {
+   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end at a road. The remotest required trail -- Lakeshore, between campsites 81 and 77 -- is 6.6 h from the nearest road at each end, which makes the shortest possible supported day 13.7 h. Choose 14 h or longer, or switch to self-supported to sleep out there."
+  },
+  "supported_11h": {
+   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end at a road. The remotest required trail -- Lakeshore, between campsites 81 and 77 -- is 6.6 h from the nearest road at each end, which makes the shortest possible supported day 13.7 h. Choose 14 h or longer, or switch to self-supported to sleep out there."
+  },
+  "supported_12h": {
+   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end at a road. The remotest required trail -- Lakeshore, between campsites 81 and 77 -- is 6.6 h from the nearest road at each end, which makes the shortest possible supported day 13.7 h. Choose 14 h or longer, or switch to self-supported to sleep out there."
+  },
+  "supported_13h": {
+   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end at a road. The remotest required trail -- Lakeshore, between campsites 81 and 77 -- is 6.6 h from the nearest road at each end, which makes the shortest possible supported day 13.7 h. Choose 14 h or longer, or switch to self-supported to sleep out there."
+  },
+  "supported_14h": {
+   "file": "preset_supported_14h.json",
+   "days": 38,
+   "walk_hours": 464.7,
+   "start_node": "TH245",
+   "shuttles": 10
+  },
+  "supported_15h": {
+   "file": "preset_supported_15h.json",
+   "days": 35,
+   "walk_hours": 443.2,
+   "start_node": "TH245",
+   "shuttles": 11
+  },
+  "supported_16h": {
+   "file": "preset_supported_16h.json",
+   "days": 32,
+   "walk_hours": 458.2,
+   "start_node": "TH245",
+   "shuttles": 6
+  },
+  "supported_8h": {
+   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end at a road. The remotest required trail -- Lakeshore, between campsites 81 and 77 -- is 6.6 h from the nearest road at each end, which makes the shortest possible supported day 13.7 h. Choose 14 h or longer, or switch to self-supported to sleep out there."
+  },
+  "supported_9h": {
+   "unavailable": "A supported hiker sleeps in town every night, so every day has to both begin and end at a road. The remotest required trail -- Lakeshore, between campsites 81 and 77 -- is 6.6 h from the nearest road at each end, which makes the shortest possible supported day 13.7 h. Choose 14 h or longer, or switch to self-supported to sleep out there."
+  }
+ }
+}

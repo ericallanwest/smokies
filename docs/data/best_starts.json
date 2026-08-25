@@ -1,679 +1,262 @@
 {
- "10h": {
-  "closed": {
-   "days": 48,
-   "default_days": 48,
-   "start": "TH148"
-  },
-  "open": {
-   "days": 48,
-   "default_days": 50,
-   "start": "TH072"
-  }
+ "selfsup_10h": {
+  "days": 48,
+  "default_days": 50,
+  "start": "TH072"
  },
- "10h_r4": {
-  "closed": {
-   "days": 51,
-   "default_days": 54,
-   "start": "CGCAT"
-  },
-  "open": {
-   "days": 52,
-   "default_days": 52,
-   "start": "TH183"
-  }
+ "selfsup_10h_r4": {
+  "days": 52,
+  "default_days": 52,
+  "start": "TH107"
  },
- "10h_r4_town": {
-  "closed": {
-   "days": 51,
-   "default_days": 54,
-   "start": "CGCAT"
-  },
-  "open": {
-   "days": 52,
-   "default_days": 52,
-   "start": "TH107"
-  }
+ "selfsup_10h_r5": {
+  "days": 49,
+  "default_days": 51,
+  "start": "TH190"
  },
- "10h_r5": {
-  "closed": {
-   "days": 49,
-   "default_days": 49,
-   "start": "TH113"
-  },
-  "open": {
-   "days": 49,
-   "default_days": 52,
-   "start": "TH107"
-  }
+ "selfsup_10h_r6": {
+  "days": 49,
+  "default_days": 50,
+  "start": "TH246"
  },
- "10h_r5_town": {
-  "closed": {
-   "days": 48,
-   "default_days": 49,
-   "start": "TH066"
-  },
-  "open": {
-   "days": 49,
-   "default_days": 51,
-   "start": "TH190"
-  }
+ "selfsup_10h_r7": {
+  "days": 49,
+  "default_days": 50,
+  "start": "TH246"
  },
- "10h_r6": {
-  "closed": {
-   "days": 50,
-   "default_days": 50,
-   "start": "TH148"
-  },
-  "open": {
-   "days": 50,
-   "default_days": 51,
-   "start": "TH246"
-  }
+ "selfsup_10h_r8": {
+  "days": 49,
+  "default_days": 50,
+  "start": "TH143"
  },
- "10h_r6_town": {
-  "closed": {
-   "days": 49,
-   "default_days": 50,
-   "start": "TH246"
-  },
-  "open": {
-   "days": 49,
-   "default_days": 50,
-   "start": "TH246"
-  }
+ "selfsup_11h": {
+  "days": 44,
+  "start": "TH143",
+  "default_days": 45
  },
- "10h_r7": {
-  "closed": {
-   "days": 50,
-   "default_days": 51,
-   "start": "TH107"
-  },
-  "open": {
-   "days": 50,
-   "default_days": 51,
-   "start": "TH107"
-  }
+ "selfsup_11h_r4": {
+  "days": 45,
+  "start": "TH190",
+  "default_days": 46
  },
- "10h_r7_town": {
-  "closed": {
-   "days": 49,
-   "default_days": 50,
-   "start": "TH246"
-  },
-  "open": {
-   "days": 49,
-   "default_days": 50,
-   "start": "TH246"
-  }
+ "selfsup_11h_r5": {
+  "days": 45,
+  "start": "TH143",
+  "default_days": 46
  },
- "10h_r8": {
-  "closed": {
-   "days": 49,
-   "default_days": 49,
-   "start": "TH106"
-  },
-  "open": {
-   "days": 49,
-   "default_days": 51,
-   "start": "TH117"
-  }
+ "selfsup_11h_r6": {
+  "days": 45,
+  "start": "TH107",
+  "default_days": 46
  },
- "10h_r8_town": {
-  "closed": {
-   "days": 49,
-   "default_days": 49,
-   "start": "TH143"
-  },
-  "open": {
-   "days": 49,
-   "default_days": 50,
-   "start": "TH143"
-  }
+ "selfsup_11h_r7": {
+  "days": 45,
+  "start": "TH143",
+  "default_days": 46
  },
- "10h_town": {
-  "closed": {
-   "days": 48,
-   "default_days": 48,
-   "start": "TH066"
-  },
-  "open": {
-   "days": 48,
-   "default_days": 50,
-   "start": "TH072"
-  }
+ "selfsup_11h_r8": {
+  "days": 44,
+  "start": "TH143",
+  "default_days": 45
  },
- "12h": {
-  "closed": {
-   "days": 40,
-   "default_days": 42,
-   "start": "TH117"
-  },
-  "open": {
-   "days": 40,
-   "default_days": 42,
-   "start": "TH117"
-  }
+ "selfsup_12h": {
+  "days": 40,
+  "default_days": 41,
+  "start": "TH001"
  },
- "12h_r4": {
-  "closed": {
-   "days": 41,
-   "default_days": 43,
-   "start": "TH117"
-  },
-  "open": {
-   "days": 41,
-   "default_days": 43,
-   "start": "TH117"
-  }
+ "selfsup_12h_r4": {
+  "days": 40,
+  "default_days": 41,
+  "start": "TH225"
  },
- "12h_r4_town": {
-  "closed": {
-   "days": 40,
-   "default_days": 42,
-   "start": "TH228"
-  },
-  "open": {
-   "days": 40,
-   "default_days": 41,
-   "start": "TH225"
-  }
+ "selfsup_12h_r5": {
+  "days": 40,
+  "default_days": 41,
+  "start": "TH225"
  },
- "12h_r5": {
-  "closed": {
-   "days": 41,
-   "default_days": 43,
-   "start": "TH263"
-  },
-  "open": {
-   "days": 41,
-   "default_days": 42,
-   "start": "TH117"
-  }
+ "selfsup_12h_r6": {
+  "days": 40,
+  "default_days": 41,
+  "start": "TH225"
  },
- "12h_r5_town": {
-  "closed": {
-   "days": 40,
-   "default_days": 41,
-   "start": "TH228"
-  },
-  "open": {
-   "days": 40,
-   "default_days": 41,
-   "start": "TH225"
-  }
+ "selfsup_12h_r7": {
+  "days": 40,
+  "default_days": 41,
+  "start": "TH225"
  },
- "12h_r6": {
-  "closed": {
-   "days": 41,
-   "default_days": 42,
-   "start": "TH126"
-  },
-  "open": {
-   "days": 41,
-   "default_days": 42,
-   "start": "TH117"
-  }
+ "selfsup_12h_r8": {
+  "days": 40,
+  "default_days": 41,
+  "start": "TH001"
  },
- "12h_r6_town": {
-  "closed": {
-   "days": 40,
-   "default_days": 41,
-   "start": "TH228"
-  },
-  "open": {
-   "days": 40,
-   "default_days": 41,
-   "start": "TH225"
-  }
+ "selfsup_13h": {
+  "days": 36,
+  "start": null
  },
- "12h_r7": {
-  "closed": {
-   "days": 40,
-   "default_days": 42,
-   "start": "TH117"
-  },
-  "open": {
-   "days": 40,
-   "default_days": 42,
-   "start": "TH117"
-  }
+ "selfsup_13h_r4": {
+  "days": 36,
+  "start": null
  },
- "12h_r7_town": {
-  "closed": {
-   "days": 39,
-   "default_days": 40,
-   "start": "TH048"
-  },
-  "open": {
-   "days": 40,
-   "default_days": 41,
-   "start": "TH225"
-  }
+ "selfsup_13h_r5": {
+  "days": 36,
+  "start": "TH190",
+  "default_days": 37
  },
- "12h_r8": {
-  "closed": {
-   "days": 40,
-   "default_days": 42,
-   "start": "TH117"
-  },
-  "open": {
-   "days": 40,
-   "default_days": 42,
-   "start": "TH117"
-  }
+ "selfsup_13h_r6": {
+  "days": 36,
+  "start": null
  },
- "12h_r8_town": {
-  "closed": {
-   "days": 39,
-   "default_days": 40,
-   "start": "TH048"
-  },
-  "open": {
-   "days": 40,
-   "default_days": 41,
-   "start": "TH001"
-  }
+ "selfsup_13h_r7": {
+  "days": 36,
+  "start": null
  },
- "12h_town": {
-  "closed": {
-   "days": 39,
-   "default_days": 40,
-   "start": "TH048"
-  },
-  "open": {
-   "days": 40,
-   "default_days": 41,
-   "start": "TH001"
-  }
+ "selfsup_13h_r8": {
+  "days": 36,
+  "start": null
  },
- "14h": {
-  "closed": {
-   "days": 33,
-   "default_days": 34,
-   "start": "TH181"
-  },
-  "open": {
-   "days": 33,
-   "default_days": 34,
-   "start": "TH091"
-  }
+ "selfsup_14h": {
+  "days": 33,
+  "start": null
  },
- "14h_r4": {
-  "closed": {
-   "days": 34,
-   "default_days": 34,
-   "start": "TH057"
-  },
-  "open": {
-   "days": 34,
-   "default_days": 34,
-   "start": "TH091"
-  }
+ "selfsup_14h_r4": {
+  "days": 33,
+  "default_days": 34,
+  "start": "CGSMO"
  },
- "14h_r4_town": {
-  "closed": {
-   "days": 33,
-   "default_days": 34,
-   "start": "TH181"
-  },
-  "open": {
-   "days": 33,
-   "default_days": 34,
-   "start": "CGSMO"
-  }
+ "selfsup_14h_r5": {
+  "days": 33,
+  "start": null
  },
- "14h_r5": {
-  "closed": {
-   "days": 33,
-   "default_days": 34,
-   "start": "TH181"
-  },
-  "open": {
-   "days": 33,
-   "default_days": 34,
-   "start": "TH091"
-  }
+ "selfsup_14h_r6": {
+  "days": 33,
+  "default_days": 33,
+  "start": "CGBIG"
  },
- "14h_r5_town": {
-  "closed": {
-   "days": 33,
-   "default_days": 34,
-   "start": "TH252"
-  },
-  "open": {
-   "days": 33,
-   "start": null
-  }
+ "selfsup_14h_r7": {
+  "days": 33,
+  "start": null
  },
- "14h_r6": {
-  "closed": {
-   "days": 33,
-   "default_days": 34,
-   "start": "TH181"
-  },
-  "open": {
-   "days": 33,
-   "default_days": 34,
-   "start": "TH091"
-  }
+ "selfsup_14h_r8": {
+  "days": 33,
+  "start": null
  },
- "14h_r6_town": {
-  "closed": {
-   "days": 33,
-   "default_days": 33,
-   "start": "CGBIG"
-  },
-  "open": {
-   "days": 33,
-   "default_days": 33,
-   "start": "CGBIG"
-  }
+ "selfsup_15h": {
+  "days": 30,
+  "start": "TH183",
+  "default_days": 31
  },
- "14h_r7": {
-  "closed": {
-   "days": 33,
-   "default_days": 34,
-   "start": "TH181"
-  },
-  "open": {
-   "days": 33,
-   "default_days": 34,
-   "start": "TH091"
-  }
+ "selfsup_15h_r4": {
+  "days": 30,
+  "start": "TH246",
+  "default_days": 31
  },
- "14h_r7_town": {
-  "closed": {
-   "days": 33,
-   "default_days": 33,
-   "start": "TH245"
-  },
-  "open": {
-   "days": 33,
-   "start": null
-  }
+ "selfsup_15h_r5": {
+  "days": 30,
+  "start": "TH246",
+  "default_days": 31
  },
- "14h_r8": {
-  "closed": {
-   "days": 33,
-   "default_days": 34,
-   "start": "TH181"
-  },
-  "open": {
-   "days": 33,
-   "default_days": 34,
-   "start": "TH091"
-  }
+ "selfsup_15h_r6": {
+  "days": 30,
+  "start": "TH183",
+  "default_days": 31
  },
- "14h_r8_town": {
-  "closed": {
-   "days": 33,
-   "default_days": 33,
-   "start": "TH245"
-  },
-  "open": {
-   "days": 33,
-   "start": null
-  }
+ "selfsup_15h_r7": {
+  "days": 30,
+  "start": "TH183",
+  "default_days": 31
  },
- "14h_town": {
-  "closed": {
-   "days": 33,
-   "default_days": 33,
-   "start": "TH245"
-  },
-  "open": {
-   "days": 33,
-   "start": null
-  }
+ "selfsup_15h_r8": {
+  "days": 30,
+  "start": "TH183",
+  "default_days": 31
  },
- "16h": {
-  "closed": {
-   "days": 28,
-   "default_days": 29,
-   "start": "TH135"
-  },
-  "open": {
-   "days": 28,
-   "default_days": 30,
-   "start": "TH136"
-  }
+ "selfsup_16h": {
+  "days": 28,
+  "default_days": 30,
+  "start": "TH033"
  },
- "16h_r4": {
-  "closed": {
-   "days": 29,
-   "default_days": 30,
-   "start": "TH183"
-  },
-  "open": {
-   "days": 29,
-   "default_days": 30,
-   "start": "TH183"
-  }
+ "selfsup_16h_r4": {
+  "days": 29,
+  "default_days": 30,
+  "start": "TH060"
  },
- "16h_r4_town": {
-  "closed": {
-   "days": 29,
-   "default_days": 30,
-   "start": "TH066"
-  },
-  "open": {
-   "days": 29,
-   "default_days": 30,
-   "start": "TH060"
-  }
+ "selfsup_16h_r5": {
+  "days": 29,
+  "default_days": 30,
+  "start": "TH060"
  },
- "16h_r5": {
-  "closed": {
-   "days": 29,
-   "default_days": 29,
-   "start": "TH072"
-  },
-  "open": {
-   "days": 29,
-   "default_days": 30,
-   "start": "TH072"
-  }
+ "selfsup_16h_r6": {
+  "days": 28,
+  "default_days": 30,
+  "start": "TH033"
  },
- "16h_r5_town": {
-  "closed": {
-   "days": 28,
-   "default_days": 29,
-   "start": "TH048"
-  },
-  "open": {
-   "days": 29,
-   "default_days": 30,
-   "start": "TH060"
-  }
+ "selfsup_16h_r7": {
+  "days": 28,
+  "default_days": 30,
+  "start": "TH033"
  },
- "16h_r6": {
-  "closed": {
-   "days": 28,
-   "default_days": 29,
-   "start": "TH070"
-  },
-  "open": {
-   "days": 28,
-   "default_days": 30,
-   "start": "TH060"
-  }
+ "selfsup_16h_r8": {
+  "days": 28,
+  "default_days": 30,
+  "start": "TH033"
  },
- "16h_r6_town": {
-  "closed": {
-   "days": 28,
-   "default_days": 29,
-   "start": "TH048"
-  },
-  "open": {
-   "days": 28,
-   "default_days": 30,
-   "start": "TH033"
-  }
+ "selfsup_8h": {
+  "days": 65,
+  "default_days": 66,
+  "start": "TH072"
  },
- "16h_r7": {
-  "closed": {
-   "days": 28,
-   "default_days": 29,
-   "start": "TH070"
-  },
-  "open": {
-   "days": 28,
-   "default_days": 30,
-   "start": "TH060"
-  }
+ "selfsup_8h_r4": {
+  "days": 72,
+  "default_days": 73,
+  "start": "TH107"
  },
- "16h_r7_town": {
-  "closed": {
-   "days": 28,
-   "default_days": 29,
-   "start": "TH048"
-  },
-  "open": {
-   "days": 28,
-   "default_days": 30,
-   "start": "TH033"
-  }
+ "selfsup_8h_r5": {
+  "days": 70,
+  "default_days": 71,
+  "start": "TH183"
  },
- "16h_r8": {
-  "closed": {
-   "days": 28,
-   "default_days": 29,
-   "start": "TH070"
-  },
-  "open": {
-   "days": 28,
-   "default_days": 30,
-   "start": "TH060"
-  }
+ "selfsup_8h_r6": {
+  "days": 66,
+  "default_days": 68,
+  "start": "TH183"
  },
- "16h_r8_town": {
-  "closed": {
-   "days": 28,
-   "default_days": 29,
-   "start": "TH048"
-  },
-  "open": {
-   "days": 28,
-   "default_days": 30,
-   "start": "TH033"
-  }
+ "selfsup_8h_r7": {
+  "days": 66,
+  "default_days": 67,
+  "start": "TH183"
  },
- "16h_town": {
-  "closed": {
-   "days": 28,
-   "default_days": 29,
-   "start": "TH048"
-  },
-  "open": {
-   "days": 28,
-   "default_days": 30,
-   "start": "TH033"
-  }
+ "selfsup_8h_r8": {
+  "days": 66,
+  "default_days": 66,
+  "start": "TH183"
  },
- "8h": {
-  "closed": {
-   "days": 66,
-   "start": null
-  },
-  "open": {
-   "days": 66,
-   "start": null
-  }
+ "selfsup_9h": {
+  "days": 54,
+  "start": "CGBIG",
+  "default_days": 55
  },
- "8h_r4": {},
- "8h_r4_town": {
-  "closed": {
-   "days": 71,
-   "default_days": 74,
-   "start": "TH107"
-  },
-  "open": {
-   "days": 72,
-   "default_days": 73,
-   "start": "TH107"
-  }
+ "selfsup_9h_r4": {
+  "days": 58,
+  "start": null
  },
- "8h_r5": {
-  "closed": {
-   "days": 73,
-   "start": null
-  },
-  "open": {
-   "days": 73,
-   "start": null
-  }
+ "selfsup_9h_r5": {
+  "days": 56,
+  "start": "TH060",
+  "default_days": 57
  },
- "8h_r5_town": {
-  "closed": {
-   "days": 70,
-   "default_days": 73,
-   "start": "TH183"
-  },
-  "open": {
-   "days": 70,
-   "default_days": 71,
-   "start": "TH183"
-  }
+ "selfsup_9h_r6": {
+  "days": 55,
+  "start": "TH060",
+  "default_days": 56
  },
- "8h_r6": {
-  "closed": {
-   "days": 71,
-   "start": null
-  },
-  "open": {
-   "days": 71,
-   "start": null
-  }
+ "selfsup_9h_r7": {
+  "days": 55,
+  "start": "CGBIG",
+  "default_days": 56
  },
- "8h_r6_town": {
-  "closed": {
-   "days": 66,
-   "default_days": 67,
-   "start": "TH183"
-  },
-  "open": {
-   "days": 66,
-   "default_days": 68,
-   "start": "TH183"
-  }
- },
- "8h_r7": {},
- "8h_r7_town": {
-  "closed": {
-   "days": 66,
-   "default_days": 67,
-   "start": "TH183"
-  },
-  "open": {
-   "days": 66,
-   "default_days": 67,
-   "start": "TH183"
-  }
- },
- "8h_r8": {},
- "8h_r8_town": {
-  "closed": {
-   "days": 66,
-   "default_days": 68,
-   "start": "TH141"
-  },
-  "open": {
-   "days": 66,
-   "default_days": 66,
-   "start": "TH183"
-  }
- },
- "8h_town": {
-  "closed": {
-   "days": 64,
-   "default_days": 64,
-   "start": "TH025"
-  },
-  "open": {
-   "days": 65,
-   "default_days": 66,
-   "start": "TH072"
-  }
+ "selfsup_9h_r8": {
+  "days": 55,
+  "start": "TH107",
+  "default_days": 56
  }
 }
