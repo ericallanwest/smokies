@@ -21,10 +21,11 @@ The result is a single continuous walk (no driving between segments) that covers
 ### Key constraints
 
 - Configurable max hiking hours per day. There is no user-facing minimum: the solver minimizes day count first, then maximizes the shortest day (last day exempt) at that count.
-- Overnights only at legal locations (`BC`/`SH`/`CG` nodes); shelters and BC113 allow 1 consecutive night, other backcountry sites up to 3.
+- Overnights only at legal locations. Self-supported: `BC`/`SH`/`CG` nodes plus the 10 resupply points; shelters and BC113 allow 1 consecutive night, other backcountry sites up to 3, town beds no cap. Supported: trailheads and frontcountry campgrounds only, no caps — the crew books the bed.
 - Either direction of traversal satisfies coverage of a required edge; any edge may be repeated (deadheaded), but repeat time counts against the daily budget.
 - Optional resupply window (`--max-resupply-days N`): at most N consecutive days without touching one of 10 resupply nodes (town-access trailheads and the two road campgrounds). Pass-through semantics — walking past a resupply point counts, since most are trailheads where overnighting is illegal. The Euler tour can go 100h+ between natural touches, so a per-stretch shortest-path plan splices minimum-cost out-and-back detours into the walk before day-splitting.
-- Optional town nights (`--town-nights`): the 10 resupply nodes also become legal overnight stops — modeling a motel or hostel stay in the gateway town — with no consecutive-night cap (you can zero-day in town). Output files carry a `_town` suffix.
+- Town nights are unconditional: the 10 resupply nodes are always legal overnight stops — a motel or hostel in the gateway town — with no consecutive-night cap (you can zero-day in town). This used to be `--town-nights`, off by default.
+- Hiking style (`--style`): `supported` means a crew drives the hiker between a road each evening and a road each morning, so days need not chain and no resupply window applies. Deadhead the van can drive, road to road, is dropped from the walk rather than walked.
 
 ## Files
 
@@ -43,10 +44,33 @@ Requires Python 3.10+ with `pandas`, `networkx`, and `ortools`:
 pip install pandas networkx ortools
 python smokies_circuit_solver_20260509a.py --max-hours 12
 python smokies_circuit_solver_20260509a.py --max-hours 12 --max-resupply-days 5
-python smokies_circuit_solver_20260509a.py --max-hours 12 --town-nights
+python smokies_circuit_solver_20260509a.py --max-hours 14 --style supported
 ```
 
-The solver writes a day-by-day itinerary as text and JSON. The JSON presets consumed by the [web app](../docs/) were generated this way for each combination of circuit type (open/closed) and max day (8/10/12/14/16 h); resupply-constrained presets carry an `_rN` suffix (currently 4–8 day windows at 12 h) and town-night presets a `_town` suffix (all five max-day settings).
+The solver writes a day-by-day itinerary as text and JSON. The JSON presets consumed by the [web app](../docs/) cover one configuration per reachable slider position:
+
+| | day lengths | resupply windows | presets |
+|---|---|---|---|
+| `--style self-supported` | 8–16 h, 1 h steps | 4–8 days, or none | 54 |
+| `--style supported` | 14–16 h (see below) | n/a | 3 |
+
+Filenames are `preset_selfsup_<h>h[_r<N>].json` and `preset_supported_<h>h.json`; `tools/build_presets_index.py` writes `presets_index.json` beside them so the app looks a configuration up rather than rebuilding its name. Only the open walk is published — a closed circuit is asked for by naming the same start and finish, which is a live solve.
+
+`--town-nights` is accepted and ignored: resupply points are always legal overnights now. That default used to be off, which published itineraries walking past a bed to reach a backcountry site; turning it on is worth a day at 12 h on its own (42 → 41 from the default start).
+
+### Why supported starts at 14 h
+
+A supported hiker is driven to a bed each night, so every day has to both begin and end where a vehicle can reach. The remotest required trail — Lakeshore, between campsites 81 and 77 — is 6.6 h from the nearest road at each end, so covering it road-to-road takes 13.73 h. Below that no supported itinerary exists at any day count. `tools/road_bound.py` recomputes the figure from the edge list.
+
+Supported is not the faster option. Exiting to a road nightly costs more than it saves:
+
+| Max day | Self-supported | Supported |
+|---------|----------------|-----------|
+| 14 h | 33 days, 408 h walking | 38 days, 465 h |
+| 15 h | — | 35 days, 443 h |
+| 16 h | 28 days, 418 h | 32 days, 458 h |
+
+What it buys is a bed and a light pack, not a shorter trip.
 
 ## Results so far
 
@@ -75,7 +99,7 @@ Resupply windows are nearly free at 12 h. The detour plan touches town-access po
 | ≤ 5 days | 41 days | 43 days | +2.5h / +11.3h |
 | ≤ 4 days | 42 days | 43 days | +8.6h / +16.3h |
 
-Allowing town nights (`--town-nights`) turns the 10 resupply points into cap-free overnight options, which mostly helps where legal campsites are sparse near the park boundary — including Cove Mountain, which becomes interior-feasible at 8 h without the terminus rotation:
+Town nights turn the 10 resupply points into cap-free overnight options, which mostly helps where legal campsites are sparse near the park boundary — including Cove Mountain, which becomes interior-feasible at 8 h without the terminus rotation. This is now always on; the "standard" column is what the old default produced:
 
 | Max day | Open (town / standard) | Closed (town / standard) |
 |---------|------------------------|--------------------------|

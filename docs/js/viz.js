@@ -443,14 +443,22 @@ function updateDay(d) {
   if (day.start_coords)
     startMarker = L.marker(day.start_coords, { icon:triIcon('#27ae60', true), zIndexOffset:1000 })
       .bindPopup(`<b>Day ${d} Start</b><br>${day.start_node}`).addTo(map);
-  if (day.end_coords)
+  if (day.end_coords) {
+    // Under Supported the day ends at a road where the crew is waiting, not at
+    // a camp -- calling it "Camp" would be telling the hiker to sleep there.
+    const endLbl = META.hiking_style === 'supported' ? 'Pick-up' : 'Camp';
     endMarker = L.marker(day.end_coords, { icon:triIcon('#c0392b', false), zIndexOffset:1001 })
-      .bindPopup(`<b>Day ${d} Camp</b><br>${day.end_node}`).addTo(map);
+      .bindPopup(`<b>Day ${d} ${endLbl}</b><br>${day.end_node}`).addTo(map);
+  }
 
   // Sidebar stats
   const rsStop = META.resupply_plan?.find(s => s.day === d);
   document.getElementById('sbDay').textContent   = `Day ${d} of ${META.n_days}`;
+  // A shuttled day did not walk here from yesterday's finish, so name where
+  // the crew picked up.  Without this the two nodes read as a gap in the walk.
+  const from = shuttledFrom(d - 1);
   document.getElementById('sbRoute').textContent =
+    (from ? `(driven from ${nodeName(from)}) ` : '') +
     `${nodeName(day.start_node)} → ${nodeName(day.end_node)}` +
     (rsStop ? ` · resupply: ${rsStop.name}` : '');
   document.querySelectorAll('.rs-stop').forEach(row =>
@@ -511,6 +519,23 @@ const BASEMAPS = {
 };
 
 // ── initViz: rebuild all data layers for a new preset ─────────────────────
+// A supported day is driven to, so it need not resume where the last one
+// stopped.  Self-supported itineraries chain by construction and return 0.
+function countShuttles(days) {
+  let n = 0;
+  for (let i = 0; i < days.length - 1; i++) {
+    if (days[i].end_node !== days[i + 1].start_node) n++;
+  }
+  return n;
+}
+
+// Where the crew picked the hiker up the evening before, if anywhere.
+function shuttledFrom(i) {
+  if (i <= 0 || i >= DAYS.length) return null;
+  const prev = DAYS[i - 1], cur = DAYS[i];
+  return prev.end_node === cur.start_node ? null : prev.end_node;
+}
+
 function initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, cov) {
   const csvBtn = document.getElementById('btnCsv');
   if (csvBtn) csvBtn.disabled = false;   // nothing to export until now
@@ -581,9 +606,15 @@ function initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, cov) {
   sl.max = meta.n_days; sl.value = 1;
 
   // Update left sidebar info panel
+  const shuttles = countShuttles(daysData);
   document.getElementById('presetInfo').innerHTML =
-    `<div class="info-row"><span>Circuit</span>        <span><b>${meta.circuit}</b></span></div>` +
+    `<div class="info-row"><span>Style</span>          <span><b>${
+       meta.hiking_style === 'supported' ? 'Supported' : 'Self-supported'}</b></span></div>` +
+    `<div class="info-row"><span>Route</span>          <span><b>${
+       meta.circuit === 'Closed' ? 'Loop' : 'Point to point'}</b></span></div>` +
     `<div class="info-row"><span>Days</span>           <span><b>${meta.n_days}</b></span></div>` +
+    (shuttles
+      ? `<div class="info-row"><span>Crew shuttles</span> <span><b>${shuttles}</b></span></div>` : '') +
     `<div class="info-row"><span>Required miles</span> <span><b>${meta.total_required_miles.toFixed(1)}</b></span></div>`;
 
   renderResupplyPlan(meta);
@@ -661,6 +692,9 @@ async function renderItinerary(itinerary) {
   const optLayer                       = buildOptionalLayer(_linesGJ, bgLayer, geomDict);
   const meta = {
     circuit: itinerary.circuit,
+    // 'supported' means the crew repositions the hiker between days, so the
+    // days need not chain -- which the map and the CSV both have to say.
+    hiking_style: itinerary.hiking_style || 'self-supported',
     n_days:  itinerary.n_days,
     // Where this itinerary begins.  Published presets are built from a swept
     // start rather than the default one -- worth 120 days across the 114 --
@@ -678,29 +712,27 @@ async function renderItinerary(itinerary) {
   initViz(meta, geomDict, daysData, bgLayer, optLayer, allNodes, covByDay);
 }
 
-async function loadPreset(filename) {
+async function loadPreset(key) {
   const seq = ++_loadSeq;
   showLoading(true);
   const errEl = document.getElementById('presetError');
   errEl.style.display = 'none';
   try {
     await ensureBaseData();
-    const itinerary = await fetch(`data/${filename}`)
+    const index = await loadPresetIndex();
+    const entry = index?.presets?.[key];
+    // A gap in the grid is not an oversight, and the index says which kind it
+    // is: a combination too tight to solve, or -- under Supported -- one the
+    // park's geography rules out outright.  Either way the reason is worth
+    // more than a broken link.
+    if (!entry || entry.unavailable) {
+      throw new Error((entry?.unavailable
+        ?? 'No itinerary for this combination.')
+        + (backendUrl() ? ' Or press Build itinerary to attempt it directly.' : ''));
+    }
+    const itinerary = await fetch(`data/${entry.file}`)
       .then(r => {
-        if (!r.ok) {
-          // A missing preset usually is not an oversight: for the tightest
-          // combinations -- short days with a narrow resupply window -- the
-          // solver finds no legal itinerary at all, because days that must end
-          // at a campsite cover little ground while most resupply points sit
-          // outside the park.  "Has it been pre-computed?" reads like a broken
-          // link and sends people looking for a file; say what is actually
-          // true, and point at the control that can try for real.
-          throw new Error(
-            'No itinerary for this combination. Short hiking days with a '
-            + 'narrow resupply window may have no legal solution at all — '
-            + 'try a longer day, or more days between resupply. '
-            + (backendUrl() ? 'Or press Build itinerary to attempt it directly.' : ''));
-        }
+        if (!r.ok) throw new Error(`Could not load ${entry.file}.`);
         return r.json();
       });
     if (seq !== _loadSeq) return;   // superseded by a newer selection
@@ -717,12 +749,80 @@ async function loadPreset(filename) {
   }
 }
 
-function currentPresetFile() {
-  const max  = document.querySelector('input[name="max_day"]:checked')?.value  ?? '12';
-  const cir  = document.querySelector('input[name="circuit"]:checked')?.value  ?? 'open';
-  const rs   = document.querySelector('input[name="resupply"]:checked')?.value ?? 'none';
-  const town = document.querySelector('input[name="town"]:checked')?.value     ?? 'no';
-  return `preset_${cir}_${max}h${rs === 'none' ? '' : `_r${rs}`}${town === 'yes' ? '_town' : ''}.json`;
+// ── Configuration → published preset ──────────────────────────────────────
+// The filename used to be rebuilt here from the control values, which made this
+// a second copy of the batch tools' label scheme.  It now resolves through
+// data/presets_index.json, so the generator decides what exists and this only
+// asks.  That also means a configuration with no itinerary arrives as a
+// sentence explaining why rather than a 404 -- which matters far more now that
+// sliders put every combination one drag away.
+let _index = null;
+
+async function loadPresetIndex() {
+  if (_index) return _index;
+  _index = await fetch('data/presets_index.json').then(r => r.ok ? r.json() : null);
+  return _index;
+}
+
+function styleFromUI() {
+  return document.querySelector('input[name="style"]:checked')?.value ?? 'selfsup';
+}
+
+function maxDayFromUI() {
+  return +(document.getElementById('maxDay')?.value ?? 12);
+}
+
+// The slider runs 4..8 and then one position past the end, which is "no limit".
+function resupplyFromUI() {
+  if (styleFromUI() === 'supported') return null;   // never applies
+  const v = +(document.getElementById('resupply')?.value ?? 9);
+  return v > 8 ? null : v;
+}
+
+// Keep the slider readouts, the resupply gate and the style note in step with
+// the controls.  Called on every input event, so it must stay cheap and must
+// not touch the map.
+function renderParamControls() {
+  const style = styleFromUI();
+  const hours = maxDayFromUI();
+  const out   = document.getElementById('maxDayOut');
+  if (out) out.textContent = `${hours} h`;
+
+  const rsEl  = document.getElementById('resupply');
+  const rsOut = document.getElementById('resupplyOut');
+  const rsGrp = document.getElementById('resupplyGroup');
+  const supported = style === 'supported';
+  if (rsEl)  rsEl.disabled = supported;
+  if (rsGrp) rsGrp.classList.toggle('disabled', supported);
+  if (rsOut) {
+    // A supported hiker meets the crew daily, so a resupply window is not a
+    // constraint that can bind -- say that rather than showing a stale number.
+    rsOut.textContent = supported ? 'n/a'
+      : (+rsEl.value > 8 ? '∞' : rsEl.value);
+  }
+
+  const note = document.getElementById('styleNote');
+  if (!note) return;
+  const min = _index?.styles?.supported?.min_hours;
+  if (supported && min && hours < min) {
+    // Not a missing preset: the park itself rules this out.  Say so here, at
+    // the control, rather than waiting for the load to fail.
+    note.textContent = `Needs ${min} h or longer — the remotest required trail `
+      + `is 6.6 h from the nearest road at each end.`;
+    note.classList.add('warn');
+  } else if (supported) {
+    note.textContent = 'A crew drives you to a bed each night, so every day '
+      + 'starts and ends at a road. Expect more days than self-supported.';
+    note.classList.remove('warn');
+  } else {
+    note.textContent = '';
+    note.classList.remove('warn');
+  }
+}
+
+function currentPresetKey() {
+  const rs = resupplyFromUI();
+  return `${styleFromUI()}_${maxDayFromUI()}h` + (rs ? `_r${rs}` : '');
 }
 
 // ── Custom solve (beta): on-demand solving via the backend service ─────────
@@ -844,6 +944,10 @@ function dayDate(dayNumber) {
 }
 
 function overnightType(nid) {
+  // Under Supported the hiker sleeps in town wherever the crew books a bed;
+  // the node is only where they were collected, so naming it as lodging would
+  // be wrong.
+  if (META?.hiking_style === 'supported') return 'crew pick-up (bed in town)';
   return nid.startsWith('BC') ? 'backcountry campsite'
        : nid.startsWith('SH') ? 'shelter'
        : nid.startsWith('CG') ? 'campground'
@@ -857,21 +961,22 @@ function buildCsv() {
   const miles  = DAYS.reduce((a, d) => a + d.miles, 0);
   const gain   = DAYS.reduce((a, d) => a + d.gain, 0);
   const loss   = DAYS.reduce((a, d) => a + d.loss, 0);
-  const maxDay = +document.querySelector('input[name="max_day"]:checked')?.value || 12;
-  const town   = document.querySelector('input[name="town"]:checked')?.value === 'yes';
+  const maxDay = maxDayFromUI();
+  const supported = META.hiking_style === 'supported';
 
   const meta = [
     ['Great Smokies Circuit Planner'],
-    ['Circuit', META.circuit],
+    ['Hiking style', supported ? 'Supported (crew shuttle)' : 'Self-supported'],
+    ['Route', META.circuit === 'Closed' ? 'Loop' : 'Point to point'],
     ['Days', META.n_days],
     ['Max hiking day', maxDay + ' h'],
     ['Required trail miles', META.total_required_miles.toFixed(1)],
     ['Distance walked', miles.toFixed(1) + ' mi'],
     ['Time walking', fmtHM(walked)],
     ['Elevation', gain.toLocaleString() + ' ft up / ' + loss.toLocaleString() + ' ft down'],
-    ['Resupply window', META.max_days_between_resupply
-      ? 'every ' + META.max_days_between_resupply + ' days' : 'none'],
-    ['Town nights', town ? 'yes' : 'no'],
+    ['Resupply window', supported ? 'n/a - the crew resupplies you'
+      : (META.max_days_between_resupply
+         ? 'every ' + META.max_days_between_resupply + ' days' : 'none')],
     ['Pace', paceIsDefault(pace)
       ? 'published'
       : levelSpeedMph(pace).toFixed(1) + ' mph flat, k ' + pace.k.toFixed(1)
@@ -884,26 +989,33 @@ function buildCsv() {
   meta.push(['Source', 'https://ericallanwest.github.io/smokies/']);
 
   // Nights first: this is the section that gets typed into a permit.  The last
-  // day ends at a trailhead, not a campsite, so it is not a night.
-  const nights = [csvRow('day', 'date', 'night_at', 'name', 'type')];
+  // day ends at a trailhead, not a campsite, so it is not a night.  Under
+  // Supported there is no permit to file -- the night is a bed in town -- but
+  // where the crew collects the hiker is exactly as worth writing down.
+  const nights = [csvRow('day', 'date', 'night_at', 'name', 'type',
+                         'next_day_starts_at')];
   DAYS.forEach((d, i) => {
     if (i === DAYS.length - 1) return;
+    const moved = DAYS[i + 1].start_node !== d.end_node;
     nights.push(csvRow(d.day, dayDate(d.day), d.end_node,
-                       nodeName(d.end_node), overnightType(d.end_node)));
+                       nodeName(d.end_node), overnightType(d.end_node),
+                       moved ? nodeName(DAYS[i + 1].start_node) : 'same place'));
   });
 
   const daily = [csvRow(
     'day', 'date', 'from', 'from_name', 'to', 'to_name', 'miles', 'time',
     'new_mi', 'repeat_mi', 'connector_mi', 'gain_ft', 'loss_ft',
-    'cum_required_mi', 'cum_pct')];
+    'cum_required_mi', 'cum_pct', 'shuttled_from')];
   for (const d of DAYS) {
+    const from = shuttledFrom(DAYS.indexOf(d));
     daily.push(csvRow(
       d.day, dayDate(d.day), d.start_node, nodeName(d.start_node),
       d.end_node, nodeName(d.end_node),
       d.miles.toFixed(2), fmtHM(d.total_s),
       d.req_miles.toFixed(2), d.rep_miles.toFixed(2), d.conn_miles.toFixed(2),
       d.gain, d.loss, d.cum_req_miles.toFixed(1),
-      (d.cum_req_miles / META.total_required_miles * 100).toFixed(1)));
+      (d.cum_req_miles / META.total_required_miles * 100).toFixed(1),
+      from ? nodeName(from) : ''));
   }
 
   // Leg detail.  'type' is the walk-order category the map colours by -- first
@@ -951,10 +1063,9 @@ function downloadCsv() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  const bits = [String(META.circuit).toLowerCase(),
-                (document.querySelector('input[name="max_day"]:checked')?.value || 12) + 'h'];
+  const bits = [META.hiking_style === 'supported' ? 'supported' : 'selfsup',
+                maxDayFromUI() + 'h'];
   if (META.max_days_between_resupply) bits.push('r' + META.max_days_between_resupply);
-  if (document.querySelector('input[name="town"]:checked')?.value === 'yes') bits.push('town');
   const p = paceFromUI();
   if (!paceIsDefault(p)) bits.push('k' + p.k.toFixed(1));
   if (_shownEnds.start) {
@@ -1015,43 +1126,29 @@ function renderEndpoints() {
   const note = document.getElementById('endpointNote');
   if (!note) return {};
   const { start, end } = endpointsFromUI();
-  const closedEl = document.querySelector('input[name="circuit"][value="closed"]');
-
-  // Pinning a finish forces an open walk: a graph carrying a forced path
-  // cannot also carry a circuit.  Say so rather than letting the two controls
-  // silently contradict each other.
-  const forcesOpen = !!end.id;
-  if (closedEl) {
-    closedEl.disabled = forcesOpen;
-    closedEl.parentElement.style.opacity = forcesOpen ? 0.45 : '';
-    closedEl.parentElement.title = forcesOpen
-      ? 'A pinned finish means an open walk' : '';
-    if (forcesOpen && closedEl.checked) {
-      document.querySelector('input[name="circuit"][value="open"]').checked = true;
-    }
-  }
-
   let msg, bad = false;
   if (!start.ok || !end.ok) {
     msg = `No trailhead or campground called "${(!start.ok ? start.raw : end.raw)}".`;
     bad = true;
   } else if (end.id && start.id && end.id === start.id) {
-    msg = 'Start and finish are the same place — that is a closed circuit. '
-        + 'Clear the finish, or pick a different one.';
-    bad = true;
+    // This used to be an error, back when a separate radio chose the circuit
+    // type.  Naming one place twice is now how you ask for a loop.
+    msg = 'Start and finish are the same place, so this builds a loop back to '
+        + `${_byId.get(start.id)?.name ?? start.id}.`;
+    bad = start.id !== _shownEnds.start || _shownEnds.end !== start.id;
   } else if (end.id && !start.id) {
     msg = 'A finish needs a start. Pick where you begin, or clear the finish.';
     bad = true;
   } else if (start.id || end.id) {
     const stale = start.id !== _shownEnds.start || end.id !== _shownEnds.end;
     msg = stale
-      ? 'Pinned endpoints mean a different circuit, not the same one re-cut. '
+      ? 'Pinned endpoints mean a different route, not the same one re-cut. '
         + 'Build to re-solve (about 10–25 s).'
       : 'This itinerary was built between these points.';
     bad = stale;
   } else {
     msg = 'Leave both blank and the solver picks the pair that saves the most '
-        + 'walking.';
+        + 'walking. Name the same place twice for a loop.';
   }
   note.classList.toggle('dirty', bad);
   note.textContent = msg;
@@ -1107,11 +1204,10 @@ async function solveCustom() {
   try {
     const hiked = document.getElementById('hikedInput').value
       .split(/[\s,]+/).filter(Boolean);
-    const rsVal = document.querySelector('input[name="resupply"]:checked')?.value;
     const body = {
-      max_hours: +(document.querySelector('input[name="max_day"]:checked')?.value ?? 12),
-      max_resupply_days: rsVal && rsVal !== 'none' ? +rsVal : null,
-      town_nights: document.querySelector('input[name="town"]:checked')?.value === 'yes',
+      max_hours: maxDayFromUI(),
+      max_resupply_days: resupplyFromUI(),
+      style: styleFromUI() === 'supported' ? 'supported' : 'self-supported',
       hiked,
       time_budget: 45,
     };
@@ -1158,7 +1254,9 @@ async function solveCustom() {
     if (seq !== _loadSeq) return;   // superseded by a preset click meanwhile
     if (!result) throw new Error('solver stream ended without a result');
     if (result.map_complete) throw new Error('Map already complete — nothing left to hike!');
-    const cir = document.querySelector('input[name="circuit"]:checked')?.value ?? 'open';
+    // The solver answers a same-start-and-finish request in "closed", and says
+    // so in params, since that request is a loop rather than a path.
+    const cir = result.params?.closed_from_equal_endpoints ? 'closed' : 'open';
     const itinerary = result[cir] || result.open || result.closed;
     if (!itinerary) throw new Error('solver found no valid itinerary for these settings');
     await renderItinerary(itinerary);
@@ -1357,11 +1455,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // show something else would put an itinerary on screen that nobody asked
   // for, under a pace label that never produced it -- so when a custom pace is
   // set and a backend is available, a parameter change re-solves instead.
-  document.querySelectorAll('input[name="max_day"], input[name="circuit"], input[name="resupply"], input[name="town"]')
-    .forEach(el => el.addEventListener('change', () => {
-      if (!paceIsDefault(paceFromUI()) && backendUrl()) solveCustom();
-      else loadPreset(currentPresetFile());
-    }));
+  const reselect = () => {
+    renderParamControls();
+    if (!paceIsDefault(paceFromUI()) && backendUrl()) solveCustom();
+    else loadPreset(currentPresetKey());
+  };
+  document.querySelectorAll('input[name="style"]')
+    .forEach(el => el.addEventListener('change', reselect));
+  // 'input' rather than 'change' would re-solve on every pixel of a drag; the
+  // readouts update live, the itinerary follows when the slider is let go.
+  ['maxDay', 'resupply'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', renderParamControls);
+    el.addEventListener('change', reselect);
+  });
 
   // ── Custom solve panel (only with a configured backend) ──────────────────
   const bkParam = new URLSearchParams(location.search).get('backend');
@@ -1397,6 +1504,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Load the default preset on startup
-  loadPreset('preset_open_12h.json');
+  // Load the default preset on startup.  renderParamControls runs twice on
+  // purpose: once now so the readouts are never blank, and again once the
+  // index has landed, since the Supported minimum comes from it.
+  renderParamControls();
+  loadPresetIndex().then(renderParamControls);
+  loadPreset(currentPresetKey());
 });

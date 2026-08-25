@@ -23,39 +23,23 @@
 <!-- ── Left sidebar: parameter presets ──────────────────────────────────── -->
 <div id="left-sidebar">
   <div class="param-group">
-    <div class="param-label">Max hiking day</div>
+    <div class="param-label">Hiking style</div>
     <div class="param-options">
-      <label><input type="radio" name="max_day" value="8"> 8 h</label>
-      <label><input type="radio" name="max_day" value="10"> 10 h</label>
-      <label><input type="radio" name="max_day" value="12" checked> 12 h</label>
-      <label><input type="radio" name="max_day" value="14"> 14 h</label>
-      <label><input type="radio" name="max_day" value="16"> 16 h</label>
+      <label title="Carry everything and sleep where the day ends"><input type="radio" name="style" value="selfsup" checked> Self-supported</label>
+      <label title="A crew drives you between a road each night and a road each morning"><input type="radio" name="style" value="supported"> Supported</label>
     </div>
+    <div class="param-note" id="styleNote"></div>
   </div>
   <div class="param-group">
-    <div class="param-label">Circuit type</div>
-    <div class="param-options">
-      <label><input type="radio" name="circuit" value="open" checked> Open</label>
-      <label><input type="radio" name="circuit" value="closed"> Closed</label>
-    </div>
+    <div class="pace-row"><span>Max hiking day</span><output id="maxDayOut">12 h</output></div>
+    <input type="range" id="maxDay" min="8" max="16" step="1" value="12"
+           aria-label="Max hiking day, hours">
   </div>
-  <div class="param-group">
-    <div class="param-label" title="Maximum full hiking days without passing a resupply point">Max days without resupply</div>
-    <div class="param-options">
-      <label><input type="radio" name="resupply" value="none" checked> ∞</label>
-      <label><input type="radio" name="resupply" value="4"> 4</label>
-      <label><input type="radio" name="resupply" value="5"> 5</label>
-      <label><input type="radio" name="resupply" value="6"> 6</label>
-      <label><input type="radio" name="resupply" value="7"> 7</label>
-      <label><input type="radio" name="resupply" value="8"> 8</label>
-    </div>
-  </div>
-  <div class="param-group">
-    <div class="param-label">Town nights at resupply points</div>
-    <div class="param-options">
-      <label><input type="radio" name="town" value="no" checked> No</label>
-      <label><input type="radio" name="town" value="yes"> Yes</label>
-    </div>
+  <div class="param-group" id="resupplyGroup">
+    <div class="pace-row" title="Maximum full hiking days without passing a resupply point"><span>Max days without resupply</span><output id="resupplyOut">∞</output></div>
+    <!-- 4..8, then one position past the end for "no limit" -->
+    <input type="range" id="resupply" min="4" max="9" step="1" value="9"
+           aria-label="Max days without resupply">
   </div>
   <div id="presetInfo"></div>
   <div class="param-group" id="exportGroup">
@@ -86,7 +70,7 @@
     </div>
     <datalist id="startPointList"></datalist>
     <p class="pace-note" id="endpointNote">Leave both blank and the solver picks
-      the pair that saves the most walking.</p>
+      the pair that saves the most walking. Name the same place twice for a loop.</p>
 
     <div class="pace-tiers" id="paceTiers">
       <button type="button" data-v0="5400" data-k="4.2" data-peak="-0.05">Heavy pack</button>

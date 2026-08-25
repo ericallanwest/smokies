@@ -1,4 +1,4 @@
-﻿import argparse
+import argparse
 import os
 import re
 import time
@@ -11,7 +11,9 @@ _ap.add_argument('--max-hours', type=float, default=12.0, help='Max hiking hours
 _ap.add_argument('--max-resupply-days', type=int, default=None,
                  help='Max days between resupply visits (default: disabled)')
 _ap.add_argument('--town-nights', action='store_true',
-                 help='Allow overnights (motel/hostel) at resupply points')
+                 help='Accepted and ignored. Resupply points are always legal '
+                      'overnights now; the flag survives so a cached frontend '
+                      'cannot break mid-deploy.')
 _ap.add_argument('--hiked', type=str, default=None,
                  help='Comma-separated edge IDs already hiked (900-Miler input); '
                       'they become non-required but stay usable as connectors')
@@ -36,6 +38,17 @@ _ap.add_argument('--start-node', type=str, default=None,
                  help='Begin the itinerary at this trailhead or campground (e.g. TH252). Default: the highest-degree trailhead, which minimises repositioning.')
 _ap.add_argument('--end-node', type=str, default=None,
                  help='Finish an open itinerary at this trailhead or campground. Requires --start-node. Omit both to let the solver choose the pair that saves the most walking.')
+_ap.add_argument('--style', choices=['self-supported', 'supported'],
+                 default='self-supported',
+                 help='self-supported: the hiker carries everything and sleeps where '
+                      'the walk stops. supported: a vehicle and crew shuttle the hiker, '
+                      'so every day begins and ends at a trailhead or frontcountry '
+                      'campground and resupply is not a constraint. A choices= enum '
+                      'rather than a boolean so a future multi-leg supported style '
+                      'slots in without a migration.')
+_ap.add_argument('--skip-closed', action='store_true',
+                 help='Do not build the closed circuit. Only the open walk is published, '
+                      'so a batch that wants only that halves its work.')
 _ap.add_argument('--balance-alpha', type=float, default=0.90,
                  help='Among itineraries tied on days and resupply stops, reject any whose shortest non-last day falls below this fraction of the best tied candidate, then take the least total walking (default: 0.90)')
 _ap.add_argument('--progress', action='store_true',
@@ -91,7 +104,13 @@ def envelope_base() -> dict:
             "tobler": {"v0_m_per_h": TOBLER_PARAMS[0], "k": TOBLER_PARAMS[1],
                        "peak_slope": TOBLER_PARAMS[2], "custom": TOBLER_CUSTOM},
             "max_resupply_days": _args.max_resupply_days,
-            "town_nights": _args.town_nights,
+            "hiking_style": _args.style,
+            # True when the caller pinned the same node as start and finish.
+            # The answer is then in "closed", not "open".
+            "closed_from_equal_endpoints": globals().get(
+                'CLOSED_FROM_EQUAL_ENDPOINTS', False),
+            # Vestigial: resupply points are always legal overnights now.
+            "town_nights": True,
             # What the hiker asked for, and where the walk actually begins --
             # they differ when nothing was pinned.
             "start_node_requested": _args.start_node,
@@ -150,10 +169,26 @@ RESUPPLY_NODES = {
 IN_PARK_RESUPPLY = {'CGCAD', 'CGSMO'}
 MAX_DAYS_BETWEEN_RESUPPLY = _args.max_resupply_days  # None = disabled
 
+# Hiking style.  Self-supported is the historical behaviour: the hiker carries
+# everything and sleeps where the walk stops.  Supported means a vehicle and
+# crew, so a day may only begin and end where a car can reach, the crew drives
+# the gap between one day's end and the next day's start, and resupply stops
+# being a constraint at all.
+SUPPORTED = _args.style == 'supported'
+
 # Town nights: resupply points double as legal overnights (motel/hostel bed).
 # Town beds have no consecutive-night cap, unlike shelters (1) and BC sites (3).
-TOWN_NIGHTS = _args.town_nights
-town_overnights: set = set(RESUPPLY_NODES) if TOWN_NIGHTS else set()
+#
+# This used to be opt-in via --town-nights, defaulting off, which published
+# itineraries that walked past a bed to reach a backcountry site.  Two of the
+# ten resupply points are frontcountry campgrounds that could always end a day
+# anyway, and the other eight are places a hiker can demonstrably sleep, so
+# there was never a reason for the default to be the restrictive one.  The flag
+# is still accepted and ignored so a cached frontend cannot break mid-deploy.
+town_overnights: set = set(RESUPPLY_NODES)
+# Under Supported every legal day-break is a road the crew can drive to, so
+# none of them carry a consecutive-night cap either.
+MAX_DAYS_BETWEEN_RESUPPLY = None if SUPPORTED else MAX_DAYS_BETWEEN_RESUPPLY
 
 progress(2, "Loading edge list")
 df = pd.read_csv(CSV_PATH)
@@ -277,9 +312,21 @@ def node_type(node_id: str) -> str:
         'RI': 'road_intersection',
     }.get(prefix, 'campground' if node_id.startswith('CG') else 'unknown')
 
+# Somewhere a vehicle can reach: the only kind of node an open walk may end on,
+# and -- under Supported -- the only kind a day may break on.  Defined here
+# rather than after the graph build because is_legal_overnight now needs it.
+VALID_CIRCUIT_ENDPOINTS = {'trailhead', 'campground'}   # TH + CG only
+
+
 def is_legal_overnight(node_id: str) -> bool:
-    return (node_id.startswith(('BC', 'SH', 'CG'))
-            or (TOWN_NIGHTS and node_id in RESUPPLY_NODES))
+    if SUPPORTED:
+        # The crew drives the hiker to a bed, so the only question a day-break
+        # has to answer is whether a vehicle can get there.  Routing the whole
+        # style through this one predicate means everything built on it --
+        # nearest_overnight, budget_forced_directions, overnight_set, the
+        # detour planners -- follows without a second switch.
+        return node_type(node_id) in VALID_CIRCUIT_ENDPOINTS
+    return node_id.startswith(('BC', 'SH', 'CG')) or node_id in RESUPPLY_NODES
 
 # First pass: collect campsite flags and overnight-closure flags with OR logic
 # across all CSV rows.  A node's status can appear in either the node_A or
@@ -361,7 +408,6 @@ n_deadhead = n_edges - n_required
 type_counts = Counter(d['node_type'] for _, d in G.nodes(data=True))
 overnight_nodes = [n for n, d in G.nodes(data=True) if d['is_legal_overnight']]
 trailhead_nodes = [n for n, d in G.nodes(data=True) if d['node_type'] == 'trailhead']
-VALID_CIRCUIT_ENDPOINTS = {'trailhead', 'campground'}   # TH + CG only
 
 print("=" * 60)
 print("GRAPH SUMMARY")
@@ -396,10 +442,17 @@ PIN_START = _resolve_pin(_args.start_node, '--start-node')
 PIN_END   = _resolve_pin(_args.end_node, '--end-node')
 if PIN_END and not PIN_START:
     raise SystemExit("--end-node requires --start-node")
-if PIN_START and PIN_END and PIN_START == PIN_END:
-    raise SystemExit(f"--start-node and --end-node are both {PIN_START}; a walk "
-                     f"that begins and ends in the same place is a closed "
-                     f"circuit -- drop --end-node")
+# Asking to finish where you started IS the request for a closed circuit, and
+# it is now the only way to make one: the app dropped its open/closed radio
+# once endpoints became pinnable, because two controls that can contradict each
+# other is one control too many.  So this collapses instead of erroring --
+# clearing PIN_END leaves PATH_CONSTRAINED false, and the ordinary closed-circuit
+# path below already means "a loop anchored at PIN_START".
+CLOSED_FROM_EQUAL_ENDPOINTS = bool(PIN_START and PIN_END and PIN_START == PIN_END)
+if CLOSED_FROM_EQUAL_ENDPOINTS:
+    print(f"\nStart and finish are both {PIN_START}: building a closed circuit "
+          f"anchored there.")
+    PIN_END = None
 # Both pinned means the open walk is fully determined, and the same graph
 # cannot also carry a closed circuit: forcing a path leaves S and E unbalanced
 # on purpose.  Solving both would mean two CP-SAT runs for an answer the hiker
@@ -448,8 +501,8 @@ if MAX_DAYS_BETWEEN_RESUPPLY is not None:
     print(f"Max days between resupply : {MAX_DAYS_BETWEEN_RESUPPLY}")
 else:
     print("Max days between resupply : disabled")
-print(f"Town nights at resupply points : "
-      f"{'enabled (no consecutive-night cap)' if TOWN_NIGHTS else 'disabled'}")
+print(f"Hiking style : {_args.style}")
+print("Town nights at resupply points : always enabled (no consecutive-night cap)")
 
 # --- Strong connectivity -- full graph ---
 print()
@@ -1288,14 +1341,20 @@ print(f"\nStarting node : {start_node}  ({G.nodes[start_node]['node_type']}, "
 # ---------------------------------------------------------------------------
 # 5A: Closed circuit
 # ---------------------------------------------------------------------------
+# --skip-closed exists for batches: only the open walk is published now, and
+# building the closed circuit costs a second Hierholzer pass plus a second full
+# day split, which is most of the run.
+SKIP_CLOSED = _args.skip_closed or PATH_CONSTRAINED
 if PATH_CONSTRAINED:
     print("\nClosed circuit: skipped -- endpoints are pinned, so this "
           "graph carries an open walk only.")
+elif _args.skip_closed:
+    print("\nClosed circuit: skipped -- --skip-closed.")
 else:
     print("\nBuilding closed circuit (Hierholzer) ...")
 t0 = time.time()
 
-circuit = None if PATH_CONSTRAINED else [
+circuit = None if SKIP_CLOSED else [
     (u, v, k, G_euler[u][v][k])
     for u, v, k in nx.eulerian_circuit(G_euler, source=start_node, keys=True)
 ]
@@ -1434,7 +1493,11 @@ else:
     print(f"  Walk start : {open_walk_start}  ({s_type})")
     print(f"  Walk end   : {open_walk_end}  ({e_type})")
     print(f"  Savings    : {best_dh_cost:,}s  ({best_dh_cost/3600:.2f}h)")
-    print(f"  Open lower bound: {(total_s - best_dh_cost)/MAX_DAY_SECONDS:.1f} days")
+    # total_s is only computed when the closed circuit was built; --skip-closed
+    # means there is nothing to take the lower bound against.
+    if 'total_s' in globals():
+        print(f"  Open lower bound: "
+              f"{(total_s - best_dh_cost)/MAX_DAY_SECONDS:.1f} days")
 
     # Rebuild the open Eulerian graph with one fewer unit of the removed flow path
     G_euler_open = nx.MultiDiGraph()
@@ -1617,6 +1680,12 @@ resupply_set = {n for n in G.nodes() if G.nodes[n].get('is_resupply', False)}
 # Overnight-use constraint sets
 sh_nodes     = {n for n, d in G.nodes(data=True) if d['node_type'] == 'shelter'}
 single_night = sh_nodes | BC_SINGLE_NIGHT_IDS   # 1-consecutive-night cap
+if SUPPORTED:
+    # Consecutive-night caps are a backcountry permit rule.  A supported hiker
+    # sleeps wherever the crew books a bed and can be dropped at the same
+    # trailhead every morning, so nothing here applies.
+    single_night = set()
+    town_overnights = set(overnight_set)
 
 
 def find_nearest_valid_overnight(from_node, D, overnight_nodes,
@@ -1632,6 +1701,74 @@ def find_nearest_valid_overnight(from_node, D, overnight_nodes,
         if dist < float('inf'):
             return dist, nn
     return float('inf'), None
+
+
+def _supported_trim_tables(arc_seq):
+    """Per-index deadhead-trim options for Supported day boundaries.
+
+    A supported day is its own open walk: the crew drops the hiker at a road and
+    collects them at a road, so a deadhead run at either end of the day is
+    driven rather than walked.  That is exactly the rule _open_trim_cuts already
+    applies to the two ends of an open itinerary -- under Supported it has to
+    hold at *every* boundary, and it has to be cheap enough to sit in the DP's
+    inner loop, hence the precomputed tables.
+
+    This is what makes the mode more than cosmetic.  Excluding trimmed head and
+    tail from the day's budget means the split is rewarded for breaking where
+    deadhead already sits, and deleting those arcs is what leaves day N ending
+    at one trailhead and day N+1 starting at another -- the free repositioning
+    the crew is there to provide.
+
+    Deleting deadhead cannot lose coverage: is_deadhead marks only duplicate and
+    connector arcs, never the required traversal.
+
+    Returns (head_opts, tail_opts, W, max_run_s):
+      head_opts[i]  legal head-cut lengths, ascending, for a day starting at arc
+                    i.  Dropping t arcs starts the day at arc_seq[i+t-1][1], or
+                    at arc_seq[i][0] when t == 0.
+      tail_opts[j]  the same for a day ending at arc j.  Dropping t arcs
+                    finishes it at arc_seq[j-t+1][0], or arc_seq[j][1] at t == 0.
+      W             prefix sums of arc weight; a span costs W[b] - W[a].
+      max_run_s     longest deadhead run in seconds -- the most any one trim can
+                    remove, which is how the DP knows when to stop extending.
+    """
+    N = len(arc_seq)
+
+    def _ok(n):
+        return node_type(n) in VALID_CIRCUIT_ENDPOINTS
+
+    is_dh = [bool(a[3].get('is_deadhead')) for a in arc_seq]
+
+    W = [0] * (N + 1)
+    for k in range(N):
+        W[k + 1] = W[k] + arc_seq[k][3]['weight']
+
+    head_opts = []
+    for i in range(N):
+        opts = [0] if _ok(arc_seq[i][0]) else []
+        t = 0
+        while i + t < N and is_dh[i + t]:
+            t += 1
+            if _ok(arc_seq[i + t - 1][1]):
+                opts.append(t)
+        head_opts.append(opts)
+
+    tail_opts = []
+    for j in range(N):
+        opts = [0] if _ok(arc_seq[j][1]) else []
+        t = 0
+        while j - t >= 0 and is_dh[j - t]:
+            t += 1
+            if _ok(arc_seq[j - t + 1][0]):
+                opts.append(t)
+        tail_opts.append(opts)
+
+    max_run_s, run_s = 0, 0
+    for k in range(N):
+        run_s = run_s + arc_seq[k][3]['weight'] if is_dh[k] else 0
+        max_run_s = max(max_run_s, run_s)
+
+    return head_opts, tail_opts, W, max_run_s
 
 
 def day_split_dp_constrained(arc_seq, overnight_set, single_night, max_s, min_s,
@@ -1655,6 +1792,30 @@ def day_split_dp_constrained(arc_seq, overnight_set, single_night, max_s, min_s,
     memo: dict = {}
     back: dict = {}
     use_resupply = (max_days_resupply is not None and resupply_set is not None)
+
+    if SUPPORTED:
+        _head_opts, _tail_opts, _W, _max_run_s = _supported_trim_tables(arc_seq)
+
+        def _cut(i, j):
+            """Deepest legal head/tail trim for a day spanning arcs i..j.
+
+            Head first, then tail on what is left, mirroring _open_trim_cuts --
+            which means a very deep head cut can in principle block a tail cut
+            that a shallower one would have allowed.  Deadhead runs are short
+            next to a day, so the greedy pair is what ships.
+
+            Returns (head_cut, tail_cut, walked_seconds) or None when no legal
+            pair leaves the hiker starting and finishing where a car can reach.
+            """
+            hs = [t for t in _head_opts[i] if t <= j - i]
+            if not hs:
+                return None
+            h = max(hs)
+            ts = [t for t in _tail_opts[j] if h + t <= j - i]
+            if not ts:
+                return None
+            t = max(ts)
+            return h, t, _W[j + 1 - t] - _W[i + h]
     if use_resupply:
         # Prefix count of resupply touches over arc to-nodes: a day spanning
         # arcs i..j touches a resupply node iff _rs_pref[j+1] - _rs_pref[i] > 0.
@@ -1675,14 +1836,33 @@ def day_split_dp_constrained(arc_seq, overnight_set, single_night, max_s, min_s,
         accum = 0
         for j in range(i, N):
             accum += arc_seq[j][3]['weight']
-            if accum > max_s:
-                break
-            if accum < min_s and j < N - 1:
-                continue
-            to_node = arc_seq[j][1]
             is_last = (j == N - 1)
-            if not (to_node in overnight_set or is_last):
-                continue
+            cut_h = cut_t = 0
+            if SUPPORTED:
+                # accum still bounds the day from above once the deepest
+                # possible trim is allowed for, so it is still safe to stop
+                # extending -- just later than in the untrimmed case.
+                if accum - _max_run_s * 2 > max_s:
+                    break
+                cut = _cut(i, j)
+                if cut is None:
+                    # No legal pair of trims: this span cannot begin and end
+                    # where a vehicle can reach, so it is not a day.
+                    continue
+                cut_h, cut_t, walked = cut
+                if walked > max_s:
+                    continue
+                if walked < min_s and not is_last:
+                    continue
+                to_node = arc_seq[j - cut_t][0] if cut_t else arc_seq[j][1]
+            else:
+                if accum > max_s:
+                    break
+                if accum < min_s and j < N - 1:
+                    continue
+                to_node = arc_seq[j][1]
+                if not (to_node in overnight_set or is_last):
+                    continue
             if not is_last:
                 if to_node == last_on and (
                         last_on in single_night
@@ -1706,7 +1886,7 @@ def day_split_dp_constrained(arc_seq, overnight_set, single_night, max_s, min_s,
             sub = dp(j + 1, new_on, new_consec, new_dsr)
             if 1 + sub < best:
                 best      = 1 + sub
-                best_data = (j + 1, new_on, new_consec, new_dsr)
+                best_data = (j + 1, new_on, new_consec, new_dsr, cut_h, cut_t)
         memo[key] = best
         if best < INF:
             back[key] = best_data
@@ -1717,8 +1897,11 @@ def day_split_dp_constrained(arc_seq, overnight_set, single_night, max_s, min_s,
     days, i, lo, c, dsr = [], 0, None, 0, 0
     while i < N:
         key = (i, lo, c, dsr) if use_resupply else (i, lo, c)
-        j, new_lo, new_c, new_dsr = back[key]
-        days.append(list(arc_seq[i:j]))
+        j, new_lo, new_c, new_dsr, cut_h, cut_t = back[key]
+        # Under Supported the trimmed arcs are dropped, not carried: the crew
+        # drives them.  This is where a day stops beginning where the previous
+        # one ended.
+        days.append(list(arc_seq[i + cut_h:j - cut_t]))
         i, lo, c, dsr = j, new_lo, new_c, new_dsr
     return days
 
@@ -2297,6 +2480,13 @@ def retarget_termini_for_budget(circuit, open_circuit):
     """
     if circuit is None:
         return circuit, open_circuit
+    if SUPPORTED:
+        # Rotation rescues an arc that no *interior* day can hold, by moving it
+        # to day 1 where the walk starts at a terminus rather than a camp.
+        # Under Supported every day already starts and ends at a terminus, so
+        # an arc that still does not fit genuinely cannot be hiked in a day and
+        # no rotation reaches it.
+        return circuit, open_circuit
     if START_NODE_PINNED is not None:
         # Rotating would move day 1 away from the trailhead the hiker asked
         # for, which is the one thing they explicitly chose.  Honour the pin
@@ -2541,6 +2731,14 @@ for _job_i, (base_label, _tag, arc_seq) in enumerate(_split_jobs):
     #       depends heavily on its floor parameter, so sweep the floor
     #       internally and refine each candidate with the exact DP.
     days_plan, floor_plan = None, None
+    # Both remedies below still apply under Supported, and it is worth being
+    # precise about why.  When the walk ends a day deep in the interior the crew
+    # cannot reach it: the hiker walks out to a road, is driven to a bed, and is
+    # dropped back at that same road next morning to walk in again.  That is the
+    # same paid out-and-back these functions insert -- they simply aim at a
+    # trailhead now, because overnight_set is the road-accessible set.
+    # What the crew actually saves is deadhead the van can drive, road to road,
+    # which is what the day-split trim deletes.
     planned_seq = insert_overnight_detours(arc_seq, MAX_DAY_SECONDS, label)
     if planned_seq is not None:
         days_plan, floor_plan = split_days_balanced(planned_seq)
@@ -2892,9 +3090,12 @@ else:
 # ---------------------------------------------------------------------------
 _max_h = int(_args.max_hours)
 _rs_sfx = f"_r{MAX_DAYS_BETWEEN_RESUPPLY}" if MAX_DAYS_BETWEEN_RESUPPLY is not None else ""
-_rs_sfx += "_town" if TOWN_NIGHTS else ""
+# The "_town" suffix is gone: town nights are unconditional, so it distinguished
+# nothing.  Style takes its place, and must be in the name or a supported run
+# would overwrite the self-supported preset for the same hours.
+_style_sfx = 'supported' if SUPPORTED else 'selfsup'
 _hk_sfx = f"_hiked{len(hiked_ids)}" if hiked_ids else ""
-OUT_PATH = f'smokies_itinerary_{_max_h}h{_rs_sfx}{_hk_sfx}.txt'
+OUT_PATH = f'smokies_itinerary_{_style_sfx}_{_max_h}h{_rs_sfx}{_hk_sfx}.txt'
 with open(OUT_PATH, 'w', encoding='utf-8') as f:
     f.write(f"GSMNP Complete Trail Itinerary -- {itinerary_label} Circuit\n")
     f.write(f"{'=' * 70}\n")
@@ -2964,6 +3165,7 @@ total_req_miles = float(df.loc[df['is_required'].astype(bool), 'Miles'].sum())
 def _build_preset(label, days):
     export = {
         "circuit": label,
+        "hiking_style": _args.style,
         "n_days": len(days),
         "total_required_miles": total_req_miles,
         # Where this itinerary actually begins.  Published presets are built
@@ -3018,13 +3220,16 @@ if hiked_ids:
     # Custom partial-completion runs must never overwrite published presets.
     print("  Skipped: --hiked run (presets cover the full map only)")
 else:
-    for _lbl in ("Open", "Closed"):
+    # Open only.  A closed circuit is now requested by naming the same start and
+    # finish, which is a live solve by definition -- publishing a closed preset
+    # would be publishing an answer to a question the UI can no longer ask.
+    for _lbl in ("Open",):
         _days = dp_results.get(_lbl)
         if _days is None:
             print(f"  {_lbl}: no valid partition — skipped")
             continue
         _export = _build_preset(_lbl, _days)
-        _fname  = f"preset_{_lbl.lower()}_{_max_h}h{_rs_sfx}.json"
+        _fname  = f"preset_{_style_sfx}_{_max_h}h{_rs_sfx}.json"
         _path   = os.path.join(_preset_dir, _fname)
         with open(_path, "w", encoding="utf-8") as _jf:
             _json.dump(_export, _jf, indent=2)

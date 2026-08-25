@@ -49,7 +49,7 @@ jobs:
           set -euo pipefail
           curl -sS --max-time 240 -X POST "$SOLVER_URL/solve" \
             -H 'Content-Type: application/json' \
-            -d '{"max_hours":12,"time_budget":90,"start_node":"TH117"}' > result.ndjson
+            -d '{"max_hours":12,"time_budget":90,"start_node":"TH001"}' > result.ndjson
           python - <<'PY'
           import json
           result = None
@@ -68,8 +68,8 @@ jobs:
           # from a swept start rather than the default one, so an unpinned
           # request would return the default's day count and disagree with the
           # file for a reason that is not a fault.
-          pub = json.load(open('docs/data/preset_open_12h.json'))
-          assert pub['start_node'] == 'TH117', (
+          pub = json.load(open('docs/data/preset_selfsup_12h.json'))
+          assert pub['start_node'] == 'TH001', (
               f"preset now starts at {pub['start_node']}; update the pin above")
           published = pub['n_days']
           got = result['open']['n_days']
@@ -81,32 +81,33 @@ jobs:
               f"service returns {got} days where the published preset has "
               f"{published}; cpsat={cpsat}")
 
-          # Cost, not route.  CP-SAT is seeded and single-threaded, which makes
-          # it reproducible on one platform but not across two: the presets are
-          # generated on Windows and the service runs a manylinux wheel on
-          # different silicon, so the two pick different members of the same
-          # optimal set.  Observed: identical objective to the second
-          # (1,587,403s), identical 415 required arcs and 796.3 required miles,
-          # but different traversal directions on some edges -- 1,148,482s of
-          # required time against 1,147,189s.  Both answers are optimal; only
-          # the tie broke differently.
-          #
-          # So compare what is platform-independent.  A drift in total tour cost
-          # or in required coverage is a real regression; a different route at
-          # equal cost is not, and asserting on the route would fail every run.
-          closed = json.load(open('docs/data/preset_closed_12h.json'))
-          want = sum(a['seconds'] for d in closed['days'] for a in d['arcs'])
-          have = sum(a['seconds'] for d in result['closed']['days']
-                     for a in d['arcs'])
-          want_mi = closed['total_required_miles']
-          have_mi = result['closed']['total_required_miles']
-          print(f"closed tour {have:,}s (preset {want:,}s), "
-                f"required {have_mi:.1f} mi (preset {want_mi:.1f} mi)")
-          assert have == want, (
-              f"closed tour costs {have}s where the preset costs {want}s -- "
-              f"that is a cost regression, not a tie broken differently")
-          assert abs(have_mi - want_mi) < 0.05, (
-              f"required coverage is {have_mi} mi, preset says {want_mi}")
+          # Route, not just cost.  This used to compare tour cost only, because
+          # presets were generated on Windows while the service runs a
+          # manylinux wheel: CP-SAT is seeded and single-threaded, so it is
+          # reproducible against one binary and not across two, and the two
+          # picked different members of the same optimal set.  Presets are now
+          # generated on Linux against the pinned wheel in
+          # backend/requirements.txt (see tools/LOCAL_DEV.md), which makes the
+          # published route reproducible by the service arc for arc -- so
+          # assert that, and catch a wheel bump that silently reroutes
+          # everything at equal cost.
+          def arcs_of(o):
+              return [(a['from'], a['to'], a['edge_id'], a['is_deadhead'])
+                      for d in o['days'] for a in d['arcs']]
+          want_s = sum(a['seconds'] for d in pub['days'] for a in d['arcs'])
+          have_s = sum(a['seconds'] for d in result['open']['days']
+                       for a in d['arcs'])
+          print(f"walk {have_s:,}s (preset {want_s:,}s), "
+                f"required {result['open']['total_required_miles']:.1f} mi")
+          assert have_s == want_s, (
+              f"walk costs {have_s}s where the preset costs {want_s}s -- "
+              f"that is a cost regression")
+          assert abs(result['open']['total_required_miles']
+                     - pub['total_required_miles']) < 0.05, 'coverage drifted'
+          assert arcs_of(result['open']) == arcs_of(pub), (
+              "service and preset take different routes at equal cost -- the "
+              "solver wheel or seed changed; regenerate the presets on Linux")
+          assert result['params']['hiking_style'] == 'self-supported'
           assert cpsat['status'] == 'OPTIMAL', (
               f"direction assignment was cut short: {cpsat}")
           assert result['best_found'] is False, 'solve was truncated'
@@ -138,8 +139,49 @@ jobs:
           assert result['params']['tobler']['custom'] is True, result['params']
           days = result['open']['n_days']
           print(f"custom pace k=4.2: open {days} days")
-          # A harder pace cannot need fewer days than the default 42.
-          assert days > 42, f"k=4.2 gave {days} days, which is not slower"
+          # A harder pace cannot need fewer days than the default pace does.
+          # 41 is the *unpinned* 12 h count -- this request names no start, so
+          # it is not the 40 of preset_selfsup_12h.json, which is solved from a
+          # swept start.  It moved from 42 when town nights became
+          # unconditional, which is worth a day on its own.
+          assert days > 41, f"k=4.2 gave {days} days, which is not slower"
+          PY
+        env:
+          SOLVER_URL: https://smokies-solver-165021828782.us-east1.run.app
+
+      - name: Supported style is reachable and road-anchored
+        run: |
+          set -euo pipefail
+          curl -sS --max-time 300 -X POST "$SOLVER_URL/solve"             -H 'Content-Type: application/json'             -d '{"max_hours":16,"style":"supported","time_budget":90}' > sup.ndjson
+          python - <<'PY'
+          import json
+          result = None
+          for line in open('sup.ndjson'):
+              line = line.strip()
+              if not line:
+                  continue
+              obj = json.loads(line)
+              if obj['type'] == 'error':
+                  raise SystemExit(f"supported solve refused: {obj['message']}")
+              if obj['type'] == 'result':
+                  result = obj
+          assert result, 'stream ended without a result'
+          assert result['params']['hiking_style'] == 'supported', result['params']
+          o = result['open']
+          # The whole point of the style: a crew can only meet the hiker where a
+          # vehicle can go, so every day has to start and finish at a trailhead
+          # or a frontcountry campground.
+          bad = [(d['day'], d['start_node'], d['end_node']) for d in o['days']
+                 if d['start_node'][:2] not in ('TH', 'CG')
+                 or d['end_node'][:2] not in ('TH', 'CG')]
+          assert not bad, f"days not anchored at a road: {bad[:3]}"
+          # And at least one day must actually be repositioned, or the crew is
+          # buying the hiker nothing and the day split silently fell back to a
+          # plain contiguous walk.
+          moved = sum(1 for k in range(len(o['days']) - 1)
+                      if o['days'][k]['end_node'] != o['days'][k + 1]['start_node'])
+          print(f"supported 16h: {o['n_days']} days, {moved} crew shuttles")
+          assert moved > 0, 'no day is repositioned; free repositioning did not fire'
           PY
         env:
           SOLVER_URL: https://smokies-solver-165021828782.us-east1.run.app

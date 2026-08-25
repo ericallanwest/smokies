@@ -95,6 +95,15 @@ body.sidebar-hidden #sidebar-toggle { right: 0; }
 .param-options { display: flex; flex-direction: column; gap: 5px; }
 .param-options label { display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 13px; color: var(--text); }
 .param-options input[type=radio] { accent-color: var(--accent); cursor: pointer; }
+/* The sliders that replaced the max-day and resupply radio groups.  The rule
+   below used to be scoped to #customSolve, where the pace sliders live. */
+.param-group input[type="range"] { width: 100%; margin: 2px 0 0; accent-color: var(--accent); }
+/* A parameter that cannot apply -- resupply under Supported -- is dimmed in
+   place rather than removed, so the sidebar does not jump as styles change. */
+.param-group.disabled { opacity: .45; }
+.param-group.disabled input { cursor: not-allowed; }
+.param-note { font-size: 10.5px; line-height: 1.45; color: var(--muted); margin-top: 6px; }
+.param-note.warn { color: var(--accent); }
 #presetInfo { margin-top: 16px; font-size: 11px; color: var(--muted); line-height: 2.0; }
 #presetInfo .info-row { display: flex; justify-content: space-between; border-bottom: 1px solid var(--hairline); padding: 2px 0; }
 #presetError { margin-top: 8px; font-size: 11px; color: var(--accent); display: none; }
@@ -217,6 +226,8 @@ body.dark .leaflet-bar a { background: #1e2129; color: #e6e7ee; border-bottom-co
 }
 .pace-row output { color: var(--text); font-variant-numeric: tabular-nums; }
 #customSolve input[type="range"] { width: 100%; margin: 2px 0 0; accent-color: var(--accent); }
+/* Day N was driven to, not walked to, so its row breaks from the one above. */
+.day-shuttle { color: var(--muted); font-size: 10.5px; font-style: italic; padding: 2px 0 2px 6px; }
 .pace-note {
   font-size: 10.5px; line-height: 1.45; color: var(--muted);
   margin: 10px 0 8px; min-height: 2.6em;

@@ -7,9 +7,15 @@
 #
 # Excluding a file a build needs would break the build, so this is a deny-list
 # of things demonstrably unused rather than an allow-list.  Between them the
-# three configs need: backend/, solver/, tools/, docs/data/segment_profiles.json
-# (baked into the image for custom-pace requests) and docs/data/start_points.json
-# (read by the start sweep).
+# build configs need: backend/, solver/, tools/, docs/data/segment_profiles.json
+# (baked into the image for custom-pace requests), docs/data/start_points.json
+# (read by the start sweep) and docs/data/best_starts.json (read when
+# regenerating presets from their swept start).
+#
+# Presets and sweeps are normally regenerated locally now rather than on Cloud
+# Build -- a Linux machine reproduces the deployed wheel exactly, so the only
+# thing that still has to happen up there is building the image itself.  See
+# tools/LOCAL_DEV.md.
 
 .git
 .gitignore
@@ -35,7 +41,8 @@ lines_20250117.geojson
 lines_20250128*.geojson
 points_20250109.geojson
 
-# Published itineraries.  The image serves these from GitHub Pages, not from
-# inside the container, and the preset batch regenerates them rather than
-# reading them.
+# Published itineraries and their index.  The site serves these from GitHub
+# Pages, not from inside the container, and the preset batch regenerates them
+# rather than reading them.
 docs/data/preset_*.json
+docs/data/presets_index.json

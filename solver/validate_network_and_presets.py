@@ -256,7 +256,11 @@ for sid, r in edges.items():
     arc_ok[(r['node_A'], r['node_B'], sid)] = int(r['cost_A_to_B'])
     arc_ok[(r['node_B'], r['node_A'], sid)] = int(r['cost_B_to_A'])
 
-PAT = re.compile(r'^preset_(open|closed)_(\d+)h(?:_r(\d+))?(_town)?\.json$')
+# preset_selfsup_12h_r6.json / preset_supported_14h.json.  The old scheme
+# carried a circuit word and a _town flag; both axes are gone -- every preset is
+# an open walk, and resupply points are always legal overnights -- and hiking
+# style takes their place.
+PAT = re.compile(r'^preset_(selfsup|supported)_(\d+)h(?:_r(\d+))?\.json$')
 files = sorted(glob.glob(os.path.join(A.data, 'preset_*.json')))
 n_clean = 0
 for fp in files:
@@ -265,9 +269,12 @@ for fp in files:
     if not m:
         fail(name, "filename does not match the preset naming scheme")
         continue
-    circuit, hours = m.group(1), int(m.group(2))
+    style, hours = m.group(1), int(m.group(2))
     rmax = int(m.group(3)) if m.group(3) else None
-    town = bool(m.group(4))
+    supported = style == 'supported'
+    town = True          # resupply points are always legal overnights now
+    if supported and rmax is not None:
+        fail(name, "supported presets carry no resupply window")
     budget = hours * 3600
     d = json.load(open(fp))
     days = d['days']
@@ -282,7 +289,10 @@ for fp in files:
             continue
         if arcs[0]['from'] != dd['start_node'] or arcs[-1]['to'] != dd['end_node']:
             fail(name, "day %s: start/end node disagrees with its arcs" % dd['day'])
-        if prev_end is not None and arcs[0]['from'] != prev_end:
+        if prev_end is not None and arcs[0]['from'] != prev_end and not supported:
+            # A supported day is driven to, so it need not resume where the
+            # previous one stopped.  Check 2i below covers the rule that does
+            # apply: both ends must be somewhere a vehicle can reach.
             fail(name, "day %s starts at %s but day %s ended at %s"
                        % (dd['day'], arcs[0]['from'], dd['day'] - 1, prev_end))
         prev_end = arcs[-1]['to']
@@ -298,9 +308,6 @@ for fp in files:
             if k and arcs[k - 1]['to'] != a['from']:
                 fail(name, "day %s: arc %d starts at %s but arc %d ended at %s"
                            % (dd['day'], k, a['from'], k - 1, arcs[k - 1]['to']))
-    if circuit == 'closed' and days and days[0]['start_node'] != days[-1]['end_node']:
-        fail(name, "closed circuit starts at %s but ends at %s"
-                   % (days[0]['start_node'], days[-1]['end_node']))
 
     # 2b. every required trail covered, exactly once as required walking
     covered = Counter(a['edge_id'] for dd in days for a in dd['arcs']
@@ -326,9 +333,12 @@ for fp in files:
             fail(name, "day %s takes %.1fh, over the %dh budget"
                        % (dd['day'], t / 3600.0, hours))
 
-    # 2d. overnights: legal, and within the consecutive-stay caps
+    # 2d. overnights: legal, and within the consecutive-stay caps.
+    #     Supported skips this entirely -- the hiker is driven to a bed, so the
+    #     rule is check 2i's "a vehicle can reach both ends", and consecutive
+    #     stays are a backcountry permit concern that no longer applies.
     last, consec = None, 0
-    for dd in days[:-1]:
+    for dd in ([] if supported else days[:-1]):
         n = dd['end_node']
         if not legal_overnight(n, town):
             fail(name, "day %s ends the night at %s, which is not a legal overnight%s"
@@ -396,27 +406,43 @@ for fp in files:
     #     the trim was actually available, i.e. it would leave the walk on a
     #     trailhead or campground: that is the same rule trim_open_termini
     #     applies in the solver, so this cannot demand something impossible.
-    if circuit == 'open':
-        flat = [a for dd in days for a in dd['arcs']]
-        for where, run_arcs, node_of in (
-                ('begins', flat, lambda a: a['to']),
-                ('ends', flat[::-1], lambda a: a['from'])):
-            run = 0
-            while run < len(run_arcs) and run_arcs[run]['is_deadhead']:
-                run += 1
-            if not run:
-                continue
-            a0 = run_arcs[0]
-            trimmable = any(node_of(run_arcs[k])[:2] in ('TH', 'CG')
-                            for k in range(run))
-            where_msg = ("walk %s on %d deadhead arc(s), first %s->%s (%s), "
-                         "covering nothing"
-                         % (where, run, a0['from'], a0['to'], a0['trail']))
-            if trimmable:
-                fail(name, where_msg + " -- trimmable to a trailhead")
-            else:
-                warn(name, where_msg + " -- no trailhead inside the run, so it "
-                                       "cannot be trimmed away")
+    flat = [a for dd in days for a in dd['arcs']]
+    for where, run_arcs, node_of in (
+            ('begins', flat, lambda a: a['to']),
+            ('ends', flat[::-1], lambda a: a['from'])):
+        run = 0
+        while run < len(run_arcs) and run_arcs[run]['is_deadhead']:
+            run += 1
+        if not run:
+            continue
+        a0 = run_arcs[0]
+        trimmable = any(node_of(run_arcs[k])[:2] in ('TH', 'CG')
+                        for k in range(run))
+        where_msg = ("walk %s on %d deadhead arc(s), first %s->%s (%s), "
+                     "covering nothing"
+                     % (where, run, a0['from'], a0['to'], a0['trail']))
+        if trimmable:
+            fail(name, where_msg + " -- trimmable to a trailhead")
+        else:
+            warn(name, where_msg + " -- no trailhead inside the run, so it "
+                                   "cannot be trimmed away")
+
+    # 2i. supported: every day is driven to and collected from, so both of its
+    #     ends have to be somewhere a vehicle can reach.  This is the rule that
+    #     replaces 2a's day-chaining and 2d's overnight legality for this style,
+    #     and it is the one that would catch a day-split trim cutting too deep.
+    if supported:
+        for dd in days:
+            for role, n in (('starts', dd['start_node']), ('ends', dd['end_node'])):
+                if n[:2] not in ('TH', 'CG'):
+                    fail(name, "day %s %s at %s, which no vehicle can reach -- "
+                               "a supported hiker cannot be dropped off or "
+                               "collected there" % (dd['day'], role, n))
+        moved = sum(1 for k in range(len(days) - 1)
+                    if days[k]['end_node'] != days[k + 1]['start_node'])
+        if not moved:
+            warn(name, "no day is repositioned by the crew, so this itinerary "
+                       "gains nothing from being supported")
 
     # 2h. a walk has to start and finish somewhere a hiker can actually be
     #     dropped off or collected.  The solver states this rule itself as
@@ -424,8 +450,7 @@ for fp in files:
     #     when picking the deadhead arc to remove; retarget_termini_for_budget
     #     later rotates the walk and drops an arc without rechecking, which is
     #     how the 8h open itinerary came to end at RI109, a road intersection.
-    ends = ([days[0]['start_node'], days[-1]['end_node']]
-            if circuit == 'open' else [days[0]['start_node']])
+    ends = [days[0]['start_node'], days[-1]['end_node']]
     for node in ends:
         if node[:2] not in ('TH', 'CG'):
             fail(name, "walk terminus %s is a %s -- not a trailhead or "

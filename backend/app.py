@@ -22,6 +22,7 @@ import shutil
 import sys
 import tempfile
 import time
+from typing import Literal
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -126,6 +127,13 @@ class SolveRequest(BaseModel):
     # the solver rejects the pair if either is not a legal terminus.
     end_node: str | None = Field(None, min_length=2, max_length=8,
                                  pattern=r'^[A-Za-z]{2}[A-Za-z0-9]{1,6}$')
+    # self-supported: carry everything, sleep where the day ends.
+    # supported: a crew shuttles the hiker, so every day begins and ends at a
+    # road and no resupply window applies.  A Literal rather than a bool so a
+    # future multi-leg style is an added value, not a second flag.
+    style: Literal['self-supported', 'supported'] = 'self-supported'
+    # Accepted and ignored: resupply points are always legal overnights now.
+    # Kept so a cached frontend cannot 422 during a rollout.
     town_nights: bool = False
     hiked: list[str] = Field(default_factory=list, max_length=1000)
     time_budget: float = Field(45.0, ge=5, le=120)
@@ -145,7 +153,9 @@ def _cache_key(req: SolveRequest) -> str:
         'max_resupply_days': req.max_resupply_days,
         'start_node': (req.start_node or '').upper(),
         'end_node': (req.end_node or '').upper(),
-        'town_nights': req.town_nights,
+        'style': req.style,
+        # town_nights is deliberately absent: it no longer changes the answer,
+        # so including it would split the cache for nothing.
         'hiked': sorted(req.hiked),
         'time_budget': req.time_budget,
         'tobler': [req.tobler_v0, req.tobler_k, req.tobler_peak],
@@ -160,6 +170,7 @@ def _ndjson(obj: dict) -> bytes:
 async def _run_solver(req: SolveRequest, key: str):
     cmd = [sys.executable, SOLVER_PY,
            '--max-hours', str(req.max_hours),
+           '--style', req.style,
            '--time-budget', str(req.time_budget),
            '--progress', '--json-out', '-']
     if req.max_resupply_days is not None:
@@ -168,8 +179,6 @@ async def _run_solver(req: SolveRequest, key: str):
         cmd += ['--start-node', req.start_node.upper()]
     if req.end_node:
         cmd += ['--end-node', req.end_node.upper()]
-    if req.town_nights:
-        cmd += ['--town-nights']
     for flag, val in (('--tobler-v0', req.tobler_v0),
                       ('--tobler-k', req.tobler_k),
                       ('--tobler-peak', req.tobler_peak)):

@@ -2,9 +2,16 @@
 
 The default start is the highest-degree trailhead, which minimises
 repositioning but is not chosen for day count -- and day count is the app's
-primary objective.  A closed circuit is a cycle, so its start is a free choice
-among the nodes it visits; only the day split changes, because day boundaries
-have to land on campsites.
+primary objective.  Where the walk begins does not change which arcs it covers,
+only where the day boundaries fall -- and boundaries have to land on legal
+overnights, so moving the start reshuffles them and can save a day.
+
+Only the open walk is swept and published now; a closed circuit is asked for by
+naming the same start and finish, which is a live solve by definition.
+
+Sweeping is worth much less under --style supported: every day there is placed
+independently between roads, so only day 1 is anchored by the start.  Sweep
+self-supported, and take the default for supported.
 
 The sweep is therefore worth running, but only offline: CP-SAT does not depend
 on the start, yet the CLI re-runs it per invocation, so each candidate costs a
@@ -34,7 +41,7 @@ STARTS = os.environ.get('STARTS') or os.path.join(
 
 MAX_HOURS = os.environ.get('MAX_HOURS', '12')
 RESUPPLY = os.environ.get('RESUPPLY', '')          # '' or e.g. '6'
-TOWN = os.environ.get('TOWN', '') == '1'
+STYLE = os.environ.get('STYLE', 'self-supported')  # or 'supported'
 WORKERS = int(os.environ.get('WORKERS', str(max(1, (os.cpu_count() or 2) - 1))))
 
 os.makedirs(OUT, exist_ok=True)
@@ -43,11 +50,13 @@ os.makedirs(OUT, exist_ok=True)
 def solve(node_id):
     """Return per-circuit stats for one pinned start, or None if it failed."""
     tmp = os.path.join(OUT, f'_sweep_{node_id or "auto"}.json')
-    cmd = [sys.executable, SOLVER, '--max-hours', MAX_HOURS, '--json-out', tmp]
+    # --skip-closed: only the open walk is published, and building the closed
+    # circuit costs a second day split, which is most of the run.  Over a
+    # 108-candidate sweep that is half the wall clock for nothing.
+    cmd = [sys.executable, SOLVER, '--max-hours', MAX_HOURS, '--style', STYLE,
+           '--skip-closed', '--json-out', tmp]
     if RESUPPLY:
         cmd += ['--max-resupply-days', RESUPPLY]
-    if TOWN:
-        cmd += ['--town-nights']
     if node_id:
         cmd += ['--start-node', node_id]
     t0 = time.time()
@@ -59,7 +68,7 @@ def solve(node_id):
         payload = json.load(f)
     os.remove(tmp)
     row = {'node': node_id, 'ok': True, 'seconds': int(time.time() - t0)}
-    for kind in ('open', 'closed'):
+    for kind in ('open',):
         o = payload.get(kind)
         row[kind] = None if not o else {
             'days': o['n_days'],
@@ -75,7 +84,8 @@ def main():
     # None first: the current default, so every candidate has a baseline to
     # be judged against in the same run and on the same machine.
     candidates = [None] + [p['id'] for p in points]
-    label = MAX_HOURS + 'h' + (f'_r{RESUPPLY}' if RESUPPLY else '') + ('_town' if TOWN else '')
+    style_sfx = 'supported' if STYLE == 'supported' else 'selfsup'
+    label = f"{style_sfx}_{MAX_HOURS}h" + (f'_r{RESUPPLY}' if RESUPPLY else '')
     print(f"sweeping {len(candidates)} starts for {label} on {WORKERS} workers",
           flush=True)
 
@@ -85,10 +95,9 @@ def main():
             rows.append(row)
             tag = row['node'] or '(default)'
             if row['ok']:
-                o, c = row.get('open'), row.get('closed')
+                o = row.get('open')
                 print(f"[{i}/{len(candidates)}] {tag:<8} "
-                      f"open {o['days'] if o else '-'}  "
-                      f"closed {c['days'] if c else '-'}  ({row['seconds']}s)",
+                      f"days {o['days'] if o else '-'}  ({row['seconds']}s)",
                       flush=True)
             else:
                 print(f"[{i}/{len(candidates)}] {tag:<8} FAILED ({row['seconds']}s)",
@@ -98,7 +107,7 @@ def main():
         json.dump({'config': label, 'rows': rows}, f, indent=1)
 
     base = next(r for r in rows if r['node'] is None)
-    for kind in ('open', 'closed'):
+    for kind in ('open',):
         got = [r for r in rows if r['ok'] and r.get(kind)]
         if not got:
             continue

@@ -13,7 +13,9 @@ pre-solved presets in `docs/data/`.
 {
   "max_hours": 12,
   "max_resupply_days": null,
-  "town_nights": false,
+  "style": "self-supported",
+  "start_node": null,
+  "end_node": null,
   "hiked": ["2.0", "8.1"],
   "time_budget": 45,
   "tobler_v0": null,
@@ -21,6 +23,17 @@ pre-solved presets in `docs/data/`.
   "tobler_peak": null
 }
 ```
+
+`style` is `self-supported` or `supported`; supported needs `max_hours` of 14 or
+more, because the remotest required trail is 6.6 h from a road at each end.
+
+`start_node` and `end_node` name a trailhead or campground. Passing the same
+value for both is how you ask for a closed circuit: the answer then arrives in
+`closed` rather than `open`, and `params.closed_from_equal_endpoints` says so.
+`end_node` requires `start_node`.
+
+`town_nights` is still accepted and ignored -- resupply points are always legal
+overnights now.
 
 ### Hiking pace
 

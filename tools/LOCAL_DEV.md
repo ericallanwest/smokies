@@ -111,3 +111,53 @@ meant the next rebuild could silently start producing a different itinerary at
 the same cost, putting the published presets back out of agreement with the
 service for no reason anyone would notice. Bumping a pin is deliberate:
 rebuild, regenerate presets, and check the fingerprint still matches.
+
+## Regenerating the published presets
+
+Four steps, all local and all free. The grid is 54 self-supported
+configurations (8–16 h × 4–8 days or none) plus 3 supported ones (14–16 h).
+
+```bash
+cd ~/gsmnp
+export SOLVER=~/gsmnp/smokies_circuit_solver_20260509a.py
+export STARTS=~/gsmnp/docs/data/start_points.json
+
+# 1. Sweep every candidate start, one run per configuration.  ~108 solves each,
+#    so this is the slow step -- roughly 10-15 min per configuration.
+for h in 8 9 10 11 12 13 14 15 16; do for r in "" 4 5 6 7 8; do
+  OUT=~/out/sweeps MAX_HOURS=$h RESUPPLY="$r" STYLE=self-supported WORKERS=8 \
+    python tools/sweep_starts.py
+done; done
+
+# 2. Pick each configuration's winner.
+python tools/build_best_starts.py --sweeps ~/out/sweeps \
+       --out docs/data/best_starts.json
+
+# 3. Re-solve each configuration from its winning start.
+OUT=~/out/presets BEST=~/gsmnp/docs/data/best_starts.json WORKERS=8 \
+  python tools/regen_with_best_starts.py
+
+# 4. Supported presets: no sweep.  Every day but the first is placed
+#    independently between roads, so the start barely matters.
+for h in 14 15 16; do
+  python "$SOLVER" --max-hours $h --style supported --skip-closed \
+         --json-out /dev/null
+done
+
+cp ~/out/presets/preset_*.json docs/data/
+python tools/build_presets_index.py --data docs/data
+python validate_network_and_presets.py --data docs/data \
+       --csv smokies_edge_list_20260509a.csv
+```
+
+`--skip-closed` is what makes this affordable: only the open walk is published
+now, and building the closed circuit costs a second Hierholzer pass plus a
+second full day split — most of the run, for an answer nothing reads.
+
+Step 4 writes straight into `docs/data`, so run it from a checkout whose
+`docs/data` is the one you mean to publish.
+
+`build_presets_index.py` is not optional. The app resolves a configuration
+through `presets_index.json` rather than rebuilding a filename, which is what
+lets it explain a gap instead of 404ing — and with sliders, every combination
+is one drag away.
