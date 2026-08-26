@@ -84,8 +84,13 @@ def main():
               + (f"   (also saw {others})" if others else ""))
         if A.into:
             os.makedirs(A.into, exist_ok=True)
-            shutil.copyfile(win['path'], os.path.join(
-                A.into, os.path.basename(win['path'])))
+            dest = os.path.join(A.into, os.path.basename(win['path']))
+            # The destination is a legitimate candidate -- passing it in is what
+            # stops a worse batch overwriting a better published tier -- so the
+            # winner is often the file already sitting there.  Copying it onto
+            # itself is an error, not a no-op.
+            if os.path.abspath(win['path']) != os.path.abspath(dest):
+                shutil.copyfile(win['path'], dest)
     if A.into:
         print(f"copied {len(by_tier)} preset(s) into {A.into}")
 
