@@ -38,7 +38,7 @@
    "resupply": [
     null
    ],
-   "min_hours": 9,
+   "min_hours": 8,
    "ferry_landings": [
     {
      "node": "TI051",
@@ -386,10 +386,10 @@
   },
   "supported_10h": {
    "file": "preset_supported_10h.json",
-   "days": 57,
-   "walk_hours": 469.5,
-   "start_node": "TH245",
-   "shuttles": 15,
+   "days": 46,
+   "walk_hours": 393.3,
+   "start_node": "TH246",
+   "shuttles": 45,
    "ferry_landings": [
     {
      "node": "BC090",
@@ -408,28 +408,10 @@
   },
   "supported_11h": {
    "file": "preset_supported_11h.json",
-   "days": 47,
-   "walk_hours": 444.5,
-   "start_node": "TH245",
-   "shuttles": 11,
-   "ferry_landings": [
-    {
-     "node": "TI051",
-     "name": "Hazel Creek Access"
-    },
-    {
-     "node": "TI064",
-     "name": "Pilkey Creek"
-    }
-   ],
-   "days_over_budget": 0
-  },
-  "supported_12h": {
-   "file": "preset_supported_12h.json",
-   "days": 42,
-   "walk_hours": 434.4,
-   "start_node": "TH245",
-   "shuttles": 13,
+   "days": 44,
+   "walk_hours": 398.4,
+   "start_node": "TH246",
+   "shuttles": 43,
    "ferry_landings": [
     {
      "node": "BC090",
@@ -438,6 +420,32 @@
     {
      "node": "TI051",
      "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_12h": {
+   "file": "preset_supported_12h.json",
+   "days": 37,
+   "walk_hours": 388.6,
+   "start_node": "TH246",
+   "shuttles": 36,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
     },
     {
      "node": "TI064",
@@ -448,58 +456,10 @@
   },
   "supported_13h": {
    "file": "preset_supported_13h.json",
-   "days": 40,
-   "walk_hours": 425.8,
-   "start_node": "TH245",
-   "shuttles": 14,
-   "ferry_landings": [
-    {
-     "node": "TI051",
-     "name": "Hazel Creek Access"
-    },
-    {
-     "node": "TI053",
-     "name": "Ollie Cove"
-    }
-   ],
-   "days_over_budget": 0
-  },
-  "supported_14h": {
-   "file": "preset_supported_14h.json",
-   "days": 38,
-   "walk_hours": 464.7,
-   "start_node": "TH245",
-   "shuttles": 10,
-   "ferry_landings": [],
-   "days_over_budget": 0
-  },
-  "supported_15h": {
-   "file": "preset_supported_15h.json",
    "days": 35,
-   "walk_hours": 443.2,
-   "start_node": "TH245",
-   "shuttles": 11,
-   "ferry_landings": [],
-   "days_over_budget": 0
-  },
-  "supported_16h": {
-   "file": "preset_supported_16h.json",
-   "days": 32,
-   "walk_hours": 458.2,
-   "start_node": "TH245",
-   "shuttles": 6,
-   "ferry_landings": [],
-   "days_over_budget": 0
-  },
-  "supported_8h": {
-   "unavailable": "Not possible at this day length. A supported hiker has to both begin and end every day where the crew can reach them, and the Appalachian Trail between Hughes Ridge and Tricorner Knob is about 4 h from a pick-up at either end -- 9.4 h to cross, however the days are cut. Below 9 h the route has stretches no crew can reach at all, and the best any schedule manages is a 36-hour day. Try 9 h instead: seven days run over there, and the longest is 9.4 h."
-  },
-  "supported_9h": {
-   "file": "preset_supported_9h.json",
-   "days": 63,
-   "walk_hours": 451.4,
-   "start_node": "TH245",
-   "shuttles": 17,
+   "walk_hours": 399.3,
+   "start_node": "TH243",
+   "shuttles": 34,
    "ferry_landings": [
     {
      "node": "BC090",
@@ -518,7 +478,86 @@
      "name": "Pilkey Creek"
     }
    ],
-   "days_over_budget": 7
+   "days_over_budget": 0
+  },
+  "supported_14h": {
+   "file": "preset_supported_14h.json",
+   "days": 33,
+   "walk_hours": 413.8,
+   "start_node": "TH107",
+   "shuttles": 31,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
+  "supported_15h": {
+   "file": "preset_supported_15h.json",
+   "days": 32,
+   "walk_hours": 403.0,
+   "start_node": "TH107",
+   "shuttles": 31,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
+  "supported_16h": {
+   "file": "preset_supported_16h.json",
+   "days": 28,
+   "walk_hours": 412.8,
+   "start_node": "TH107",
+   "shuttles": 27,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
+  "supported_8h": {
+   "file": "preset_supported_8h.json",
+   "days": 62,
+   "walk_hours": 425.0,
+   "start_node": "TH246",
+   "shuttles": 61,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 4
+  },
+  "supported_9h": {
+   "file": "preset_supported_9h.json",
+   "days": 53,
+   "walk_hours": 401.4,
+   "start_node": "TH246",
+   "shuttles": 52,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 1
   }
  }
 }

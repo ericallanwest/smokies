@@ -26,23 +26,26 @@ RESUPPLY = [4, 5, 6, 7, 8, None]       # None = unlimited, the slider's right ed
 
 # Measured, not guessed.  Every day of a supported trip has to both begin and
 # end where the hiker can be collected, so the binding constraint is whichever
-# required trail is furthest from a pick-up point.  That is Lakeshore, along
-# Fontana Lake's north shore: 6.6 h from the nearest road at each end, making a
-# road-only supported day 13.73 h at minimum.
+# required trail is furthest from a pick-up point.  On roads alone that is
+# Lakeshore, along Fontana Lake's north shore: 6.6 h from the nearest road at
+# each end, making a road-only supported day 13.73 h at minimum.
 #
 # The Fontana Lake ferry landings attack exactly that trail -- minutes from the
-# water where it is hours from tarmac -- and drop the floor to 9.36 h, which is
-# why supported starts at 10 h rather than 14.  tools/road_bound.py recomputes
-# both figures from the edge list if the network changes.
-SUPPORTED_MIN_HOURS = 9
+# water where it is hours from tarmac -- and move the binding arc to the
+# Appalachian Trail between Hughes Ridge and Tricorner Knob, 9.2 h pick-up to
+# pick-up.  tools/road_bound.py recomputes both figures from the edge list if
+# the network changes.
+#
+# Every day length the slider can reach now has an itinerary, so this floor no
+# longer hides anything: at 8 h and 9 h a few days run past the budget and say
+# so, which is a truer answer than refusing to plan.  The reason below is kept
+# for a network change that puts a tier out of reach again.
+SUPPORTED_MIN_HOURS = 8
 SUPPORTED_REASON = (
     "Not possible at this day length. A supported hiker has to both begin and "
-    "end every day where the crew can reach them, and the Appalachian Trail "
-    "between Hughes Ridge and Tricorner Knob is about 4 h from a pick-up at "
-    "either end -- 9.4 h to cross, however the days are cut. Below 9 h the "
-    "route has stretches no crew can reach at all, and the best any schedule "
-    "manages is a 36-hour day. Try 9 h instead: seven days run over there, "
-    "and the longest is 9.4 h."
+    "end every day where the crew can reach them, and the remotest required "
+    "trail is further from a pick-up than this budget allows -- no way of "
+    "arranging the days can change that. Try a longer day."
 )
 
 # Mirrors FERRY_LANDINGS in the solver.  Published so the custom-solve picker
