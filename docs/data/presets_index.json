@@ -387,7 +387,7 @@
   "supported_10h": {
    "file": "preset_supported_10h.json",
    "days": 46,
-   "walk_hours": 392.1,
+   "walk_hours": 388.0,
    "start_node": "TH246",
    "shuttles": 45,
    "ferry_landings": [
@@ -408,10 +408,10 @@
   },
   "supported_11h": {
    "file": "preset_supported_11h.json",
-   "days": 43,
-   "walk_hours": 391.4,
-   "start_node": "TH246",
-   "shuttles": 42,
+   "days": 42,
+   "walk_hours": 390.9,
+   "start_node": "TH150",
+   "shuttles": 40,
    "ferry_landings": [
     {
      "node": "BC090",
@@ -431,7 +431,7 @@
   "supported_12h": {
    "file": "preset_supported_12h.json",
    "days": 37,
-   "walk_hours": 386.7,
+   "walk_hours": 382.5,
    "start_node": "TH246",
    "shuttles": 36,
    "ferry_landings": [
@@ -456,9 +456,9 @@
   },
   "supported_13h": {
    "file": "preset_supported_13h.json",
-   "days": 35,
-   "walk_hours": 393.2,
-   "start_node": "TH243",
+   "days": 34,
+   "walk_hours": 394.3,
+   "start_node": "TH015",
    "shuttles": 33,
    "ferry_landings": [
     {
@@ -472,10 +472,6 @@
     {
      "node": "TI053",
      "name": "Ollie Cove"
-    },
-    {
-     "node": "TI064",
-     "name": "Pilkey Creek"
     }
    ],
    "days_over_budget": 0
@@ -483,17 +479,17 @@
   "supported_14h": {
    "file": "preset_supported_14h.json",
    "days": 33,
-   "walk_hours": 407.0,
-   "start_node": "TH107",
-   "shuttles": 31,
+   "walk_hours": 405.4,
+   "start_node": "TH126",
+   "shuttles": 32,
    "ferry_landings": [],
    "days_over_budget": 0
   },
   "supported_15h": {
    "file": "preset_supported_15h.json",
    "days": 32,
-   "walk_hours": 395.8,
-   "start_node": "TH107",
+   "walk_hours": 389.9,
+   "start_node": "TH142",
    "shuttles": 31,
    "ferry_landings": [],
    "days_over_budget": 0
@@ -501,18 +497,18 @@
   "supported_16h": {
    "file": "preset_supported_16h.json",
    "days": 28,
-   "walk_hours": 397.7,
-   "start_node": "TH107",
-   "shuttles": 27,
+   "walk_hours": 396.1,
+   "start_node": "TH126",
+   "shuttles": 26,
    "ferry_landings": [],
    "days_over_budget": 0
   },
   "supported_8h": {
    "file": "preset_supported_8h.json",
-   "days": 60,
-   "walk_hours": 405.3,
-   "start_node": "TH246",
-   "shuttles": 59,
+   "days": 57,
+   "walk_hours": 393.5,
+   "start_node": "TH148",
+   "shuttles": 55,
    "ferry_landings": [
     {
      "node": "BC090",
@@ -531,19 +527,15 @@
      "name": "Pilkey Creek"
     }
    ],
-   "days_over_budget": 4
+   "days_over_budget": 3
   },
   "supported_9h": {
    "file": "preset_supported_9h.json",
-   "days": 51,
-   "walk_hours": 396.1,
+   "days": 50,
+   "walk_hours": 389.7,
    "start_node": "TH246",
-   "shuttles": 50,
+   "shuttles": 47,
    "ferry_landings": [
-    {
-     "node": "BC090",
-     "name": "Campsite 90"
-    },
     {
      "node": "TI051",
      "name": "Hazel Creek Access"
