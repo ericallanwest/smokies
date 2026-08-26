@@ -88,7 +88,15 @@ def total(days):
     return sum(d['seconds'] for d in days)
 
 
-def improve(net, days, budget, exact_max, deadline):
+def _bank(collect, *ds):
+    """Record days as columns, keyed by the trails they cover."""
+    if collect is None:
+        return
+    for d in ds:
+        collect.setdefault(frozenset(e for e, _ in d['route']), list(d['route']))
+
+
+def improve(net, days, budget, exact_max, deadline, collect=None):
     """Relocate and swap while it walks less.  Returns edges moved."""
     moved = 0
     changed = True
@@ -117,13 +125,18 @@ def improve(net, days, budget, exact_max, deadline):
                 days[j]['seconds'] += best[0]
                 reroute(net, src, exact_max)
                 reroute(net, days[j], exact_max)
+                # Both ends of the move are new days that existed nowhere
+                # before.  Banking them here rather than once a round is what
+                # makes the column pool worth keeping: a rejected solution is
+                # still made of usable days.
+                _bank(collect, src, days[j])
                 moved += 1
                 changed = True
                 break
     return moved
 
 
-def eliminate(net, days, budget, exact_max, deadline, rng):
+def eliminate(net, days, budget, exact_max, deadline, rng, collect=None):
     """Try to empty the smallest day into the others.  True if a day went."""
     order = sorted(range(len(days)), key=lambda i: (len(days[i]['route']),
                                                    days[i]['seconds']))
@@ -154,6 +167,7 @@ def eliminate(net, days, budget, exact_max, deadline, rng):
         if ok:
             for d in others:
                 reroute(net, d, exact_max)
+            _bank(collect, *others)
             days[:] = others
             return True
     return False
@@ -180,8 +194,17 @@ def perturb(net, days, budget, exact_max, rng, strength=3):
                 break
 
 
-def search(net, days, budget, exact_max, seconds, seed=0, log=print):
-    """Run to a wall-clock budget.  Returns the best days found."""
+def search(net, days, budget, exact_max, seconds, seed=0, log=print,
+           collect=None):
+    """Run to a wall-clock budget.  Returns the best days found.
+
+    Pass a dict as `collect` to keep every day the search builds, keyed by the
+    set of trails it covers.  Almost all of them belong to solutions that were
+    rejected, which is exactly why they are worth keeping: a day discarded here
+    because its neighbours did not work out may be the day another tier needs,
+    and tools/carp_pool.py can assemble an itinerary from days no single run
+    ever held at once.
+    """
     rng = random.Random(seed)
     deadline = time.time() + seconds
     days = [{'route': list(d['route']), 'seconds': d['seconds']} for d in days]
@@ -190,11 +213,13 @@ def search(net, days, budget, exact_max, seconds, seed=0, log=print):
     best = [dict(route=list(d['route']), seconds=d['seconds']) for d in days]
     log(f"    start {len(days)} days, {total(days) / 3600:.1f} h")
     rounds = 0
+
+    _bank(collect, *days)
     while time.time() < deadline:
         rounds += 1
-        improve(net, days, budget, exact_max, deadline)
-        while eliminate(net, days, budget, exact_max, deadline, rng):
-            improve(net, days, budget, exact_max, deadline)
+        improve(net, days, budget, exact_max, deadline, collect)
+        while eliminate(net, days, budget, exact_max, deadline, rng, collect):
+            improve(net, days, budget, exact_max, deadline, collect)
             log(f"    -> {len(days)} days, {total(days) / 3600:.1f} h")
         if (len(days), total(days)) < (len(best), total(best)):
             best = [dict(route=list(d['route']), seconds=d['seconds'])

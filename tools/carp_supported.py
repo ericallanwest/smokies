@@ -70,18 +70,32 @@ def near(net, cluster_nodes, remaining, k):
     return [eid for _, eid in scored[:k]]
 
 
-def grow(net, route, cost, remaining, budget, k):
-    """Insert edges one at a time while they fit.  Returns (route, cost)."""
+def grow(net, route, cost, remaining, budget, k, rng=None, width=3):
+    """Insert edges one at a time while they fit.  Returns (route, cost).
+
+    With an rng, the insertion is drawn from the `width` cheapest rather than
+    always the cheapest.  That is what makes two constructions differ, and
+    differing constructions are the point when the output is feeding a column
+    pool rather than being published directly.
+    """
     nodes = {n for it in route for n in net.leg(it)[:2]}
     while remaining:
-        best = None
+        opts = []
         for eid in near(net, nodes, remaining, k):
             for d in (0, 1):
                 for pos in range(len(route) + 1):
                     delta = insertion(net, route, (eid, d), pos)
-                    if delta < INF and (best is None or delta < best[0]):
-                        best = (delta, eid, d, pos)
-        if best is None or cost + best[0] > budget:
+                    if delta < INF:
+                        opts.append((delta, eid, d, pos))
+        if not opts:
+            return route, cost
+        opts.sort(key=lambda o: o[0])
+        best = rng.choice(opts[:width]) if rng else opts[0]
+        if cost + best[0] > budget:
+            # Falling back to the cheapest keeps a random pick from ending the
+            # day early when a tighter option would still have fitted.
+            best = opts[0]
+        if cost + best[0] > budget:
             return route, cost
         delta, eid, d, pos = best
         route.insert(pos, (eid, d))
@@ -91,7 +105,7 @@ def grow(net, route, cost, remaining, budget, k):
     return route, cost
 
 
-def build(net, budget, exact_max, k, log=print):
+def build(net, budget, exact_max, k, log=print, rng=None, seed_width=5):
     """Phase 1 + 2 over the whole required set.  Returns a list of days."""
     remaining = set(net.required)
     unreachable = {e for e in remaining if net.solo(e) == INF}
@@ -100,7 +114,8 @@ def build(net, budget, exact_max, k, log=print):
         remaining -= unreachable
     days = []
     while remaining:
-        seed = max(remaining, key=lambda e: (net.solo(e), e))
+        ranked = sorted(remaining, key=lambda e: (-net.solo(e), e))
+        seed = rng.choice(ranked[:seed_width]) if rng else ranked[0]
         remaining.discard(seed)
         d = min((0, 1), key=lambda k2: net.enter((seed, k2)) + net.leave((seed, k2)))
         route, cost = [(seed, d)], net.solo(seed)
@@ -112,7 +127,7 @@ def build(net, budget, exact_max, k, log=print):
             continue
         while True:
             before = len(route)
-            route, cost = grow(net, route, cost, remaining, budget, k)
+            route, cost = grow(net, route, cost, remaining, budget, k, rng)
             if len(route) <= exact_max:
                 ecost, eroute = day_optimum(net, [e for e, _ in route], exact_max)
                 if ecost < cost:

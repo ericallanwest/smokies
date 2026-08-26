@@ -65,6 +65,36 @@ def harvest(dirs, net):
     return out
 
 
+def price_all(net, routes, ex):
+    """Expand every route against this network, once.
+
+    What a route costs and what it covers depend on the network -- which
+    pick-ups exist changes the approach -- but not on the tier.  Expanding
+    per tier repeated the same few thousand shortest-path walks nine times
+    over; this does it twice, once per network, and the tiers filter the
+    result by cost.
+    """
+    required = set(net.required)
+    priced = []
+    for route in routes:
+        cost = net.route_cost(route)
+        if cost >= INF:
+            continue
+        arcs = ex.day(route)
+        seen, full = set(), []
+        for a in arcs:
+            eid = a['edge_id']
+            if eid in required and eid not in seen:
+                d = carp_credit.direction(net, eid, a['from'], a['to'])
+                if d is not None:
+                    seen.add(eid)
+                    full.append((eid, d))
+        priced.append({'route': full, 'legs': {e for e, _ in route},
+                       'seconds': sum(a['seconds'] for a in arcs),
+                       'covers': seen})
+    return priced
+
+
 def columns_for(net, routes, budget, ceiling, ex):
     """Price each route against this tier and keep the ones that fit.
 
@@ -160,6 +190,8 @@ def main():
     ap.add_argument('--search', type=float, default=0,
                     help='seconds of local search after the cover')
     ap.add_argument('--exact-max', type=int, default=13)
+    ap.add_argument('--bank', default=None,
+                    help='extra columns from tools/carp_cycle.py')
     ap.add_argument('--emit', default=None)
     A = ap.parse_args()
 
@@ -168,15 +200,32 @@ def main():
     dirs = [d for d in dirs if os.path.isdir(d)]
     nets = {True: Net(ferry=True), False: Net(ferry=False)}
     exs = {k: carp_preset.Expander(v) for k, v in nets.items()}
+    priced = {}
     routes = harvest(dirs, nets[True])
-    print(f"harvested {len(routes)} distinct days from {len(dirs)} directories")
+    seen = {frozenset(e for e, _ in r) for r in routes}
+    extra = 0
+    if A.bank and os.path.exists(A.bank):
+        with open(A.bank, encoding='utf-8') as f:
+            for r in json.load(f)['routes']:
+                route = [(e, d) for e, d in r]
+                k = frozenset(e for e, _ in route)
+                if k not in seen:
+                    seen.add(k)
+                    routes.append(route)
+                    extra += 1
+    print(f"harvested {len(routes)} distinct days from {len(dirs)} directories"
+          + (f" plus {extra} from the bank" if extra else ""))
 
     for h in [int(x) for x in A.hours.split(',')]:
         budget = h * 3600
         best = None
         for ferry in (False, True):
             net, ex = nets[ferry], exs[ferry]
-            cols = columns_for(net, routes, budget, budget * HARD_MULTIPLE, ex)
+            if ferry not in priced:
+                priced[ferry] = price_all(net, routes, ex)
+            ceiling = budget * HARD_MULTIPLE
+            cols = [dict(c, over=c['seconds'] > budget)
+                    for c in priced[ferry] if c['seconds'] <= ceiling]
             fit = sum(1 for c in cols if not c['over'])
             # Days inside the budget first.  Minimising the day count over a
             # pool that also holds over-budget days just picks the longest ones
