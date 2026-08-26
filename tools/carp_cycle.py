@@ -94,11 +94,18 @@ def load_bank(path):
 
 def save_bank(path, bank, cap):
     routes = list(bank.values())
-    # Cap by trail count: a day covering more is a more useful column, and
-    # expanding every route against every tier is what costs time downstream.
+    # Keeping simply the days that cover the most would quietly starve the
+    # tight tiers: a day carrying fifteen trails is a better column at 16 h and
+    # unusable at 8 h, where every column has to fit inside eight hours.  So
+    # half the room goes to the largest days and half to an even spread across
+    # the rest, which keeps short days in the bank for the budgets that need
+    # them.
     if len(routes) > cap:
         routes.sort(key=len, reverse=True)
-        routes = routes[:cap]
+        head = routes[:cap // 2]
+        rest = routes[cap // 2:]
+        step = max(1, len(rest) // max(1, cap - len(head)))
+        routes = head + rest[::step][:cap - len(head)]
     os.makedirs(os.path.dirname(path) or '.', exist_ok=True)
     with open(path, 'w', encoding='utf-8') as f:
         json.dump({'routes': [list(map(list, r)) for r in routes]}, f)
@@ -176,8 +183,13 @@ def main():
         if rc != 0:
             print("  cover failed; stopping", flush=True)
             return
+        # A.data is in the candidate list on purpose: promotion picks the best
+        # of what it is shown, so leaving the published itineraries out would
+        # let a cycle that did worse overwrite a better one.  Nothing here has
+        # regressed yet, but only because every cycle so far has improved.
         subprocess.call([A.python, os.path.join(tools, 'carp_promote.py'),
-                         '--into', A.data, os.path.join('out', 'cycle'),
+                         '--into', A.data, A.data,
+                         os.path.join('out', 'cycle'),
                          os.path.join('out', 'pool'),
                          os.path.join('out', 'carp_tight')])
         subprocess.call([A.python, os.path.join(tools, 'build_presets_index.py')])
@@ -189,7 +201,7 @@ def main():
                           if h in before) / 3600
         print(f"  cycle {cycle}: "
               + (", ".join(moved) if moved else "no day count changed")
-              + f", {hours_saved:+.1f} h walking", flush=True)
+              + f", {hours_saved:+.1f} h walking saved", flush=True)
         if not moved and abs(hours_saved) < 0.5 and len(bank) == start:
             print("  converged", flush=True)
             return
