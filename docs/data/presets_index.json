@@ -387,7 +387,7 @@
   "supported_10h": {
    "file": "preset_supported_10h.json",
    "days": 43,
-   "walk_hours": 394.8,
+   "walk_hours": 387.4,
    "start_node": "TH007",
    "shuttles": 42,
    "ferry_landings": [
@@ -408,10 +408,10 @@
   },
   "supported_11h": {
    "file": "preset_supported_11h.json",
-   "days": 41,
-   "walk_hours": 405.2,
-   "start_node": "TH142",
-   "shuttles": 40,
+   "days": 40,
+   "walk_hours": 385.4,
+   "start_node": "TH246",
+   "shuttles": 38,
    "ferry_landings": [
     {
      "node": "BC090",
@@ -424,6 +424,10 @@
     {
      "node": "TI053",
      "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
     }
    ],
    "days_over_budget": 0
@@ -431,8 +435,8 @@
   "supported_12h": {
    "file": "preset_supported_12h.json",
    "days": 36,
-   "walk_hours": 392.0,
-   "start_node": "TH194",
+   "walk_hours": 383.0,
+   "start_node": "TH176",
    "shuttles": 35,
    "ferry_landings": [
     {
@@ -442,6 +446,10 @@
     {
      "node": "TI051",
      "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
     },
     {
      "node": "TI064",
@@ -474,18 +482,18 @@
   },
   "supported_14h": {
    "file": "preset_supported_14h.json",
-   "days": 33,
-   "walk_hours": 405.4,
-   "start_node": "TH126",
-   "shuttles": 32,
+   "days": 32,
+   "walk_hours": 407.9,
+   "start_node": "TH194",
+   "shuttles": 31,
    "ferry_landings": [],
    "days_over_budget": 0
   },
   "supported_15h": {
    "file": "preset_supported_15h.json",
    "days": 31,
-   "walk_hours": 411.9,
-   "start_node": "TH234",
+   "walk_hours": 411.1,
+   "start_node": "TH194",
    "shuttles": 30,
    "ferry_landings": [],
    "days_over_budget": 0
@@ -502,8 +510,8 @@
   "supported_8h": {
    "file": "preset_supported_8h.json",
    "days": 54,
-   "walk_hours": 412.6,
-   "start_node": "TH273",
+   "walk_hours": 403.7,
+   "start_node": "TH107",
    "shuttles": 53,
    "ferry_landings": [
     {
@@ -528,10 +536,14 @@
   "supported_9h": {
    "file": "preset_supported_9h.json",
    "days": 49,
-   "walk_hours": 389.4,
-   "start_node": "TH228",
+   "walk_hours": 392.7,
+   "start_node": "TH091",
    "shuttles": 48,
    "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
     {
      "node": "TI051",
      "name": "Hazel Creek Access"
