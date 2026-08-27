@@ -145,16 +145,36 @@ def kappa_exact(net, duals, budget, seconds=600, workers=8, log=print):
     m.Maximize(sum(int(nodes[i]['pi'] * scale + 0.5) * visit[i]
                    for i in range(n)))
 
+    class Harvest(cp_model.CpSolverSolutionCallback):
+        """Keep every day the search passes through, not only the last.
+
+        One column per solve is what makes column generation tail off: at 8 h
+        the LP moved 40.31 to 40.28 across twenty-three rounds of four minutes
+        each.  Every improving solution on the way to the best one is also a day
+        the LP does not have, and they cost nothing extra to collect.
+        """
+
+        def __init__(self):
+            super().__init__()
+            self.days = []
+
+        def on_solution_callback(self):
+            self.days.append(
+                ([nodes[i]['edge'] for i in range(n) if self.Value(visit[i])],
+                 self.ObjectiveValue() / scale))
+
     s = cp_model.CpSolver()
     s.parameters.max_time_in_seconds = seconds
     s.parameters.num_search_workers = workers
-    st = s.Solve(m)
+    harvest = Harvest()
+    st = s.Solve(m, harvest)
     if st not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         return sum(duals.values()), 0.0, [], False
     ub = s.BestObjectiveBound() / scale
     got = s.ObjectiveValue() / scale
     proved = st == cp_model.OPTIMAL
     picked = [nodes[i]['edge'] for i in range(n) if s.Value(visit[i])]
+    kappa_exact.last_days = [d for d, p in harvest.days if p > 1.0 + 1e-9]
     log(f"    best day {got:.4f}, upper bound {ub:.4f}"
         + ("  (proved)" if proved else f"  ({s.WallTime():.0f}s, not proved)"))
     return ub, got, picked, proved

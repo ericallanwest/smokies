@@ -257,16 +257,27 @@ def main():
                     # cheapest trails come off until it fits.  What is left is
                     # worth less than the pricer claimed but is a genuine day,
                     # and if it still beats 1 the LP wanted it.
-                    keep = sorted(picked, key=lambda e: -duals[e])
-                    while keep:
-                        cost, route = day_optimum(net, keep, 13)
-                        if route and cost <= budget:
-                            break
-                        keep.pop()
-                    prize = sum(duals[e] for e in keep)
-                    if keep and prize > 1.0 + 1e-9:
-                        new = [(route, cost, prize)]
-                    best_prize = max(got_p, prize if keep else 0.0)
+                    # Every day the pricer passed through on its way to the
+                    # best one, not just the winner: one column a round is what
+                    # made this tail off.
+                    cands = getattr(carp_price_exact.kappa_exact,
+                                    'last_days', None) or [picked]
+                    seen_here = set()
+                    for cand in cands:
+                        key = frozenset(cand)
+                        if key in seen_here:
+                            continue
+                        seen_here.add(key)
+                        keep = sorted(cand, key=lambda e: -duals[e])
+                        while keep:
+                            cost, route = day_optimum(net, keep, 13)
+                            if route and cost <= budget:
+                                break
+                            keep.pop()
+                        prize = sum(duals[e] for e in keep)
+                        if keep and prize > 1.0 + 1e-9:
+                            new.append((route, cost, prize))
+                    best_prize = got_p
             print(f"  iter {it:>2}  LP {obj:7.2f}   best day collects "
                   f"{best_prize:5.2f}   {len(new)} new columns"
                   + (f"   [exact: <= {exact_ub:.3f}"
