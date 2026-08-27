@@ -387,9 +387,9 @@
   "supported_10h": {
    "file": "preset_supported_10h.json",
    "days": 43,
-   "walk_hours": 385.5,
+   "walk_hours": 385.3,
    "start_node": "TH107",
-   "shuttles": 40,
+   "shuttles": 42,
    "ferry_landings": [
     {
      "node": "BC090",
@@ -409,8 +409,8 @@
   "supported_11h": {
    "file": "preset_supported_11h.json",
    "days": 40,
-   "walk_hours": 385.1,
-   "start_node": "TH243",
+   "walk_hours": 380.2,
+   "start_node": "TH201",
    "shuttles": 39,
    "ferry_landings": [
     {
@@ -483,7 +483,7 @@
   "supported_14h": {
    "file": "preset_supported_14h.json",
    "days": 32,
-   "walk_hours": 407.9,
+   "walk_hours": 407.1,
    "start_node": "TH194",
    "shuttles": 31,
    "ferry_landings": [],
@@ -491,10 +491,10 @@
   },
   "supported_15h": {
    "file": "preset_supported_15h.json",
-   "days": 31,
-   "walk_hours": 411.1,
-   "start_node": "TH194",
-   "shuttles": 30,
+   "days": 30,
+   "walk_hours": 400.5,
+   "start_node": "TH234",
+   "shuttles": 29,
    "ferry_landings": [],
    "days_over_budget": 0
   },
@@ -510,8 +510,8 @@
   "supported_8h": {
    "file": "preset_supported_8h.json",
    "days": 54,
-   "walk_hours": 403.7,
-   "start_node": "TH107",
+   "walk_hours": 403.5,
+   "start_node": "TH184",
    "shuttles": 53,
    "ferry_landings": [
     {
