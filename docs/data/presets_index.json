@@ -513,8 +513,8 @@
   },
   "supported_8h": {
    "file": "preset_supported_8h.json",
-   "days": 58,
-   "walk_hours": 400.2,
+   "days": 57,
+   "walk_hours": 410.3,
    "start_node": "TH273",
    "shuttles": 54,
    "ferry_landings": [
@@ -539,11 +539,15 @@
   },
   "supported_9h": {
    "file": "preset_supported_9h.json",
-   "days": 50,
-   "walk_hours": 390.9,
+   "days": 49,
+   "walk_hours": 391.9,
    "start_node": "TH092",
-   "shuttles": 49,
+   "shuttles": 48,
    "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
     {
      "node": "TI051",
      "name": "Hazel Creek Access"

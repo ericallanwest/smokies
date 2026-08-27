@@ -160,6 +160,9 @@ def main():
     ap.add_argument('--bank', default=os.path.join('out', 'bank.json'))
     ap.add_argument('--data', default=os.path.join('docs', 'data'))
     ap.add_argument('--iterations', type=int, default=15)
+    ap.add_argument('--dump-columns', default=None,
+                    help='append every day the pricer invented to this bank, '
+                         'so carp_pool can build an itinerary out of them')
     ap.add_argument('--dump-duals', default=None,
                     help='write the final duals here, for tools/carp_price.py')
     ap.add_argument('--kappa', type=float, default=None,
@@ -242,6 +245,24 @@ def main():
                 json.dump({k: v for k, v in duals.items() if v > 0}, f)
             print(f"  duals -> {dest} "
                   f"({sum(1 for v in duals.values() if v > 0)} priced trails)")
+        if A.dump_columns:
+            # The pricer invents days to satisfy the LP, and they are days no
+            # construction happened to build -- which is exactly what the pool
+            # cover wants.  Whether they make a better itinerary is a question
+            # for carp_pool, not for the LP.
+            bank = {}
+            if os.path.exists(A.dump_columns):
+                with open(A.dump_columns, encoding='utf-8') as f:
+                    for r in json.load(f)['routes']:
+                        bank[frozenset(e for e, _ in r)] = [(e, d) for e, d in r]
+            before = len(bank)
+            for c in cols:
+                bank.setdefault(frozenset(e for e, _ in c['route']), c['route'])
+            with open(A.dump_columns, 'w', encoding='utf-8') as f:
+                json.dump({'routes': [list(map(list, r))
+                                      for r in bank.values()]}, f)
+            print(f"  columns -> {A.dump_columns} "
+                  f"({len(bank) - before} new, {len(bank)} total)")
         if duals is None:
             print("  no LP solved for this tier; nothing to report")
             continue
