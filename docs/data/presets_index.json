@@ -513,10 +513,10 @@
   },
   "supported_8h": {
    "file": "preset_supported_8h.json",
-   "days": 57,
-   "walk_hours": 410.3,
-   "start_node": "TH273",
-   "shuttles": 54,
+   "days": 54,
+   "walk_hours": 405.3,
+   "start_node": "TH144",
+   "shuttles": 53,
    "ferry_landings": [
     {
      "node": "BC090",

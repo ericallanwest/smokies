@@ -133,6 +133,9 @@ def main():
     ap.add_argument('--data', default=os.path.join('docs', 'data'))
     ap.add_argument('--bank', default=os.path.join('out', 'bank.json'))
     ap.add_argument('--max-bank', type=int, default=5000)
+    ap.add_argument('--lp', type=int, default=0,
+                    help='rounds of LP column generation per cycle, whose '
+                         'invented days join the bank before the cover')
     ap.add_argument('--constructions', type=int, default=6,
                     help='randomised builds per tier per cycle')
     ap.add_argument('--candidates', type=int, default=10)
@@ -173,6 +176,18 @@ def main():
         kept = save_bank(A.bank, bank, A.max_bank)
         print(f"  bank {start} -> {len(bank)} days "
               f"({kept} kept), searched in {int(time.time() - t0)}s", flush=True)
+
+        if A.lp:
+            # The pricer invents days to satisfy the LP rather than to be
+            # walked as a set, so they are days no construction produces.  At
+            # 8 h and 9 h that was worth a day each, which is more than a cycle
+            # of construction managed by then.
+            subprocess.call([A.python, os.path.join(tools, 'carp_cg.py'),
+                             '--hours', A.hours,
+                             '--iterations', str(A.lp),
+                             '--dump-columns', A.bank])
+            bank = load_bank(A.bank)
+            print(f"  bank after pricing: {len(bank)} days", flush=True)
 
         # The cover runs in a separate process because it needs both graphs and
         # a lot of expansion memory, and a fresh one keeps this loop's own
