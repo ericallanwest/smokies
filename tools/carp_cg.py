@@ -241,7 +241,13 @@ def main():
                 # exact pricer runs precisely when the cheap one is finished,
                 # and its answer decides whether this is convergence or only
                 # exhaustion.
-                exact_ub, got_p, picked, proved = carp_price_exact.kappa(
+                # The exact-cost model, not the halved one: the halved model
+                # names days that fall below 1 once routed for real, so the
+                # loop could never converge on them.  This one costs every
+                # traversal as the hiker would pay it, so the day it returns is
+                # a day, and arc pruning keeps it small -- 15k hops rather than
+                # half a million.
+                exact_ub, got_p, picked, proved = carp_price_exact.kappa_exact(
                     net, duals, budget, A.exact, log=lambda *_: None)
                 if got_p > 1.0 + 1e-9 and picked:
                     # The pricing model undercharges on purpose -- every cost is

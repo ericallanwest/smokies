@@ -70,6 +70,96 @@ def build(net, duals, budget, near=None):
     return trails, walk, into, outof, hop
 
 
+def build_exact(net, duals, budget):
+    """One node per orientation, with the costs a hiker would actually pay.
+
+    The halved model undercharges by taking the cheaper direction everywhere,
+    which is safe for the bound and useless for the column: at 8 h it named a
+    day worth 1.75 that fell below 1 the moment it was routed for real, so the
+    loop could never converge on it.  Here a node is a trail walked one way, and
+    every cost is that traversal's own.
+
+    It doubles the node count, so arcs that cannot appear in any feasible day
+    are dropped -- a hop is impossible if entering the first trail, walking
+    both, crossing between them and leaving the second already exceeds the
+    budget.  That prunes on real arithmetic, so nothing walkable is lost.
+    """
+    nodes = []
+    for e, pi in duals.items():
+        if pi <= 0:
+            continue
+        for d in (0, 1):
+            t, h, w = net.legs[e][d]
+            into = net.from_access.get(t, INF)
+            outof = net.to_access.get(h, INF)
+            if into + w + outof <= budget:
+                nodes.append({'edge': e, 'dir': d, 'walk': int(w),
+                              'into': int(into), 'out': int(outof),
+                              'tail': t, 'head': h, 'pi': pi})
+    hop = {}
+    for i, a in enumerate(nodes):
+        for j, b in enumerate(nodes):
+            if i == j or a['edge'] == b['edge']:
+                continue
+            c = net.dist(a['head'], b['tail'])
+            if c >= INF:
+                continue
+            if a['into'] + a['walk'] + c + b['walk'] + b['out'] > budget:
+                continue
+            hop[(i, j)] = int(c)
+    return nodes, hop
+
+
+def kappa_exact(net, duals, budget, seconds=600, workers=8, log=print):
+    """Kappa with no undercharging: the bound and the day are both real."""
+    from ortools.sat.python import cp_model
+
+    nodes, hop = build_exact(net, duals, budget)
+    n = len(nodes)
+    log(f"    {n} orientations, {len(hop)} feasible hops")
+    if n == 0:
+        return 0.0, 0.0, [], True
+
+    m = cp_model.CpModel()
+    visit = [m.NewBoolVar(f'v{i}') for i in range(n)]
+    arcs, times = [], []
+    for i, nd in enumerate(nodes):
+        a = m.NewBoolVar(f'in{i}')
+        b = m.NewBoolVar(f'out{i}')
+        arcs += [(0, i + 1, a), (i + 1, 0, b), (i + 1, i + 1, visit[i].Not())]
+        times += [(nd['into'], a), (nd['out'], b), (nd['walk'], visit[i])]
+    for (i, j), c in hop.items():
+        lit = m.NewBoolVar(f'a{i}_{j}')
+        arcs.append((i + 1, j + 1, lit))
+        times.append((c, lit))
+    m.AddCircuit(arcs)
+    m.Add(sum(c * lit for c, lit in times) <= int(budget))
+    # A trail counts once however many ways it could be walked.
+    by_edge = {}
+    for i, nd in enumerate(nodes):
+        by_edge.setdefault(nd['edge'], []).append(i)
+    for idxs in by_edge.values():
+        if len(idxs) > 1:
+            m.AddAtMostOne([visit[i] for i in idxs])
+    scale = 10000
+    m.Maximize(sum(int(nodes[i]['pi'] * scale + 0.5) * visit[i]
+                   for i in range(n)))
+
+    s = cp_model.CpSolver()
+    s.parameters.max_time_in_seconds = seconds
+    s.parameters.num_search_workers = workers
+    st = s.Solve(m)
+    if st not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+        return sum(duals.values()), 0.0, [], False
+    ub = s.BestObjectiveBound() / scale
+    got = s.ObjectiveValue() / scale
+    proved = st == cp_model.OPTIMAL
+    picked = [nodes[i]['edge'] for i in range(n) if s.Value(visit[i])]
+    log(f"    best day {got:.4f}, upper bound {ub:.4f}"
+        + ("  (proved)" if proved else f"  ({s.WallTime():.0f}s, not proved)"))
+    return ub, got, picked, proved
+
+
 def kappa(net, duals, budget, seconds=600, workers=8, log=print):
     """Upper bound on the best day's prize, the day itself, and whether proved.
 
@@ -139,14 +229,17 @@ def main():
     ap.add_argument('--seconds', type=float, default=600)
     ap.add_argument('--workers', type=int, default=8)
     ap.add_argument('--no-ferry', action='store_true')
+    ap.add_argument('--halved', action='store_true',
+                    help='use the undercharged one-node-per-trail model')
     ap.add_argument('--out', default=None)
     A = ap.parse_args()
 
     net = Net(ferry=not A.no_ferry)
     with open(A.duals, encoding='utf-8') as f:
         duals = {k: float(v) for k, v in json.load(f).items()}
-    k, got, picked, proved = kappa(net, duals, A.hours * 3600,
-                                   A.seconds, A.workers)
+    fn = kappa if A.halved else kappa_exact
+    k, got, picked, proved = fn(net, duals, A.hours * 3600,
+                                A.seconds, A.workers)
     total = sum(duals.values())
     import math
     bound = math.ceil(total / max(1.0, k))
