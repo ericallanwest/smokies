@@ -261,11 +261,71 @@ for sid, r in edges.items():
     arc_ok[(r['node_A'], r['node_B'], sid)] = int(r['cost_A_to_B'])
     arc_ok[(r['node_B'], r['node_A'], sid)] = int(r['cost_B_to_A'])
 
-# preset_selfsup_12h_r6.json / preset_supported_14h.json.  The old scheme
-# carried a circuit word and a _town flag; both axes are gone -- every preset is
-# an open walk, and resupply points are always legal overnights -- and hiking
-# style takes their place.
-PAT = re.compile(r'^preset_(selfsup|supported)_(\d+)h(?:_r(\d+))?\.json$')
+# Costs are baked into the CSV at the standard pace, so a Heavy pack preset
+# checked against them would fail every arc.  The histogram in
+# segment_profiles.json re-times both directions of an edge from its 1% slope
+# bins, and this recomputes that here rather than importing the code that built
+# the presets -- a validator that shares an arithmetic bug with its subject
+# proves nothing.  Mirrors PACES in tools/carp_common.py and the solver.
+PACE_CONSTANTS = {
+    'standard': (6000.0, 3.5, -0.05),
+    'heavy':    (5400.0, 4.2, -0.05),
+    'strong':   (6300.0, 3.2, -0.05),
+    'fast':     (6600.0, 3.0, -0.04),
+}
+_PROFILES = None
+_ARC_BY_PACE = {'standard': arc_ok}
+
+
+def arcs_at_pace(pace):
+    """(from, to, edge_id) -> seconds, for a pace other than the baked one."""
+    global _PROFILES
+    if pace in _ARC_BY_PACE:
+        return _ARC_BY_PACE[pace]
+    if _PROFILES is None:
+        pf = os.path.join(A.data, 'segment_profiles.json')
+        if not os.path.exists(pf):
+            fail('data', 'segment_profiles.json is missing, so presets at a '
+                         'pace other than standard cannot be checked at all')
+            _PROFILES = {}
+        else:
+            _PROFILES = json.load(open(pf, encoding='utf-8'))['segments']
+    v0, k, peak = PACE_CONSTANTS[pace]
+
+    def secs(bins, reverse):
+        t = 0.0
+        for dist_m, rise_m in bins.values():
+            if dist_m <= 0:
+                continue
+            s = rise_m / dist_m
+            if reverse:
+                s = -s
+            t += dist_m / (v0 * math.exp(-k * abs(s - peak))) * 3600.0
+        return t
+
+    table = {}
+    for sid, r in edges.items():
+        if closed_trail(r):
+            continue
+        rec = _PROFILES.get(str(float(sid)))
+        if rec is None:
+            continue
+        table[(r['node_A'], r['node_B'], sid)] = int(round(secs(rec['bins'], False)))
+        table[(r['node_B'], r['node_A'], sid)] = int(round(secs(rec['bins'], True)))
+    _ARC_BY_PACE[pace] = table
+    return table
+
+
+# preset_selfsup_12h_r6_standard.json / preset_supported_14h_noferry_fast.json.
+# The old scheme carried a circuit word and a _town flag; both axes are gone --
+# every preset is an open walk, and resupply points are always legal overnights.
+# Hiking style took their place, then pace, and for supported trips whether the
+# ferry may be used -- which had been a publishing decision rather than the
+# hiker's.  Both new parts are optional, because the pre-pace filenames are kept
+# as aliases until the frontend reads presets_index.json for its filename.
+PAT = re.compile(r'^preset_(selfsup|supported)_(\d+)h(?:_r(\d+))?'
+                 r'(?:_(ferry|noferry))?(?:_(heavy|standard|strong|fast))?'
+                 r'\.json$')
 files = sorted(glob.glob(os.path.join(A.data, 'preset_*.json')))
 n_clean = 0
 for fp in files:
@@ -276,10 +336,17 @@ for fp in files:
         continue
     style, hours = m.group(1), int(m.group(2))
     rmax = int(m.group(3)) if m.group(3) else None
+    # A filename with no ferry word predates the axis and states nothing about
+    # the boat either way, so the no-ferry check below is skipped for it.
+    ferry_ok = None if m.group(4) is None else (m.group(4) == 'ferry')
+    pace = m.group(5) or 'standard'
+    arc_ok = arcs_at_pace(pace)
     supported = style == 'supported'
     town = True          # resupply points are always legal overnights now
     if supported and rmax is not None:
         fail(name, "supported presets carry no resupply window")
+    if not supported and ferry_ok:
+        fail(name, "a self-supported preset cannot depend on the ferry")
     budget = hours * 3600
     d = json.load(open(fp))
     days = d['days']
@@ -477,6 +544,11 @@ for fp in files:
         if used != declared:
             fail(name, "uses ferry landings %s but declares %s"
                        % (sorted(used) or 'none', sorted(declared) or 'none'))
+        # A no-ferry preset is the whole point of the axis: someone who will not
+        # or cannot book the boat asked for an itinerary that never needs it.
+        if ferry_ok is False and used:
+            fail(name, "filename says no ferry, but the itinerary is collected "
+                       "from %s" % sorted(used))
 
     # 2h. a walk has to start and finish somewhere a hiker can actually be
     #     dropped off or collected.  The solver states this rule itself as
