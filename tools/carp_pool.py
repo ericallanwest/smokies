@@ -148,7 +148,11 @@ def solve_cover(net, cols, budget, log=print, seconds=120):
     by_edge = {e: [] for e in net.required}
     for i, c in enumerate(cols):
         for e in c['covers']:
-            by_edge[e].append(i)
+            # A column can walk trails that are not required of this solve --
+            # a 900-miler who has already done them, say.  They are covered
+            # anyway and simply do not constrain anything.
+            if e in by_edge:
+                by_edge[e].append(i)
     orphan = [e for e, v in by_edge.items() if not v]
     if orphan:
         log(f"    {len(orphan)} trails no column covers; cannot solve")

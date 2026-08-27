@@ -143,7 +143,10 @@ def tighten(net, walks, budget, exact_max, log=print, control=False):
 
     covered = [e for d in days for e, _ in d['route']]
     assert len(covered) == len(set(covered)), 'an edge ended up on two days'
-    assert set(covered) == set(net.required), 'tightening lost an edge'
+    # Every required trail must be credited exactly once.  A day may also walk
+    # trails the solve does not require -- already-hiked ones -- and those are
+    # not owned by anybody, which is fine.
+    assert set(net.required) <= set(covered), 'tightening lost an edge'
     log(f"    moved {moved} credit(s), {len(walks)} -> {len(days)} days")
     return days
 
