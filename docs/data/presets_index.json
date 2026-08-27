@@ -39,6 +39,10 @@
     null
    ],
    "min_hours": 8,
+   "solver_floor_hours": {
+    "roads": 13.8,
+    "ferry": 9.2
+   },
    "ferry_landings": [
     {
      "node": "TI051",
@@ -509,10 +513,10 @@
   },
   "supported_8h": {
    "file": "preset_supported_8h.json",
-   "days": 54,
-   "walk_hours": 403.5,
-   "start_node": "TH184",
-   "shuttles": 53,
+   "days": 58,
+   "walk_hours": 400.2,
+   "start_node": "TH273",
+   "shuttles": 54,
    "ferry_landings": [
     {
      "node": "BC090",
@@ -535,10 +539,10 @@
   },
   "supported_9h": {
    "file": "preset_supported_9h.json",
-   "days": 49,
-   "walk_hours": 388.2,
-   "start_node": "TH201",
-   "shuttles": 48,
+   "days": 50,
+   "walk_hours": 390.9,
+   "start_node": "TH092",
+   "shuttles": 49,
    "ferry_landings": [
     {
      "node": "TI051",

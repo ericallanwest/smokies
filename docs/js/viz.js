@@ -834,22 +834,34 @@ function renderParamControls() {
       + `trail is further from a pick-up than that. Try ${min} h.`;
     note.classList.add('warn');
   } else if (supported) {
-    // Where days run over, say by how little. "4 days over budget" reads as a
-    // broken itinerary; "4 days reach 9.2 h against your 8 h" reads as the
-    // trade-off it actually is, and the hiker can judge it.
     const ob = META?.days_over_budget ?? [];
+    // The two things a hiker needs here are independent, so neither branch can
+    // own the message: an itinerary can have days running over *and* sit below
+    // what a live solve can manage, which is exactly the case at 8 h and 9 h.
+    const below = hours < supportedFloor();
+    let text;
     if (ob.length && META?.hiking_style === 'supported') {
+      // Where days run over, say by how little. "4 days over budget" reads as a
+      // broken itinerary; "4 days reach 9.2 h against your 8 h" reads as the
+      // trade-off it actually is, and the hiker can judge it.
       const worst = Math.max(...ob.map(x => x.seconds)) / 3600;
-      note.textContent = `${ob.length} of these days run past ${hours} h — the `
-        + `longest is ${worst.toFixed(1)} h. Nothing shorter is possible: the `
-        + `remotest required trail cannot be crossed pick-up to pick-up in `
-        + `less than that.`;
+      text = `${ob.length} of these days run past ${hours} h — the longest is `
+        + `${worst.toFixed(1)} h. Nothing shorter is possible: the remotest `
+        + `required trail cannot be crossed pick-up to pick-up in less.`;
     } else {
-      note.textContent = 'A crew meets you each night, so every day starts and '
-        + 'ends at a road — or at a Fontana Lake ferry landing where these '
-        + 'itineraries need one. Expect more days than self-supported.';
+      text = 'A crew meets you each night, so every day starts and ends at a '
+        + 'road — or at a Fontana Lake ferry landing where these itineraries '
+        + 'need one. Expect more days than self-supported.';
     }
-    note.classList.remove('warn');
+    if (below) {
+      const blocked = hours * 1.5 < supportedFloor();
+      text += blocked
+        ? ` Build cannot run here: without a ferry landing no day reaches the `
+          + `remotest trail and returns in under ${supportedFloor()} h.`
+        : ` A custom Build at this length will return days that run over too.`;
+    }
+    note.textContent = text;
+    note.classList.toggle('warn', hours * 1.5 < supportedFloor());
   } else {
     note.textContent = '';
     note.classList.remove('warn');
@@ -1293,6 +1305,18 @@ function reportEndpointSaving(data) {
     + `${h.toFixed(1)} h against returning to the start.`;
 }
 
+// What a live solve can actually manage for a supported trip.  Every day has to
+// begin and end where the crew can reach, so the remotest required trail sets a
+// floor: 13.7 h on roads alone, 9.2 h once ferry landings are in play.  The
+// published itineraries go below that only because they declare the days that
+// run over instead of stretching one to absurdity, which the solver will not do
+// -- ask it for a 8 h supported trip and it returns a thirty-six hour day.
+function supportedFloor() {
+  const f = _index?.styles?.supported?.solver_floor_hours;
+  if (!f) return 0;
+  return ferryFromUI().length ? f.ferry : f.roads;
+}
+
 async function solveCustom() {
   const seq = ++_loadSeq;
   const errEl = document.getElementById('presetError');
@@ -1310,6 +1334,26 @@ async function solveCustom() {
       hiked,
       time_budget: 45,
     };
+    // Refuse only where the best conceivable day is past the validator's own
+    // "not a day anyone can walk" line, a half again over budget.  Between the
+    // floor and that line a solve returns days that run over and say so, which
+    // is a trade-off worth offering rather than a failure worth blocking.
+    if (body.style === 'supported'
+        && maxDayFromUI() * 1.5 < supportedFloor()) {
+      const pre = _index?.presets?.[currentPresetKey()];
+      throw new Error(
+        `No supported day can reach the remotest required trail and return in `
+        + `under ${supportedFloor()} h`
+        + (body.shuttle_nodes.length ? '' : ' without a ferry landing')
+        + `, so a ${maxDayFromUI()} h solve would stretch one day past anything `
+        + `walkable.`
+        + (body.shuttle_nodes.length ? '' : ' Pick a ferry landing to lower that.')
+        + (pre?.days
+           ? ` The published itinerary handles it instead: ${pre.days} days`
+             + (pre.days_over_budget
+                ? `, ${pre.days_over_budget} of which run over and say so.` : '.')
+           : ''));
+    }
     const ends = endpointsFromUI();
     if (!ends.start.ok || !ends.end.ok) {
       throw new Error('That start or finish is not a trailhead or campground.');

@@ -36,8 +36,11 @@ def describe(path):
         d = json.load(f)
     hours = int(PAT.match(os.path.basename(path)).group(1))
     walk = sum(a['seconds'] for day in d['days'] for a in day['arcs'])
+    ob = d.get('days_over_budget', [])
     return {'path': path, 'hours': hours, 'days': d['n_days'],
-            'walk': walk, 'over': len(d.get('days_over_budget', [])),
+            'walk': walk, 'over': len(ob),
+            'excess': sum(o['over_by'] for o in ob),
+            'worst': max((o['seconds'] for o in ob), default=0),
             'ferry': bool(d.get('ferry_landings'))}
 
 
@@ -45,7 +48,14 @@ def pick(cands, ferry_worth):
     """The one to publish, by the policy in the module docstring."""
     clean = [c for c in cands if c['over'] == 0]
     if not clean:
-        return min(cands, key=lambda c: (c['over'], c['days'], c['walk']))
+        # Counting over-budget days and stopping there is not enough.  At 8 h it
+        # once traded four days of about 9.2 h for three days one of which ran
+        # 11.95 h, which is fewer broken promises but a much worse one -- and a
+        # twelve-hour day is not the trip an eight-hour hiker asked for.  Total
+        # excess comes second for the same reason the solver's own day-split
+        # ranks it there.
+        return min(cands, key=lambda c: (c['over'], c['excess'], c['days'],
+                                         c['walk']))
     roads = [c for c in clean if not c['ferry']]
     if not roads:
         return min(clean, key=lambda c: (c['days'], c['walk']))

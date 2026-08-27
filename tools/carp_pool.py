@@ -42,7 +42,11 @@ import carp_preset                                     # noqa: E402
 import carp_search                                     # noqa: E402
 from carp_common import INF, Net, day_optimum          # noqa: E402
 
-HARD_MULTIPLE = 1.5      # the validator's ceiling for a declared long day
+# The validator accepts a declared day up to 1.5x the budget, but that is its
+# outer limit rather than a target: at 8 h it would pass an 11.95 h day.  The
+# cover is held to a quarter over, so a day that runs long is still recognisably
+# the day the hiker asked for.
+HARD_MULTIPLE = 1.25
 
 
 def harvest(dirs, net):
@@ -130,7 +134,7 @@ def columns_for(net, routes, budget, ceiling, ex):
     return cols
 
 
-def solve_cover(net, cols, log=print, seconds=120):
+def solve_cover(net, cols, budget, log=print, seconds=120):
     """Fewest days covering every trail, ranked the way the itinerary is.
 
     The objective has to be lexicographic and it has to lead with over-budget
@@ -152,6 +156,10 @@ def solve_cover(net, cols, log=print, seconds=120):
 
     terms = [
         lambda x: sum(x[i] for i in range(len(cols)) if cols[i]['over']),
+        # Then by how far they run over, in minutes.  Without this the solver
+        # happily swaps several slightly-long days for one enormous one.
+        lambda x: sum(x[i] * max(0, (cols[i]['seconds'] - budget) // 60)
+                      for i in range(len(cols))),
         lambda x: sum(x),
         lambda x: sum(x[i] * (cols[i]['seconds'] // 60) for i in range(len(cols))),
     ]
@@ -233,11 +241,11 @@ def main():
             # walk.  The ceiling is a fallback for tiers where the trail
             # network leaves no alternative, not a licence.
             inside = [c for c in cols if not c['over']]
-            pick = solve_cover(net, inside, log=lambda *_: None)
+            pick = solve_cover(net, inside, budget, log=lambda *_: None)
             if pick is not None:
                 cols = inside
             else:
-                pick = solve_cover(net, cols, log=lambda *_: None)
+                pick = solve_cover(net, cols, budget, log=lambda *_: None)
             if pick is None:
                 continue
             chosen = [cols[i] for i in pick]

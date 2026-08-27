@@ -48,6 +48,19 @@ SUPPORTED_REASON = (
     "arranging the days can change that. Try a longer day."
 )
 
+# What a *live* solve can manage, which is not the same as what the published
+# grid offers.  Every supported day has to begin and end where a vehicle can
+# reach, so the binding constraint is whichever required trail is furthest from
+# a pick-up: Lakeshore at 13.7 h on roads alone, and the Appalachian Trail
+# between Hughes Ridge and Tricorner Knob at 9.2 h once the ferry landings are
+# available.  Below those a solve returns days nobody could walk.
+#
+# The published itineraries go lower than this because they are built
+# differently -- they declare the days that run over rather than stretching one
+# to absurdity -- which is exactly why the app has to warn before sending a
+# short supported solve to the backend.  tools/carp_bound.py recomputes both.
+SOLVER_FLOOR_HOURS = {"roads": 13.8, "ferry": 9.2}
+
 # Mirrors FERRY_LANDINGS in the solver.  Published so the custom-solve picker
 # can offer them without a second hardcoded copy in the frontend.
 FERRY_LANDINGS = [
@@ -121,6 +134,7 @@ def main():
                 "hours": HOURS,
                 "resupply": [None],
                 "min_hours": SUPPORTED_MIN_HOURS,
+                "solver_floor_hours": SOLVER_FLOOR_HOURS,
                 # Offered in the custom-solve panel.  The published presets take
                 # them only where roads alone give no itinerary, since a ferry
                 # is an expense and a schedule.
