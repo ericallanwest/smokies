@@ -1,4 +1,35 @@
 {
+ "paces": [
+  {
+   "key": "heavy",
+   "label": "Heavy pack",
+   "v0": 5400.0,
+   "k": 4.2,
+   "peak": -0.05
+  },
+  {
+   "key": "standard",
+   "label": "Standard",
+   "v0": 6000.0,
+   "k": 3.5,
+   "peak": -0.05
+  },
+  {
+   "key": "strong",
+   "label": "Strong",
+   "v0": 6300.0,
+   "k": 3.2,
+   "peak": -0.05
+  },
+  {
+   "key": "fast",
+   "label": "Fast",
+   "v0": 6600.0,
+   "k": 3.0,
+   "peak": -0.04
+  }
+ ],
+ "default_pace": "standard",
  "styles": {
   "selfsup": {
    "label": "Self-supported",
@@ -20,6 +51,9 @@
     7,
     8,
     null
+   ],
+   "ferry": [
+    false
    ]
   },
   "supported": {
@@ -38,7 +72,10 @@
    "resupply": [
     null
    ],
-   "min_hours": 8,
+   "ferry": [
+    true,
+    false
+   ],
    "solver_floor_hours": {
     "roads": 13.8,
     "ferry": 9.2
@@ -70,11 +107,47 @@
    "walk_hours": 420.9,
    "start_node": "TH072"
   },
+  "selfsup_10h_fast": {
+   "file": "preset_selfsup_10h_fast.json",
+   "days": 41,
+   "walk_hours": 355.9,
+   "start_node": "TH245"
+  },
+  "selfsup_10h_heavy": {
+   "file": "preset_selfsup_10h_heavy.json",
+   "days": 64,
+   "walk_hours": 535.1,
+   "start_node": "TH252"
+  },
   "selfsup_10h_r4": {
    "file": "preset_selfsup_10h_r4.json",
-   "days": 52,
-   "walk_hours": 432.6,
-   "start_node": "TH107"
+   "days": 51,
+   "walk_hours": 440.2,
+   "start_node": "TH252"
+  },
+  "selfsup_10h_r4_fast": {
+   "file": "preset_selfsup_10h_r4_fast.json",
+   "days": 41,
+   "walk_hours": 361.9,
+   "start_node": "TH245"
+  },
+  "selfsup_10h_r4_heavy": {
+   "file": "preset_selfsup_10h_r4_heavy.json",
+   "days": 72,
+   "walk_hours": 589.3,
+   "start_node": "TH252"
+  },
+  "selfsup_10h_r4_standard": {
+   "file": "preset_selfsup_10h_r4_standard.json",
+   "days": 51,
+   "walk_hours": 440.2,
+   "start_node": "TH252"
+  },
+  "selfsup_10h_r4_strong": {
+   "file": "preset_selfsup_10h_r4_strong.json",
+   "days": 47,
+   "walk_hours": 406.1,
+   "start_node": "TH252"
   },
   "selfsup_10h_r5": {
    "file": "preset_selfsup_10h_r5.json",
@@ -82,11 +155,59 @@
    "walk_hours": 425.4,
    "start_node": "TH190"
   },
+  "selfsup_10h_r5_fast": {
+   "file": "preset_selfsup_10h_r5_fast.json",
+   "days": 41,
+   "walk_hours": 373.0,
+   "start_node": "TH245"
+  },
+  "selfsup_10h_r5_heavy": {
+   "file": "preset_selfsup_10h_r5_heavy.json",
+   "days": 67,
+   "walk_hours": 559.1,
+   "start_node": "TH252"
+  },
+  "selfsup_10h_r5_standard": {
+   "file": "preset_selfsup_10h_r5_standard.json",
+   "days": 49,
+   "walk_hours": 425.4,
+   "start_node": "TH190"
+  },
+  "selfsup_10h_r5_strong": {
+   "file": "preset_selfsup_10h_r5_strong.json",
+   "days": 46,
+   "walk_hours": 399.3,
+   "start_node": "TH252"
+  },
   "selfsup_10h_r6": {
    "file": "preset_selfsup_10h_r6.json",
    "days": 49,
    "walk_hours": 421.0,
    "start_node": "TH246"
+  },
+  "selfsup_10h_r6_fast": {
+   "file": "preset_selfsup_10h_r6_fast.json",
+   "days": 41,
+   "walk_hours": 357.5,
+   "start_node": "TH245"
+  },
+  "selfsup_10h_r6_heavy": {
+   "file": "preset_selfsup_10h_r6_heavy.json",
+   "days": 65,
+   "walk_hours": 547.3,
+   "start_node": "TH252"
+  },
+  "selfsup_10h_r6_standard": {
+   "file": "preset_selfsup_10h_r6_standard.json",
+   "days": 49,
+   "walk_hours": 421.0,
+   "start_node": "TH246"
+  },
+  "selfsup_10h_r6_strong": {
+   "file": "preset_selfsup_10h_r6_strong.json",
+   "days": 46,
+   "walk_hours": 399.2,
+   "start_node": "TH252"
   },
   "selfsup_10h_r7": {
    "file": "preset_selfsup_10h_r7.json",
@@ -94,11 +215,71 @@
    "walk_hours": 420.5,
    "start_node": "TH246"
   },
+  "selfsup_10h_r7_fast": {
+   "file": "preset_selfsup_10h_r7_fast.json",
+   "days": 41,
+   "walk_hours": 357.3,
+   "start_node": "TH245"
+  },
+  "selfsup_10h_r7_heavy": {
+   "file": "preset_selfsup_10h_r7_heavy.json",
+   "days": 65,
+   "walk_hours": 542.5,
+   "start_node": "TH252"
+  },
+  "selfsup_10h_r7_standard": {
+   "file": "preset_selfsup_10h_r7_standard.json",
+   "days": 49,
+   "walk_hours": 420.5,
+   "start_node": "TH246"
+  },
+  "selfsup_10h_r7_strong": {
+   "file": "preset_selfsup_10h_r7_strong.json",
+   "days": 46,
+   "walk_hours": 392.9,
+   "start_node": "TH252"
+  },
   "selfsup_10h_r8": {
    "file": "preset_selfsup_10h_r8.json",
    "days": 49,
    "walk_hours": 420.0,
    "start_node": "TH143"
+  },
+  "selfsup_10h_r8_fast": {
+   "file": "preset_selfsup_10h_r8_fast.json",
+   "days": 41,
+   "walk_hours": 355.6,
+   "start_node": "TH245"
+  },
+  "selfsup_10h_r8_heavy": {
+   "file": "preset_selfsup_10h_r8_heavy.json",
+   "days": 64,
+   "walk_hours": 540.6,
+   "start_node": "TH252"
+  },
+  "selfsup_10h_r8_standard": {
+   "file": "preset_selfsup_10h_r8_standard.json",
+   "days": 49,
+   "walk_hours": 420.0,
+   "start_node": "TH143"
+  },
+  "selfsup_10h_r8_strong": {
+   "file": "preset_selfsup_10h_r8_strong.json",
+   "days": 46,
+   "walk_hours": 382.6,
+   "start_node": "TH252"
+  },
+  "selfsup_10h_standard": {
+   "file": "preset_selfsup_10h_standard.json",
+   "days": 48,
+   "walk_hours": 420.9,
+   "start_node": "TH072"
+  },
+  "selfsup_10h_strong": {
+   "file": "preset_selfsup_10h_strong.json",
+   "days": 46,
+   "walk_hours": 382.5,
+   "start_node": "TH252"
   },
   "selfsup_11h": {
    "file": "preset_selfsup_11h.json",
@@ -106,11 +287,47 @@
    "walk_hours": 428.5,
    "start_node": "TH143"
   },
+  "selfsup_11h_fast": {
+   "file": "preset_selfsup_11h_fast.json",
+   "days": 36,
+   "walk_hours": 351.1,
+   "start_node": "TH245"
+  },
+  "selfsup_11h_heavy": {
+   "file": "preset_selfsup_11h_heavy.json",
+   "days": 55,
+   "walk_hours": 510.9,
+   "start_node": "TH252"
+  },
   "selfsup_11h_r4": {
    "file": "preset_selfsup_11h_r4.json",
    "days": 45,
    "walk_hours": 443.3,
    "start_node": "TH190"
+  },
+  "selfsup_11h_r4_fast": {
+   "file": "preset_selfsup_11h_r4_fast.json",
+   "days": 37,
+   "walk_hours": 364.6,
+   "start_node": "TH245"
+  },
+  "selfsup_11h_r4_heavy": {
+   "file": "preset_selfsup_11h_r4_heavy.json",
+   "days": 58,
+   "walk_hours": 540.0,
+   "start_node": "TH252"
+  },
+  "selfsup_11h_r4_standard": {
+   "file": "preset_selfsup_11h_r4_standard.json",
+   "days": 45,
+   "walk_hours": 443.3,
+   "start_node": "TH190"
+  },
+  "selfsup_11h_r4_strong": {
+   "file": "preset_selfsup_11h_r4_strong.json",
+   "days": 40,
+   "walk_hours": 399.3,
+   "start_node": "TH252"
   },
   "selfsup_11h_r5": {
    "file": "preset_selfsup_11h_r5.json",
@@ -118,11 +335,59 @@
    "walk_hours": 430.2,
    "start_node": "TH143"
   },
+  "selfsup_11h_r5_fast": {
+   "file": "preset_selfsup_11h_r5_fast.json",
+   "days": 37,
+   "walk_hours": 356.1,
+   "start_node": "TH245"
+  },
+  "selfsup_11h_r5_heavy": {
+   "file": "preset_selfsup_11h_r5_heavy.json",
+   "days": 56,
+   "walk_hours": 525.0,
+   "start_node": "TH252"
+  },
+  "selfsup_11h_r5_standard": {
+   "file": "preset_selfsup_11h_r5_standard.json",
+   "days": 45,
+   "walk_hours": 430.2,
+   "start_node": "TH143"
+  },
+  "selfsup_11h_r5_strong": {
+   "file": "preset_selfsup_11h_r5_strong.json",
+   "days": 40,
+   "walk_hours": 402.7,
+   "start_node": "TH252"
+  },
   "selfsup_11h_r6": {
    "file": "preset_selfsup_11h_r6.json",
    "days": 45,
    "walk_hours": 429.3,
    "start_node": "TH107"
+  },
+  "selfsup_11h_r6_fast": {
+   "file": "preset_selfsup_11h_r6_fast.json",
+   "days": 37,
+   "walk_hours": 354.7,
+   "start_node": "TH245"
+  },
+  "selfsup_11h_r6_heavy": {
+   "file": "preset_selfsup_11h_r6_heavy.json",
+   "days": 55,
+   "walk_hours": 518.9,
+   "start_node": "TH252"
+  },
+  "selfsup_11h_r6_standard": {
+   "file": "preset_selfsup_11h_r6_standard.json",
+   "days": 45,
+   "walk_hours": 429.3,
+   "start_node": "TH107"
+  },
+  "selfsup_11h_r6_strong": {
+   "file": "preset_selfsup_11h_r6_strong.json",
+   "days": 41,
+   "walk_hours": 395.1,
+   "start_node": "TH252"
   },
   "selfsup_11h_r7": {
    "file": "preset_selfsup_11h_r7.json",
@@ -130,11 +395,71 @@
    "walk_hours": 423.0,
    "start_node": "TH143"
   },
+  "selfsup_11h_r7_fast": {
+   "file": "preset_selfsup_11h_r7_fast.json",
+   "days": 36,
+   "walk_hours": 351.1,
+   "start_node": "TH245"
+  },
+  "selfsup_11h_r7_heavy": {
+   "file": "preset_selfsup_11h_r7_heavy.json",
+   "days": 56,
+   "walk_hours": 518.5,
+   "start_node": "TH252"
+  },
+  "selfsup_11h_r7_standard": {
+   "file": "preset_selfsup_11h_r7_standard.json",
+   "days": 45,
+   "walk_hours": 423.0,
+   "start_node": "TH143"
+  },
+  "selfsup_11h_r7_strong": {
+   "file": "preset_selfsup_11h_r7_strong.json",
+   "days": 41,
+   "walk_hours": 399.7,
+   "start_node": "TH252"
+  },
   "selfsup_11h_r8": {
    "file": "preset_selfsup_11h_r8.json",
    "days": 44,
    "walk_hours": 428.5,
    "start_node": "TH143"
+  },
+  "selfsup_11h_r8_fast": {
+   "file": "preset_selfsup_11h_r8_fast.json",
+   "days": 36,
+   "walk_hours": 351.1,
+   "start_node": "TH245"
+  },
+  "selfsup_11h_r8_heavy": {
+   "file": "preset_selfsup_11h_r8_heavy.json",
+   "days": 56,
+   "walk_hours": 522.6,
+   "start_node": "TH252"
+  },
+  "selfsup_11h_r8_standard": {
+   "file": "preset_selfsup_11h_r8_standard.json",
+   "days": 44,
+   "walk_hours": 428.5,
+   "start_node": "TH143"
+  },
+  "selfsup_11h_r8_strong": {
+   "file": "preset_selfsup_11h_r8_strong.json",
+   "days": 41,
+   "walk_hours": 391.6,
+   "start_node": "TH252"
+  },
+  "selfsup_11h_standard": {
+   "file": "preset_selfsup_11h_standard.json",
+   "days": 44,
+   "walk_hours": 428.5,
+   "start_node": "TH143"
+  },
+  "selfsup_11h_strong": {
+   "file": "preset_selfsup_11h_strong.json",
+   "days": 41,
+   "walk_hours": 392.0,
+   "start_node": "TH252"
   },
   "selfsup_12h": {
    "file": "preset_selfsup_12h.json",
@@ -142,11 +467,47 @@
    "walk_hours": 414.9,
    "start_node": "TH001"
   },
+  "selfsup_12h_fast": {
+   "file": "preset_selfsup_12h_fast.json",
+   "days": 33,
+   "walk_hours": 344.4,
+   "start_node": "TH245"
+  },
+  "selfsup_12h_heavy": {
+   "file": "preset_selfsup_12h_heavy.json",
+   "days": 50,
+   "walk_hours": 505.8,
+   "start_node": "TH252"
+  },
   "selfsup_12h_r4": {
    "file": "preset_selfsup_12h_r4.json",
    "days": 40,
    "walk_hours": 424.3,
    "start_node": "TH225"
+  },
+  "selfsup_12h_r4_fast": {
+   "file": "preset_selfsup_12h_r4_fast.json",
+   "days": 33,
+   "walk_hours": 360.4,
+   "start_node": "TH245"
+  },
+  "selfsup_12h_r4_heavy": {
+   "file": "preset_selfsup_12h_r4_heavy.json",
+   "days": 53,
+   "walk_hours": 545.7,
+   "start_node": "TH252"
+  },
+  "selfsup_12h_r4_standard": {
+   "file": "preset_selfsup_12h_r4_standard.json",
+   "days": 40,
+   "walk_hours": 424.3,
+   "start_node": "TH225"
+  },
+  "selfsup_12h_r4_strong": {
+   "file": "preset_selfsup_12h_r4_strong.json",
+   "days": 36,
+   "walk_hours": 399.2,
+   "start_node": "TH252"
   },
   "selfsup_12h_r5": {
    "file": "preset_selfsup_12h_r5.json",
@@ -154,11 +515,59 @@
    "walk_hours": 424.0,
    "start_node": "TH225"
   },
+  "selfsup_12h_r5_fast": {
+   "file": "preset_selfsup_12h_r5_fast.json",
+   "days": 33,
+   "walk_hours": 347.4,
+   "start_node": "TH245"
+  },
+  "selfsup_12h_r5_heavy": {
+   "file": "preset_selfsup_12h_r5_heavy.json",
+   "days": 51,
+   "walk_hours": 521.3,
+   "start_node": "TH252"
+  },
+  "selfsup_12h_r5_standard": {
+   "file": "preset_selfsup_12h_r5_standard.json",
+   "days": 40,
+   "walk_hours": 424.0,
+   "start_node": "TH225"
+  },
+  "selfsup_12h_r5_strong": {
+   "file": "preset_selfsup_12h_r5_strong.json",
+   "days": 36,
+   "walk_hours": 388.6,
+   "start_node": "TH252"
+  },
   "selfsup_12h_r6": {
    "file": "preset_selfsup_12h_r6.json",
    "days": 40,
    "walk_hours": 424.0,
    "start_node": "TH225"
+  },
+  "selfsup_12h_r6_fast": {
+   "file": "preset_selfsup_12h_r6_fast.json",
+   "days": 33,
+   "walk_hours": 346.6,
+   "start_node": "TH245"
+  },
+  "selfsup_12h_r6_heavy": {
+   "file": "preset_selfsup_12h_r6_heavy.json",
+   "days": 51,
+   "walk_hours": 513.5,
+   "start_node": "TH252"
+  },
+  "selfsup_12h_r6_standard": {
+   "file": "preset_selfsup_12h_r6_standard.json",
+   "days": 40,
+   "walk_hours": 424.0,
+   "start_node": "TH225"
+  },
+  "selfsup_12h_r6_strong": {
+   "file": "preset_selfsup_12h_r6_strong.json",
+   "days": 36,
+   "walk_hours": 387.2,
+   "start_node": "TH252"
   },
   "selfsup_12h_r7": {
    "file": "preset_selfsup_12h_r7.json",
@@ -166,11 +575,71 @@
    "walk_hours": 417.6,
    "start_node": "TH225"
   },
+  "selfsup_12h_r7_fast": {
+   "file": "preset_selfsup_12h_r7_fast.json",
+   "days": 33,
+   "walk_hours": 343.7,
+   "start_node": "TH245"
+  },
+  "selfsup_12h_r7_heavy": {
+   "file": "preset_selfsup_12h_r7_heavy.json",
+   "days": 52,
+   "walk_hours": 517.4,
+   "start_node": "TH252"
+  },
+  "selfsup_12h_r7_standard": {
+   "file": "preset_selfsup_12h_r7_standard.json",
+   "days": 40,
+   "walk_hours": 417.6,
+   "start_node": "TH225"
+  },
+  "selfsup_12h_r7_strong": {
+   "file": "preset_selfsup_12h_r7_strong.json",
+   "days": 35,
+   "walk_hours": 379.7,
+   "start_node": "TH252"
+  },
   "selfsup_12h_r8": {
    "file": "preset_selfsup_12h_r8.json",
    "days": 40,
    "walk_hours": 415.3,
    "start_node": "TH001"
+  },
+  "selfsup_12h_r8_fast": {
+   "file": "preset_selfsup_12h_r8_fast.json",
+   "days": 33,
+   "walk_hours": 344.4,
+   "start_node": "TH245"
+  },
+  "selfsup_12h_r8_heavy": {
+   "file": "preset_selfsup_12h_r8_heavy.json",
+   "days": 51,
+   "walk_hours": 510.1,
+   "start_node": "TH252"
+  },
+  "selfsup_12h_r8_standard": {
+   "file": "preset_selfsup_12h_r8_standard.json",
+   "days": 40,
+   "walk_hours": 415.3,
+   "start_node": "TH001"
+  },
+  "selfsup_12h_r8_strong": {
+   "file": "preset_selfsup_12h_r8_strong.json",
+   "days": 35,
+   "walk_hours": 379.5,
+   "start_node": "TH252"
+  },
+  "selfsup_12h_standard": {
+   "file": "preset_selfsup_12h_standard.json",
+   "days": 40,
+   "walk_hours": 414.9,
+   "start_node": "TH001"
+  },
+  "selfsup_12h_strong": {
+   "file": "preset_selfsup_12h_strong.json",
+   "days": 35,
+   "walk_hours": 379.5,
+   "start_node": "TH252"
   },
   "selfsup_13h": {
    "file": "preset_selfsup_13h.json",
@@ -178,11 +647,47 @@
    "walk_hours": 416.0,
    "start_node": "TH245"
   },
+  "selfsup_13h_fast": {
+   "file": "preset_selfsup_13h_fast.json",
+   "days": 30,
+   "walk_hours": 349.0,
+   "start_node": "TH245"
+  },
+  "selfsup_13h_heavy": {
+   "file": "preset_selfsup_13h_heavy.json",
+   "days": 46,
+   "walk_hours": 529.7,
+   "start_node": "TH252"
+  },
   "selfsup_13h_r4": {
    "file": "preset_selfsup_13h_r4.json",
    "days": 36,
    "walk_hours": 422.5,
    "start_node": "TH245"
+  },
+  "selfsup_13h_r4_fast": {
+   "file": "preset_selfsup_13h_r4_fast.json",
+   "days": 31,
+   "walk_hours": 348.5,
+   "start_node": "TH245"
+  },
+  "selfsup_13h_r4_heavy": {
+   "file": "preset_selfsup_13h_r4_heavy.json",
+   "days": 47,
+   "walk_hours": 542.5,
+   "start_node": "TH252"
+  },
+  "selfsup_13h_r4_standard": {
+   "file": "preset_selfsup_13h_r4_standard.json",
+   "days": 36,
+   "walk_hours": 422.5,
+   "start_node": "TH245"
+  },
+  "selfsup_13h_r4_strong": {
+   "file": "preset_selfsup_13h_r4_strong.json",
+   "days": 33,
+   "walk_hours": 384.3,
+   "start_node": "TH252"
   },
   "selfsup_13h_r5": {
    "file": "preset_selfsup_13h_r5.json",
@@ -190,11 +695,59 @@
    "walk_hours": 414.2,
    "start_node": "TH190"
   },
+  "selfsup_13h_r5_fast": {
+   "file": "preset_selfsup_13h_r5_fast.json",
+   "days": 31,
+   "walk_hours": 346.2,
+   "start_node": "TH245"
+  },
+  "selfsup_13h_r5_heavy": {
+   "file": "preset_selfsup_13h_r5_heavy.json",
+   "days": 46,
+   "walk_hours": 539.7,
+   "start_node": "TH252"
+  },
+  "selfsup_13h_r5_standard": {
+   "file": "preset_selfsup_13h_r5_standard.json",
+   "days": 36,
+   "walk_hours": 414.2,
+   "start_node": "TH190"
+  },
+  "selfsup_13h_r5_strong": {
+   "file": "preset_selfsup_13h_r5_strong.json",
+   "days": 33,
+   "walk_hours": 380.1,
+   "start_node": "TH252"
+  },
   "selfsup_13h_r6": {
    "file": "preset_selfsup_13h_r6.json",
    "days": 36,
    "walk_hours": 419.5,
    "start_node": "TH245"
+  },
+  "selfsup_13h_r6_fast": {
+   "file": "preset_selfsup_13h_r6_fast.json",
+   "days": 30,
+   "walk_hours": 349.0,
+   "start_node": "TH245"
+  },
+  "selfsup_13h_r6_heavy": {
+   "file": "preset_selfsup_13h_r6_heavy.json",
+   "days": 46,
+   "walk_hours": 542.2,
+   "start_node": "TH252"
+  },
+  "selfsup_13h_r6_standard": {
+   "file": "preset_selfsup_13h_r6_standard.json",
+   "days": 36,
+   "walk_hours": 419.5,
+   "start_node": "TH245"
+  },
+  "selfsup_13h_r6_strong": {
+   "file": "preset_selfsup_13h_r6_strong.json",
+   "days": 33,
+   "walk_hours": 382.9,
+   "start_node": "TH252"
   },
   "selfsup_13h_r7": {
    "file": "preset_selfsup_13h_r7.json",
@@ -202,11 +755,71 @@
    "walk_hours": 416.1,
    "start_node": "TH245"
   },
+  "selfsup_13h_r7_fast": {
+   "file": "preset_selfsup_13h_r7_fast.json",
+   "days": 30,
+   "walk_hours": 349.0,
+   "start_node": "TH245"
+  },
+  "selfsup_13h_r7_heavy": {
+   "file": "preset_selfsup_13h_r7_heavy.json",
+   "days": 46,
+   "walk_hours": 539.9,
+   "start_node": "TH252"
+  },
+  "selfsup_13h_r7_standard": {
+   "file": "preset_selfsup_13h_r7_standard.json",
+   "days": 36,
+   "walk_hours": 416.1,
+   "start_node": "TH245"
+  },
+  "selfsup_13h_r7_strong": {
+   "file": "preset_selfsup_13h_r7_strong.json",
+   "days": 33,
+   "walk_hours": 373.4,
+   "start_node": "TH252"
+  },
   "selfsup_13h_r8": {
    "file": "preset_selfsup_13h_r8.json",
    "days": 36,
    "walk_hours": 416.0,
    "start_node": "TH245"
+  },
+  "selfsup_13h_r8_fast": {
+   "file": "preset_selfsup_13h_r8_fast.json",
+   "days": 30,
+   "walk_hours": 349.0,
+   "start_node": "TH245"
+  },
+  "selfsup_13h_r8_heavy": {
+   "file": "preset_selfsup_13h_r8_heavy.json",
+   "days": 46,
+   "walk_hours": 529.7,
+   "start_node": "TH252"
+  },
+  "selfsup_13h_r8_standard": {
+   "file": "preset_selfsup_13h_r8_standard.json",
+   "days": 36,
+   "walk_hours": 416.0,
+   "start_node": "TH245"
+  },
+  "selfsup_13h_r8_strong": {
+   "file": "preset_selfsup_13h_r8_strong.json",
+   "days": 33,
+   "walk_hours": 373.8,
+   "start_node": "TH252"
+  },
+  "selfsup_13h_standard": {
+   "file": "preset_selfsup_13h_standard.json",
+   "days": 36,
+   "walk_hours": 416.0,
+   "start_node": "TH245"
+  },
+  "selfsup_13h_strong": {
+   "file": "preset_selfsup_13h_strong.json",
+   "days": 33,
+   "walk_hours": 373.8,
+   "start_node": "TH252"
   },
   "selfsup_14h": {
    "file": "preset_selfsup_14h.json",
@@ -214,11 +827,47 @@
    "walk_hours": 408.0,
    "start_node": "TH245"
   },
+  "selfsup_14h_fast": {
+   "file": "preset_selfsup_14h_fast.json",
+   "days": 28,
+   "walk_hours": 352.0,
+   "start_node": "TH245"
+  },
+  "selfsup_14h_heavy": {
+   "file": "preset_selfsup_14h_heavy.json",
+   "days": 42,
+   "walk_hours": 510.0,
+   "start_node": "TH252"
+  },
   "selfsup_14h_r4": {
    "file": "preset_selfsup_14h_r4.json",
    "days": 33,
    "walk_hours": 421.6,
    "start_node": "CGSMO"
+  },
+  "selfsup_14h_r4_fast": {
+   "file": "preset_selfsup_14h_r4_fast.json",
+   "days": 28,
+   "walk_hours": 356.2,
+   "start_node": "TH245"
+  },
+  "selfsup_14h_r4_heavy": {
+   "file": "preset_selfsup_14h_r4_heavy.json",
+   "days": 43,
+   "walk_hours": 523.4,
+   "start_node": "TH252"
+  },
+  "selfsup_14h_r4_standard": {
+   "file": "preset_selfsup_14h_r4_standard.json",
+   "days": 33,
+   "walk_hours": 421.6,
+   "start_node": "CGSMO"
+  },
+  "selfsup_14h_r4_strong": {
+   "file": "preset_selfsup_14h_r4_strong.json",
+   "days": 31,
+   "walk_hours": 386.2,
+   "start_node": "TH252"
   },
   "selfsup_14h_r5": {
    "file": "preset_selfsup_14h_r5.json",
@@ -226,11 +875,59 @@
    "walk_hours": 415.4,
    "start_node": "TH245"
   },
+  "selfsup_14h_r5_fast": {
+   "file": "preset_selfsup_14h_r5_fast.json",
+   "days": 28,
+   "walk_hours": 354.9,
+   "start_node": "TH245"
+  },
+  "selfsup_14h_r5_heavy": {
+   "file": "preset_selfsup_14h_r5_heavy.json",
+   "days": 42,
+   "walk_hours": 517.5,
+   "start_node": "TH252"
+  },
+  "selfsup_14h_r5_standard": {
+   "file": "preset_selfsup_14h_r5_standard.json",
+   "days": 33,
+   "walk_hours": 415.4,
+   "start_node": "TH245"
+  },
+  "selfsup_14h_r5_strong": {
+   "file": "preset_selfsup_14h_r5_strong.json",
+   "days": 31,
+   "walk_hours": 385.8,
+   "start_node": "TH252"
+  },
   "selfsup_14h_r6": {
    "file": "preset_selfsup_14h_r6.json",
    "days": 33,
    "walk_hours": 413.4,
    "start_node": "CGBIG"
+  },
+  "selfsup_14h_r6_fast": {
+   "file": "preset_selfsup_14h_r6_fast.json",
+   "days": 28,
+   "walk_hours": 352.0,
+   "start_node": "TH245"
+  },
+  "selfsup_14h_r6_heavy": {
+   "file": "preset_selfsup_14h_r6_heavy.json",
+   "days": 42,
+   "walk_hours": 518.0,
+   "start_node": "TH252"
+  },
+  "selfsup_14h_r6_standard": {
+   "file": "preset_selfsup_14h_r6_standard.json",
+   "days": 33,
+   "walk_hours": 413.4,
+   "start_node": "CGBIG"
+  },
+  "selfsup_14h_r6_strong": {
+   "file": "preset_selfsup_14h_r6_strong.json",
+   "days": 30,
+   "walk_hours": 379.1,
+   "start_node": "TH252"
   },
   "selfsup_14h_r7": {
    "file": "preset_selfsup_14h_r7.json",
@@ -238,11 +935,71 @@
    "walk_hours": 408.0,
    "start_node": "TH245"
   },
+  "selfsup_14h_r7_fast": {
+   "file": "preset_selfsup_14h_r7_fast.json",
+   "days": 28,
+   "walk_hours": 352.0,
+   "start_node": "TH245"
+  },
+  "selfsup_14h_r7_heavy": {
+   "file": "preset_selfsup_14h_r7_heavy.json",
+   "days": 42,
+   "walk_hours": 514.3,
+   "start_node": "TH252"
+  },
+  "selfsup_14h_r7_standard": {
+   "file": "preset_selfsup_14h_r7_standard.json",
+   "days": 33,
+   "walk_hours": 408.0,
+   "start_node": "TH245"
+  },
+  "selfsup_14h_r7_strong": {
+   "file": "preset_selfsup_14h_r7_strong.json",
+   "days": 30,
+   "walk_hours": 379.1,
+   "start_node": "TH252"
+  },
   "selfsup_14h_r8": {
    "file": "preset_selfsup_14h_r8.json",
    "days": 33,
    "walk_hours": 408.0,
    "start_node": "TH245"
+  },
+  "selfsup_14h_r8_fast": {
+   "file": "preset_selfsup_14h_r8_fast.json",
+   "days": 28,
+   "walk_hours": 352.0,
+   "start_node": "TH245"
+  },
+  "selfsup_14h_r8_heavy": {
+   "file": "preset_selfsup_14h_r8_heavy.json",
+   "days": 42,
+   "walk_hours": 509.5,
+   "start_node": "TH252"
+  },
+  "selfsup_14h_r8_standard": {
+   "file": "preset_selfsup_14h_r8_standard.json",
+   "days": 33,
+   "walk_hours": 408.0,
+   "start_node": "TH245"
+  },
+  "selfsup_14h_r8_strong": {
+   "file": "preset_selfsup_14h_r8_strong.json",
+   "days": 30,
+   "walk_hours": 379.1,
+   "start_node": "TH252"
+  },
+  "selfsup_14h_standard": {
+   "file": "preset_selfsup_14h_standard.json",
+   "days": 33,
+   "walk_hours": 408.0,
+   "start_node": "TH245"
+  },
+  "selfsup_14h_strong": {
+   "file": "preset_selfsup_14h_strong.json",
+   "days": 30,
+   "walk_hours": 379.1,
+   "start_node": "TH252"
   },
   "selfsup_15h": {
    "file": "preset_selfsup_15h.json",
@@ -250,11 +1007,47 @@
    "walk_hours": 414.1,
    "start_node": "TH183"
   },
+  "selfsup_15h_fast": {
+   "file": "preset_selfsup_15h_fast.json",
+   "days": 25,
+   "walk_hours": 352.4,
+   "start_node": "TH245"
+  },
+  "selfsup_15h_heavy": {
+   "file": "preset_selfsup_15h_heavy.json",
+   "days": 38,
+   "walk_hours": 513.6,
+   "start_node": "TH252"
+  },
   "selfsup_15h_r4": {
    "file": "preset_selfsup_15h_r4.json",
    "days": 30,
    "walk_hours": 424.7,
    "start_node": "TH246"
+  },
+  "selfsup_15h_r4_fast": {
+   "file": "preset_selfsup_15h_r4_fast.json",
+   "days": 26,
+   "walk_hours": 353.4,
+   "start_node": "TH245"
+  },
+  "selfsup_15h_r4_heavy": {
+   "file": "preset_selfsup_15h_r4_heavy.json",
+   "days": 39,
+   "walk_hours": 535.6,
+   "start_node": "TH252"
+  },
+  "selfsup_15h_r4_standard": {
+   "file": "preset_selfsup_15h_r4_standard.json",
+   "days": 30,
+   "walk_hours": 424.7,
+   "start_node": "TH246"
+  },
+  "selfsup_15h_r4_strong": {
+   "file": "preset_selfsup_15h_r4_strong.json",
+   "days": 29,
+   "walk_hours": 384.1,
+   "start_node": "TH252"
   },
   "selfsup_15h_r5": {
    "file": "preset_selfsup_15h_r5.json",
@@ -262,11 +1055,59 @@
    "walk_hours": 424.3,
    "start_node": "TH246"
   },
+  "selfsup_15h_r5_fast": {
+   "file": "preset_selfsup_15h_r5_fast.json",
+   "days": 25,
+   "walk_hours": 352.4,
+   "start_node": "TH245"
+  },
+  "selfsup_15h_r5_heavy": {
+   "file": "preset_selfsup_15h_r5_heavy.json",
+   "days": 38,
+   "walk_hours": 517.8,
+   "start_node": "TH252"
+  },
+  "selfsup_15h_r5_standard": {
+   "file": "preset_selfsup_15h_r5_standard.json",
+   "days": 30,
+   "walk_hours": 424.3,
+   "start_node": "TH246"
+  },
+  "selfsup_15h_r5_strong": {
+   "file": "preset_selfsup_15h_r5_strong.json",
+   "days": 29,
+   "walk_hours": 376.5,
+   "start_node": "TH252"
+  },
   "selfsup_15h_r6": {
    "file": "preset_selfsup_15h_r6.json",
    "days": 30,
    "walk_hours": 414.1,
    "start_node": "TH183"
+  },
+  "selfsup_15h_r6_fast": {
+   "file": "preset_selfsup_15h_r6_fast.json",
+   "days": 25,
+   "walk_hours": 352.4,
+   "start_node": "TH245"
+  },
+  "selfsup_15h_r6_heavy": {
+   "file": "preset_selfsup_15h_r6_heavy.json",
+   "days": 38,
+   "walk_hours": 517.2,
+   "start_node": "TH252"
+  },
+  "selfsup_15h_r6_standard": {
+   "file": "preset_selfsup_15h_r6_standard.json",
+   "days": 30,
+   "walk_hours": 414.1,
+   "start_node": "TH183"
+  },
+  "selfsup_15h_r6_strong": {
+   "file": "preset_selfsup_15h_r6_strong.json",
+   "days": 28,
+   "walk_hours": 381.7,
+   "start_node": "TH252"
   },
   "selfsup_15h_r7": {
    "file": "preset_selfsup_15h_r7.json",
@@ -274,11 +1115,71 @@
    "walk_hours": 414.1,
    "start_node": "TH183"
   },
+  "selfsup_15h_r7_fast": {
+   "file": "preset_selfsup_15h_r7_fast.json",
+   "days": 25,
+   "walk_hours": 352.4,
+   "start_node": "TH245"
+  },
+  "selfsup_15h_r7_heavy": {
+   "file": "preset_selfsup_15h_r7_heavy.json",
+   "days": 38,
+   "walk_hours": 513.6,
+   "start_node": "TH252"
+  },
+  "selfsup_15h_r7_standard": {
+   "file": "preset_selfsup_15h_r7_standard.json",
+   "days": 30,
+   "walk_hours": 414.1,
+   "start_node": "TH183"
+  },
+  "selfsup_15h_r7_strong": {
+   "file": "preset_selfsup_15h_r7_strong.json",
+   "days": 28,
+   "walk_hours": 381.7,
+   "start_node": "TH252"
+  },
   "selfsup_15h_r8": {
    "file": "preset_selfsup_15h_r8.json",
    "days": 30,
    "walk_hours": 414.1,
    "start_node": "TH183"
+  },
+  "selfsup_15h_r8_fast": {
+   "file": "preset_selfsup_15h_r8_fast.json",
+   "days": 25,
+   "walk_hours": 352.4,
+   "start_node": "TH245"
+  },
+  "selfsup_15h_r8_heavy": {
+   "file": "preset_selfsup_15h_r8_heavy.json",
+   "days": 38,
+   "walk_hours": 513.6,
+   "start_node": "TH252"
+  },
+  "selfsup_15h_r8_standard": {
+   "file": "preset_selfsup_15h_r8_standard.json",
+   "days": 30,
+   "walk_hours": 414.1,
+   "start_node": "TH183"
+  },
+  "selfsup_15h_r8_strong": {
+   "file": "preset_selfsup_15h_r8_strong.json",
+   "days": 28,
+   "walk_hours": 381.7,
+   "start_node": "TH252"
+  },
+  "selfsup_15h_standard": {
+   "file": "preset_selfsup_15h_standard.json",
+   "days": 30,
+   "walk_hours": 414.1,
+   "start_node": "TH183"
+  },
+  "selfsup_15h_strong": {
+   "file": "preset_selfsup_15h_strong.json",
+   "days": 28,
+   "walk_hours": 381.7,
+   "start_node": "TH252"
   },
   "selfsup_16h": {
    "file": "preset_selfsup_16h.json",
@@ -286,11 +1187,47 @@
    "walk_hours": 417.5,
    "start_node": "TH033"
   },
+  "selfsup_16h_fast": {
+   "file": "preset_selfsup_16h_fast.json",
+   "days": 24,
+   "walk_hours": 350.6,
+   "start_node": "TH245"
+  },
+  "selfsup_16h_heavy": {
+   "file": "preset_selfsup_16h_heavy.json",
+   "days": 37,
+   "walk_hours": 509.6,
+   "start_node": "TH252"
+  },
   "selfsup_16h_r4": {
    "file": "preset_selfsup_16h_r4.json",
    "days": 29,
    "walk_hours": 408.7,
    "start_node": "TH060"
+  },
+  "selfsup_16h_r4_fast": {
+   "file": "preset_selfsup_16h_r4_fast.json",
+   "days": 24,
+   "walk_hours": 353.5,
+   "start_node": "TH245"
+  },
+  "selfsup_16h_r4_heavy": {
+   "file": "preset_selfsup_16h_r4_heavy.json",
+   "days": 37,
+   "walk_hours": 505.6,
+   "start_node": "TH252"
+  },
+  "selfsup_16h_r4_standard": {
+   "file": "preset_selfsup_16h_r4_standard.json",
+   "days": 29,
+   "walk_hours": 408.7,
+   "start_node": "TH060"
+  },
+  "selfsup_16h_r4_strong": {
+   "file": "preset_selfsup_16h_r4_strong.json",
+   "days": 26,
+   "walk_hours": 382.9,
+   "start_node": "TH252"
   },
   "selfsup_16h_r5": {
    "file": "preset_selfsup_16h_r5.json",
@@ -298,11 +1235,59 @@
    "walk_hours": 407.2,
    "start_node": "TH060"
   },
+  "selfsup_16h_r5_fast": {
+   "file": "preset_selfsup_16h_r5_fast.json",
+   "days": 24,
+   "walk_hours": 350.7,
+   "start_node": "TH245"
+  },
+  "selfsup_16h_r5_heavy": {
+   "file": "preset_selfsup_16h_r5_heavy.json",
+   "days": 37,
+   "walk_hours": 518.2,
+   "start_node": "TH252"
+  },
+  "selfsup_16h_r5_standard": {
+   "file": "preset_selfsup_16h_r5_standard.json",
+   "days": 29,
+   "walk_hours": 407.2,
+   "start_node": "TH060"
+  },
+  "selfsup_16h_r5_strong": {
+   "file": "preset_selfsup_16h_r5_strong.json",
+   "days": 26,
+   "walk_hours": 380.2,
+   "start_node": "TH252"
+  },
   "selfsup_16h_r6": {
    "file": "preset_selfsup_16h_r6.json",
    "days": 28,
    "walk_hours": 417.7,
    "start_node": "TH033"
+  },
+  "selfsup_16h_r6_fast": {
+   "file": "preset_selfsup_16h_r6_fast.json",
+   "days": 24,
+   "walk_hours": 350.6,
+   "start_node": "TH245"
+  },
+  "selfsup_16h_r6_heavy": {
+   "file": "preset_selfsup_16h_r6_heavy.json",
+   "days": 37,
+   "walk_hours": 513.8,
+   "start_node": "TH252"
+  },
+  "selfsup_16h_r6_standard": {
+   "file": "preset_selfsup_16h_r6_standard.json",
+   "days": 28,
+   "walk_hours": 417.7,
+   "start_node": "TH033"
+  },
+  "selfsup_16h_r6_strong": {
+   "file": "preset_selfsup_16h_r6_strong.json",
+   "days": 26,
+   "walk_hours": 380.2,
+   "start_node": "TH252"
   },
   "selfsup_16h_r7": {
    "file": "preset_selfsup_16h_r7.json",
@@ -310,11 +1295,71 @@
    "walk_hours": 417.5,
    "start_node": "TH033"
   },
+  "selfsup_16h_r7_fast": {
+   "file": "preset_selfsup_16h_r7_fast.json",
+   "days": 24,
+   "walk_hours": 350.6,
+   "start_node": "TH245"
+  },
+  "selfsup_16h_r7_heavy": {
+   "file": "preset_selfsup_16h_r7_heavy.json",
+   "days": 37,
+   "walk_hours": 509.1,
+   "start_node": "TH252"
+  },
+  "selfsup_16h_r7_standard": {
+   "file": "preset_selfsup_16h_r7_standard.json",
+   "days": 28,
+   "walk_hours": 417.5,
+   "start_node": "TH033"
+  },
+  "selfsup_16h_r7_strong": {
+   "file": "preset_selfsup_16h_r7_strong.json",
+   "days": 26,
+   "walk_hours": 380.2,
+   "start_node": "TH252"
+  },
   "selfsup_16h_r8": {
    "file": "preset_selfsup_16h_r8.json",
    "days": 28,
    "walk_hours": 417.5,
    "start_node": "TH033"
+  },
+  "selfsup_16h_r8_fast": {
+   "file": "preset_selfsup_16h_r8_fast.json",
+   "days": 24,
+   "walk_hours": 350.6,
+   "start_node": "TH245"
+  },
+  "selfsup_16h_r8_heavy": {
+   "file": "preset_selfsup_16h_r8_heavy.json",
+   "days": 37,
+   "walk_hours": 509.6,
+   "start_node": "TH252"
+  },
+  "selfsup_16h_r8_standard": {
+   "file": "preset_selfsup_16h_r8_standard.json",
+   "days": 28,
+   "walk_hours": 417.5,
+   "start_node": "TH033"
+  },
+  "selfsup_16h_r8_strong": {
+   "file": "preset_selfsup_16h_r8_strong.json",
+   "days": 26,
+   "walk_hours": 380.2,
+   "start_node": "TH252"
+  },
+  "selfsup_16h_standard": {
+   "file": "preset_selfsup_16h_standard.json",
+   "days": 28,
+   "walk_hours": 417.5,
+   "start_node": "TH033"
+  },
+  "selfsup_16h_strong": {
+   "file": "preset_selfsup_16h_strong.json",
+   "days": 26,
+   "walk_hours": 380.2,
+   "start_node": "TH252"
   },
   "selfsup_8h": {
    "file": "preset_selfsup_8h.json",
@@ -322,11 +1367,41 @@
    "walk_hours": 432.4,
    "start_node": "TH072"
   },
+  "selfsup_8h_fast": {
+   "file": "preset_selfsup_8h_fast.json",
+   "days": 53,
+   "walk_hours": 357.6,
+   "start_node": "TH245"
+  },
+  "selfsup_8h_heavy": {
+   "unavailable": "No itinerary satisfies this combination of day length, resupply window and pace."
+  },
   "selfsup_8h_r4": {
    "file": "preset_selfsup_8h_r4.json",
    "days": 72,
    "walk_hours": 495.1,
    "start_node": "TH107"
+  },
+  "selfsup_8h_r4_fast": {
+   "file": "preset_selfsup_8h_r4_fast.json",
+   "days": 56,
+   "walk_hours": 384.0,
+   "start_node": "TH245"
+  },
+  "selfsup_8h_r4_heavy": {
+   "unavailable": "No itinerary satisfies this combination of day length, resupply window and pace."
+  },
+  "selfsup_8h_r4_standard": {
+   "file": "preset_selfsup_8h_r4_standard.json",
+   "days": 72,
+   "walk_hours": 495.1,
+   "start_node": "TH107"
+  },
+  "selfsup_8h_r4_strong": {
+   "file": "preset_selfsup_8h_r4_strong.json",
+   "days": 61,
+   "walk_hours": 425.0,
+   "start_node": "TH252"
   },
   "selfsup_8h_r5": {
    "file": "preset_selfsup_8h_r5.json",
@@ -334,11 +1409,53 @@
    "walk_hours": 457.9,
    "start_node": "TH183"
   },
+  "selfsup_8h_r5_fast": {
+   "file": "preset_selfsup_8h_r5_fast.json",
+   "days": 56,
+   "walk_hours": 365.6,
+   "start_node": "TH245"
+  },
+  "selfsup_8h_r5_heavy": {
+   "unavailable": "No itinerary satisfies this combination of day length, resupply window and pace."
+  },
+  "selfsup_8h_r5_standard": {
+   "file": "preset_selfsup_8h_r5_standard.json",
+   "days": 70,
+   "walk_hours": 457.9,
+   "start_node": "TH183"
+  },
+  "selfsup_8h_r5_strong": {
+   "file": "preset_selfsup_8h_r5_strong.json",
+   "days": 59,
+   "walk_hours": 411.1,
+   "start_node": "TH252"
+  },
   "selfsup_8h_r6": {
    "file": "preset_selfsup_8h_r6.json",
    "days": 66,
    "walk_hours": 440.3,
    "start_node": "TH183"
+  },
+  "selfsup_8h_r6_fast": {
+   "file": "preset_selfsup_8h_r6_fast.json",
+   "days": 54,
+   "walk_hours": 362.1,
+   "start_node": "TH245"
+  },
+  "selfsup_8h_r6_heavy": {
+   "unavailable": "No itinerary satisfies this combination of day length, resupply window and pace."
+  },
+  "selfsup_8h_r6_standard": {
+   "file": "preset_selfsup_8h_r6_standard.json",
+   "days": 66,
+   "walk_hours": 440.3,
+   "start_node": "TH183"
+  },
+  "selfsup_8h_r6_strong": {
+   "file": "preset_selfsup_8h_r6_strong.json",
+   "days": 57,
+   "walk_hours": 404.8,
+   "start_node": "TH252"
   },
   "selfsup_8h_r7": {
    "file": "preset_selfsup_8h_r7.json",
@@ -346,11 +1463,65 @@
    "walk_hours": 429.4,
    "start_node": "TH183"
   },
+  "selfsup_8h_r7_fast": {
+   "file": "preset_selfsup_8h_r7_fast.json",
+   "days": 54,
+   "walk_hours": 360.8,
+   "start_node": "TH245"
+  },
+  "selfsup_8h_r7_heavy": {
+   "unavailable": "No itinerary satisfies this combination of day length, resupply window and pace."
+  },
+  "selfsup_8h_r7_standard": {
+   "file": "preset_selfsup_8h_r7_standard.json",
+   "days": 66,
+   "walk_hours": 429.4,
+   "start_node": "TH183"
+  },
+  "selfsup_8h_r7_strong": {
+   "file": "preset_selfsup_8h_r7_strong.json",
+   "days": 57,
+   "walk_hours": 402.6,
+   "start_node": "TH252"
+  },
   "selfsup_8h_r8": {
    "file": "preset_selfsup_8h_r8.json",
    "days": 66,
    "walk_hours": 438.5,
    "start_node": "TH183"
+  },
+  "selfsup_8h_r8_fast": {
+   "file": "preset_selfsup_8h_r8_fast.json",
+   "days": 54,
+   "walk_hours": 360.6,
+   "start_node": "TH245"
+  },
+  "selfsup_8h_r8_heavy": {
+   "unavailable": "No itinerary satisfies this combination of day length, resupply window and pace."
+  },
+  "selfsup_8h_r8_standard": {
+   "file": "preset_selfsup_8h_r8_standard.json",
+   "days": 66,
+   "walk_hours": 438.5,
+   "start_node": "TH183"
+  },
+  "selfsup_8h_r8_strong": {
+   "file": "preset_selfsup_8h_r8_strong.json",
+   "days": 57,
+   "walk_hours": 401.9,
+   "start_node": "TH252"
+  },
+  "selfsup_8h_standard": {
+   "file": "preset_selfsup_8h_standard.json",
+   "days": 65,
+   "walk_hours": 432.4,
+   "start_node": "TH072"
+  },
+  "selfsup_8h_strong": {
+   "file": "preset_selfsup_8h_strong.json",
+   "days": 57,
+   "walk_hours": 392.8,
+   "start_node": "TH252"
   },
   "selfsup_9h": {
    "file": "preset_selfsup_9h.json",
@@ -358,11 +1529,47 @@
    "walk_hours": 429.1,
    "start_node": "CGBIG"
   },
+  "selfsup_9h_fast": {
+   "file": "preset_selfsup_9h_fast.json",
+   "days": 46,
+   "walk_hours": 350.8,
+   "start_node": "TH245"
+  },
+  "selfsup_9h_heavy": {
+   "file": "preset_selfsup_9h_heavy.json",
+   "days": 75,
+   "walk_hours": 527.0,
+   "start_node": "TH252"
+  },
   "selfsup_9h_r4": {
    "file": "preset_selfsup_9h_r4.json",
    "days": 58,
-   "walk_hours": 449.5,
+   "walk_hours": 447.4,
+   "start_node": "TH252"
+  },
+  "selfsup_9h_r4_fast": {
+   "file": "preset_selfsup_9h_r4_fast.json",
+   "days": 47,
+   "walk_hours": 370.1,
    "start_node": "TH245"
+  },
+  "selfsup_9h_r4_heavy": {
+   "file": "preset_selfsup_9h_r4_heavy.json",
+   "days": 86,
+   "walk_hours": 602.8,
+   "start_node": "TH252"
+  },
+  "selfsup_9h_r4_standard": {
+   "file": "preset_selfsup_9h_r4_standard.json",
+   "days": 58,
+   "walk_hours": 447.4,
+   "start_node": "TH252"
+  },
+  "selfsup_9h_r4_strong": {
+   "file": "preset_selfsup_9h_r4_strong.json",
+   "days": 52,
+   "walk_hours": 410.0,
+   "start_node": "TH252"
   },
   "selfsup_9h_r5": {
    "file": "preset_selfsup_9h_r5.json",
@@ -370,11 +1577,59 @@
    "walk_hours": 448.1,
    "start_node": "TH060"
   },
+  "selfsup_9h_r5_fast": {
+   "file": "preset_selfsup_9h_r5_fast.json",
+   "days": 46,
+   "walk_hours": 371.0,
+   "start_node": "TH245"
+  },
+  "selfsup_9h_r5_heavy": {
+   "file": "preset_selfsup_9h_r5_heavy.json",
+   "days": 86,
+   "walk_hours": 602.8,
+   "start_node": "TH252"
+  },
+  "selfsup_9h_r5_standard": {
+   "file": "preset_selfsup_9h_r5_standard.json",
+   "days": 56,
+   "walk_hours": 448.1,
+   "start_node": "TH060"
+  },
+  "selfsup_9h_r5_strong": {
+   "file": "preset_selfsup_9h_r5_strong.json",
+   "days": 50,
+   "walk_hours": 398.4,
+   "start_node": "TH252"
+  },
   "selfsup_9h_r6": {
    "file": "preset_selfsup_9h_r6.json",
    "days": 55,
    "walk_hours": 445.0,
    "start_node": "TH060"
+  },
+  "selfsup_9h_r6_fast": {
+   "file": "preset_selfsup_9h_r6_fast.json",
+   "days": 47,
+   "walk_hours": 367.8,
+   "start_node": "TH245"
+  },
+  "selfsup_9h_r6_heavy": {
+   "file": "preset_selfsup_9h_r6_heavy.json",
+   "days": 79,
+   "walk_hours": 548.5,
+   "start_node": "TH252"
+  },
+  "selfsup_9h_r6_standard": {
+   "file": "preset_selfsup_9h_r6_standard.json",
+   "days": 55,
+   "walk_hours": 445.0,
+   "start_node": "TH060"
+  },
+  "selfsup_9h_r6_strong": {
+   "file": "preset_selfsup_9h_r6_strong.json",
+   "days": 50,
+   "walk_hours": 393.6,
+   "start_node": "TH252"
   },
   "selfsup_9h_r7": {
    "file": "preset_selfsup_9h_r7.json",
@@ -382,11 +1637,71 @@
    "walk_hours": 438.8,
    "start_node": "CGBIG"
   },
+  "selfsup_9h_r7_fast": {
+   "file": "preset_selfsup_9h_r7_fast.json",
+   "days": 47,
+   "walk_hours": 356.5,
+   "start_node": "TH245"
+  },
+  "selfsup_9h_r7_heavy": {
+   "file": "preset_selfsup_9h_r7_heavy.json",
+   "days": 79,
+   "walk_hours": 548.5,
+   "start_node": "TH252"
+  },
+  "selfsup_9h_r7_standard": {
+   "file": "preset_selfsup_9h_r7_standard.json",
+   "days": 55,
+   "walk_hours": 438.8,
+   "start_node": "CGBIG"
+  },
+  "selfsup_9h_r7_strong": {
+   "file": "preset_selfsup_9h_r7_strong.json",
+   "days": 50,
+   "walk_hours": 383.6,
+   "start_node": "TH252"
+  },
   "selfsup_9h_r8": {
    "file": "preset_selfsup_9h_r8.json",
    "days": 55,
    "walk_hours": 430.0,
    "start_node": "TH107"
+  },
+  "selfsup_9h_r8_fast": {
+   "file": "preset_selfsup_9h_r8_fast.json",
+   "days": 46,
+   "walk_hours": 365.6,
+   "start_node": "TH245"
+  },
+  "selfsup_9h_r8_heavy": {
+   "file": "preset_selfsup_9h_r8_heavy.json",
+   "days": 77,
+   "walk_hours": 540.5,
+   "start_node": "TH252"
+  },
+  "selfsup_9h_r8_standard": {
+   "file": "preset_selfsup_9h_r8_standard.json",
+   "days": 55,
+   "walk_hours": 430.0,
+   "start_node": "TH107"
+  },
+  "selfsup_9h_r8_strong": {
+   "file": "preset_selfsup_9h_r8_strong.json",
+   "days": 50,
+   "walk_hours": 398.3,
+   "start_node": "TH252"
+  },
+  "selfsup_9h_standard": {
+   "file": "preset_selfsup_9h_standard.json",
+   "days": 54,
+   "walk_hours": 429.1,
+   "start_node": "CGBIG"
+  },
+  "selfsup_9h_strong": {
+   "file": "preset_selfsup_9h_strong.json",
+   "days": 50,
+   "walk_hours": 393.7,
+   "start_node": "TH252"
   },
   "supported_10h": {
    "file": "preset_supported_10h.json",
@@ -409,6 +1724,116 @@
     }
    ],
    "days_over_budget": 0
+  },
+  "supported_10h_ferry_fast": {
+   "file": "preset_supported_10h_ferry_fast.json",
+   "days": 39,
+   "walk_hours": 328.5,
+   "start_node": "TH137",
+   "shuttles": 38,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_10h_ferry_heavy": {
+   "file": "preset_supported_10h_ferry_heavy.json",
+   "days": 55,
+   "walk_hours": 488.4,
+   "start_node": "TH148",
+   "shuttles": 54,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 2
+  },
+  "supported_10h_ferry_standard": {
+   "file": "preset_supported_10h_ferry_standard.json",
+   "days": 43,
+   "walk_hours": 385.3,
+   "start_node": "TH107",
+   "shuttles": 42,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_10h_ferry_strong": {
+   "file": "preset_supported_10h_ferry_strong.json",
+   "days": 41,
+   "walk_hours": 354.0,
+   "start_node": "TH150",
+   "shuttles": 40,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_10h_noferry_fast": {
+   "file": "preset_supported_10h_noferry_fast.json",
+   "days": 40,
+   "walk_hours": 348.2,
+   "start_node": "TH134",
+   "shuttles": 39,
+   "ferry_landings": [],
+   "days_over_budget": 2
+  },
+  "supported_10h_noferry_heavy": {
+   "unavailable": "Not possible on roads alone at this day length. The remotest required trail is Lakeshore, on the north shore of Fontana Lake, and walking to it and back to a road takes longer than this budget allows. Allow the ferry, or try a longer day."
+  },
+  "supported_10h_noferry_standard": {
+   "unavailable": "Not possible on roads alone at this day length. The remotest required trail is Lakeshore, on the north shore of Fontana Lake, and walking to it and back to a road takes longer than this budget allows. Allow the ferry, or try a longer day."
+  },
+  "supported_10h_noferry_strong": {
+   "unavailable": "Not possible on roads alone at this day length. The remotest required trail is Lakeshore, on the north shore of Fontana Lake, and walking to it and back to a road takes longer than this budget allows. Allow the ferry, or try a longer day."
   },
   "supported_11h": {
    "file": "preset_supported_11h.json",
@@ -436,6 +1861,132 @@
    ],
    "days_over_budget": 0
   },
+  "supported_11h_ferry_fast": {
+   "file": "preset_supported_11h_ferry_fast.json",
+   "days": 37,
+   "walk_hours": 332.9,
+   "start_node": "TH234",
+   "shuttles": 36,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_11h_ferry_heavy": {
+   "file": "preset_supported_11h_ferry_heavy.json",
+   "days": 50,
+   "walk_hours": 486.2,
+   "start_node": "TH007",
+   "shuttles": 49,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_11h_ferry_standard": {
+   "file": "preset_supported_11h_ferry_standard.json",
+   "days": 40,
+   "walk_hours": 380.2,
+   "start_node": "TH201",
+   "shuttles": 39,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_11h_ferry_strong": {
+   "file": "preset_supported_11h_ferry_strong.json",
+   "days": 38,
+   "walk_hours": 354.2,
+   "start_node": "TH126",
+   "shuttles": 37,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_11h_noferry_fast": {
+   "file": "preset_supported_11h_noferry_fast.json",
+   "days": 35,
+   "walk_hours": 340.0,
+   "start_node": "TH038",
+   "shuttles": 33,
+   "ferry_landings": [],
+   "days_over_budget": 1
+  },
+  "supported_11h_noferry_heavy": {
+   "unavailable": "Not possible on roads alone at this day length. The remotest required trail is Lakeshore, on the north shore of Fontana Lake, and walking to it and back to a road takes longer than this budget allows. Allow the ferry, or try a longer day."
+  },
+  "supported_11h_noferry_standard": {
+   "file": "preset_supported_11h_noferry_standard.json",
+   "days": 43,
+   "walk_hours": 410.6,
+   "start_node": "TH246",
+   "shuttles": 41,
+   "ferry_landings": [],
+   "days_over_budget": 3
+  },
+  "supported_11h_noferry_strong": {
+   "file": "preset_supported_11h_noferry_strong.json",
+   "days": 39,
+   "walk_hours": 375.6,
+   "start_node": "TH126",
+   "shuttles": 38,
+   "ferry_landings": [],
+   "days_over_budget": 2
+  },
   "supported_12h": {
    "file": "preset_supported_12h.json",
    "days": 36,
@@ -462,6 +2013,119 @@
    ],
    "days_over_budget": 0
   },
+  "supported_12h_ferry_fast": {
+   "file": "preset_supported_12h_ferry_fast.json",
+   "days": 32,
+   "walk_hours": 334.7,
+   "start_node": "TH201",
+   "shuttles": 30,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
+  "supported_12h_ferry_heavy": {
+   "file": "preset_supported_12h_ferry_heavy.json",
+   "days": 46,
+   "walk_hours": 471.3,
+   "start_node": "TH245",
+   "shuttles": 44,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_12h_ferry_standard": {
+   "file": "preset_supported_12h_ferry_standard.json",
+   "days": 36,
+   "walk_hours": 383.0,
+   "start_node": "TH176",
+   "shuttles": 35,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_12h_ferry_strong": {
+   "file": "preset_supported_12h_ferry_strong.json",
+   "days": 34,
+   "walk_hours": 353.1,
+   "start_node": "TH142",
+   "shuttles": 32,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_12h_noferry_fast": {
+   "file": "preset_supported_12h_noferry_fast.json",
+   "days": 32,
+   "walk_hours": 334.7,
+   "start_node": "TH201",
+   "shuttles": 30,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
+  "supported_12h_noferry_heavy": {
+   "unavailable": "Not possible on roads alone at this day length. The remotest required trail is Lakeshore, on the north shore of Fontana Lake, and walking to it and back to a road takes longer than this budget allows. Allow the ferry, or try a longer day."
+  },
+  "supported_12h_noferry_standard": {
+   "file": "preset_supported_12h_noferry_standard.json",
+   "days": 39,
+   "walk_hours": 411.9,
+   "start_node": "TH126",
+   "shuttles": 38,
+   "ferry_landings": [],
+   "days_over_budget": 2
+  },
+  "supported_12h_noferry_strong": {
+   "file": "preset_supported_12h_noferry_strong.json",
+   "days": 36,
+   "walk_hours": 370.5,
+   "start_node": "TH038",
+   "shuttles": 35,
+   "ferry_landings": [],
+   "days_over_budget": 1
+  },
   "supported_13h": {
    "file": "preset_supported_13h.json",
    "days": 34,
@@ -484,11 +2148,229 @@
    ],
    "days_over_budget": 0
   },
+  "supported_13h_ferry_fast": {
+   "file": "preset_supported_13h_ferry_fast.json",
+   "days": 30,
+   "walk_hours": 327.3,
+   "start_node": "TH201",
+   "shuttles": 29,
+   "ferry_landings": [
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_13h_ferry_heavy": {
+   "file": "preset_supported_13h_ferry_heavy.json",
+   "days": 42,
+   "walk_hours": 471.5,
+   "start_node": "TH229",
+   "shuttles": 41,
+   "ferry_landings": [
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_13h_ferry_standard": {
+   "file": "preset_supported_13h_ferry_standard.json",
+   "days": 34,
+   "walk_hours": 394.3,
+   "start_node": "TH015",
+   "shuttles": 33,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_13h_ferry_strong": {
+   "file": "preset_supported_13h_ferry_strong.json",
+   "days": 31,
+   "walk_hours": 359.0,
+   "start_node": "TH201",
+   "shuttles": 30,
+   "ferry_landings": [
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_13h_noferry_fast": {
+   "file": "preset_supported_13h_noferry_fast.json",
+   "days": 30,
+   "walk_hours": 336.0,
+   "start_node": "TH038",
+   "shuttles": 29,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
+  "supported_13h_noferry_heavy": {
+   "unavailable": "Not possible on roads alone at this day length. The remotest required trail is Lakeshore, on the north shore of Fontana Lake, and walking to it and back to a road takes longer than this budget allows. Allow the ferry, or try a longer day."
+  },
+  "supported_13h_noferry_standard": {
+   "file": "preset_supported_13h_noferry_standard.json",
+   "days": 36,
+   "walk_hours": 399.5,
+   "start_node": "TH126",
+   "shuttles": 35,
+   "ferry_landings": [],
+   "days_over_budget": 1
+  },
+  "supported_13h_noferry_strong": {
+   "file": "preset_supported_13h_noferry_strong.json",
+   "days": 32,
+   "walk_hours": 363.1,
+   "start_node": "TH199",
+   "shuttles": 31,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
   "supported_14h": {
    "file": "preset_supported_14h.json",
    "days": 32,
    "walk_hours": 407.1,
    "start_node": "TH194",
+   "shuttles": 31,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
+  "supported_14h_ferry_fast": {
+   "file": "preset_supported_14h_ferry_fast.json",
+   "days": 28,
+   "walk_hours": 326.6,
+   "start_node": "TH150",
+   "shuttles": 27,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_14h_ferry_heavy": {
+   "file": "preset_supported_14h_ferry_heavy.json",
+   "days": 40,
+   "walk_hours": 473.5,
+   "start_node": "TH246",
+   "shuttles": 39,
+   "ferry_landings": [
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_14h_ferry_standard": {
+   "file": "preset_supported_14h_ferry_standard.json",
+   "days": 32,
+   "walk_hours": 383.7,
+   "start_node": "TH172",
+   "shuttles": 30,
+   "ferry_landings": [
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_14h_ferry_strong": {
+   "file": "preset_supported_14h_ferry_strong.json",
+   "days": 30,
+   "walk_hours": 353.1,
+   "start_node": "TH126",
+   "shuttles": 29,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_14h_noferry_fast": {
+   "file": "preset_supported_14h_noferry_fast.json",
+   "days": 28,
+   "walk_hours": 343.2,
+   "start_node": "TH199",
+   "shuttles": 27,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
+  "supported_14h_noferry_heavy": {
+   "file": "preset_supported_14h_noferry_heavy.json",
+   "days": 42,
+   "walk_hours": 506.1,
+   "start_node": "TH126",
+   "shuttles": 41,
+   "ferry_landings": [],
+   "days_over_budget": 2
+  },
+  "supported_14h_noferry_standard": {
+   "file": "preset_supported_14h_noferry_standard.json",
+   "days": 32,
+   "walk_hours": 407.1,
+   "start_node": "TH194",
+   "shuttles": 31,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
+  "supported_14h_noferry_strong": {
+   "file": "preset_supported_14h_noferry_strong.json",
+   "days": 32,
+   "walk_hours": 368.9,
+   "start_node": "TH126",
    "shuttles": 31,
    "ferry_landings": [],
    "days_over_budget": 0
@@ -502,6 +2384,134 @@
    "ferry_landings": [],
    "days_over_budget": 0
   },
+  "supported_15h_ferry_fast": {
+   "file": "preset_supported_15h_ferry_fast.json",
+   "days": 27,
+   "walk_hours": 332.8,
+   "start_node": "TH150",
+   "shuttles": 26,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_15h_ferry_heavy": {
+   "file": "preset_supported_15h_ferry_heavy.json",
+   "days": 37,
+   "walk_hours": 477.6,
+   "start_node": "TH192",
+   "shuttles": 36,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_15h_ferry_standard": {
+   "file": "preset_supported_15h_ferry_standard.json",
+   "days": 31,
+   "walk_hours": 386.3,
+   "start_node": "TH126",
+   "shuttles": 30,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_15h_ferry_strong": {
+   "file": "preset_supported_15h_ferry_strong.json",
+   "days": 28,
+   "walk_hours": 359.4,
+   "start_node": "TH201",
+   "shuttles": 27,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_15h_noferry_fast": {
+   "file": "preset_supported_15h_noferry_fast.json",
+   "days": 27,
+   "walk_hours": 332.4,
+   "start_node": "TH176",
+   "shuttles": 26,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
+  "supported_15h_noferry_heavy": {
+   "file": "preset_supported_15h_noferry_heavy.json",
+   "days": 38,
+   "walk_hours": 501.6,
+   "start_node": "TH234",
+   "shuttles": 36,
+   "ferry_landings": [],
+   "days_over_budget": 1
+  },
+  "supported_15h_noferry_standard": {
+   "file": "preset_supported_15h_noferry_standard.json",
+   "days": 30,
+   "walk_hours": 400.5,
+   "start_node": "TH234",
+   "shuttles": 29,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
+  "supported_15h_noferry_strong": {
+   "file": "preset_supported_15h_noferry_strong.json",
+   "days": 28,
+   "walk_hours": 363.3,
+   "start_node": "TH201",
+   "shuttles": 27,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
   "supported_16h": {
    "file": "preset_supported_16h.json",
    "days": 28,
@@ -511,11 +2521,118 @@
    "ferry_landings": [],
    "days_over_budget": 0
   },
+  "supported_16h_ferry_fast": {
+   "file": "preset_supported_16h_ferry_fast.json",
+   "days": 25,
+   "walk_hours": 336.5,
+   "start_node": "TH176",
+   "shuttles": 24,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
+  "supported_16h_ferry_heavy": {
+   "file": "preset_supported_16h_ferry_heavy.json",
+   "days": 35,
+   "walk_hours": 477.9,
+   "start_node": "TH126",
+   "shuttles": 34,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_16h_ferry_standard": {
+   "file": "preset_supported_16h_ferry_standard.json",
+   "days": 29,
+   "walk_hours": 392.5,
+   "start_node": "TH176",
+   "shuttles": 28,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_16h_ferry_strong": {
+   "file": "preset_supported_16h_ferry_strong.json",
+   "days": 26,
+   "walk_hours": 362.0,
+   "start_node": "TH091",
+   "shuttles": 25,
+   "ferry_landings": [
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_16h_noferry_fast": {
+   "file": "preset_supported_16h_noferry_fast.json",
+   "days": 25,
+   "walk_hours": 336.5,
+   "start_node": "TH176",
+   "shuttles": 24,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
+  "supported_16h_noferry_heavy": {
+   "file": "preset_supported_16h_noferry_heavy.json",
+   "days": 34,
+   "walk_hours": 487.8,
+   "start_node": "TH234",
+   "shuttles": 33,
+   "ferry_landings": [],
+   "days_over_budget": 1
+  },
+  "supported_16h_noferry_standard": {
+   "file": "preset_supported_16h_noferry_standard.json",
+   "days": 28,
+   "walk_hours": 396.1,
+   "start_node": "TH126",
+   "shuttles": 26,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
+  "supported_16h_noferry_strong": {
+   "file": "preset_supported_16h_noferry_strong.json",
+   "days": 28,
+   "walk_hours": 368.5,
+   "start_node": "TH201",
+   "shuttles": 27,
+   "ferry_landings": [],
+   "days_over_budget": 0
+  },
   "supported_8h": {
    "file": "preset_supported_8h.json",
    "days": 54,
-   "walk_hours": 405.3,
-   "start_node": "TH144",
+   "walk_hours": 399.9,
+   "start_node": "TH025",
    "shuttles": 53,
    "ferry_landings": [
     {
@@ -536,6 +2653,99 @@
     }
    ],
    "days_over_budget": 3
+  },
+  "supported_8h_ferry_fast": {
+   "file": "preset_supported_8h_ferry_fast.json",
+   "days": 49,
+   "walk_hours": 336.3,
+   "start_node": "TH107",
+   "shuttles": 48,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_8h_ferry_heavy": {
+   "unavailable": "Not possible at this day length and pace. A supported hiker has to both begin and end every day where the crew can reach them, and the remotest required trail is further from a pick-up than this budget allows -- no way of arranging the days can change that. Try a longer day or a faster pace."
+  },
+  "supported_8h_ferry_standard": {
+   "file": "preset_supported_8h_ferry_standard.json",
+   "days": 54,
+   "walk_hours": 399.9,
+   "start_node": "TH025",
+   "shuttles": 53,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 3
+  },
+  "supported_8h_ferry_strong": {
+   "file": "preset_supported_8h_ferry_strong.json",
+   "days": 52,
+   "walk_hours": 364.6,
+   "start_node": "TH007",
+   "shuttles": 51,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 1
+  },
+  "supported_8h_noferry_fast": {
+   "unavailable": "Not possible on roads alone at this day length. The remotest required trail is Lakeshore, on the north shore of Fontana Lake, and walking to it and back to a road takes longer than this budget allows. Allow the ferry, or try a longer day."
+  },
+  "supported_8h_noferry_heavy": {
+   "unavailable": "Not possible on roads alone at this day length. The remotest required trail is Lakeshore, on the north shore of Fontana Lake, and walking to it and back to a road takes longer than this budget allows. Allow the ferry, or try a longer day."
+  },
+  "supported_8h_noferry_standard": {
+   "unavailable": "Not possible on roads alone at this day length. The remotest required trail is Lakeshore, on the north shore of Fontana Lake, and walking to it and back to a road takes longer than this budget allows. Allow the ferry, or try a longer day."
+  },
+  "supported_8h_noferry_strong": {
+   "unavailable": "Not possible on roads alone at this day length. The remotest required trail is Lakeshore, on the north shore of Fontana Lake, and walking to it and back to a road takes longer than this budget allows. Allow the ferry, or try a longer day."
   },
   "supported_9h": {
    "file": "preset_supported_9h.json",
@@ -562,6 +2772,114 @@
     }
    ],
    "days_over_budget": 1
+  },
+  "supported_9h_ferry_fast": {
+   "file": "preset_supported_9h_ferry_fast.json",
+   "days": 42,
+   "walk_hours": 328.9,
+   "start_node": "TH229",
+   "shuttles": 41,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_9h_ferry_heavy": {
+   "file": "preset_supported_9h_ferry_heavy.json",
+   "days": 61,
+   "walk_hours": 503.9,
+   "start_node": "TH026",
+   "shuttles": 59,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 5
+  },
+  "supported_9h_ferry_standard": {
+   "file": "preset_supported_9h_ferry_standard.json",
+   "days": 49,
+   "walk_hours": 391.9,
+   "start_node": "TH092",
+   "shuttles": 48,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    },
+    {
+     "node": "TI064",
+     "name": "Pilkey Creek"
+    }
+   ],
+   "days_over_budget": 1
+  },
+  "supported_9h_ferry_strong": {
+   "file": "preset_supported_9h_ferry_strong.json",
+   "days": 46,
+   "walk_hours": 357.7,
+   "start_node": "TH148",
+   "shuttles": 45,
+   "ferry_landings": [
+    {
+     "node": "BC090",
+     "name": "Campsite 90"
+    },
+    {
+     "node": "TI051",
+     "name": "Hazel Creek Access"
+    },
+    {
+     "node": "TI053",
+     "name": "Ollie Cove"
+    }
+   ],
+   "days_over_budget": 0
+  },
+  "supported_9h_noferry_fast": {
+   "unavailable": "Not possible on roads alone at this day length. The remotest required trail is Lakeshore, on the north shore of Fontana Lake, and walking to it and back to a road takes longer than this budget allows. Allow the ferry, or try a longer day."
+  },
+  "supported_9h_noferry_heavy": {
+   "unavailable": "Not possible on roads alone at this day length. The remotest required trail is Lakeshore, on the north shore of Fontana Lake, and walking to it and back to a road takes longer than this budget allows. Allow the ferry, or try a longer day."
+  },
+  "supported_9h_noferry_standard": {
+   "unavailable": "Not possible on roads alone at this day length. The remotest required trail is Lakeshore, on the north shore of Fontana Lake, and walking to it and back to a road takes longer than this budget allows. Allow the ferry, or try a longer day."
+  },
+  "supported_9h_noferry_strong": {
+   "unavailable": "Not possible on roads alone at this day length. The remotest required trail is Lakeshore, on the north shore of Fontana Lake, and walking to it and back to a road takes longer than this budget allows. Allow the ferry, or try a longer day."
   }
  }
 }

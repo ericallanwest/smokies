@@ -1,4 +1,4 @@
-"""Fill grid cells the solver failed on, using a stricter cell that succeeded.
+"""Make the grid monotonic: fill cells the solver failed on, and fix inversions.
 
 Some empty cells are the park saying no.  Others are the solver saying "greedy
 sweep produced no usable candidate", which is a different statement entirely,
@@ -10,6 +10,22 @@ least every four days satisfies "at least every five" by construction, so an
 answer for r5 was sitting next door the whole time.  Publishing "no itinerary
 satisfies this combination" there would have been false.
 
+The same containment catches a subtler wrong: a cell that *was* built, but
+worse than one whose constraints are tighter.  Fast pack at 12 h came out at 33
+days with the ferry allowed and 32 without -- yet every no-ferry itinerary is
+legal when the ferry is merely permitted, so the ferry cell can never really be
+worse.  It is search noise, and published side by side it reads as a bug.
+Whichever answer is better belongs in both cells.
+
+That replacement applies to **supported cells only**.  A self-supported preset
+is exactly what the deployed service returns at those settings, arc for arc --
+solver-health.yml asserts it, and it is why those presets can be trusted at
+all.  Moving the 12 h r4 itinerary into the unlimited cell buys one day and
+costs that: the service, asked for 12 h with no resupply limit, would return
+something else and CI would rightly fail.  A day is not worth the guarantee.
+Empty self-supported cells are still filled, because a cell with no file has
+no parity to lose and "no itinerary exists" would be a lie.
+
 The dominance rules, each one a containment rather than a heuristic:
 
   fewer hours   a day inside 8 h is inside 9 h
@@ -19,9 +35,11 @@ The dominance rules, each one a containment rather than a heuristic:
 Pace is not among them: a different pace is a different set of costs, so
 nothing carries across.
 
-Only genuinely empty cells are filled, and days_over_budget is recomputed
-against the cell being filled -- a day that ran over at 8 h may sit inside 9 h,
-and saying otherwise would misreport the itinerary the hiker is being handed.
+days_over_budget is recomputed against the cell being filled -- a day that ran
+over at 8 h may sit inside 9 h -- and the comparison uses that recount, ranking
+on (over-budget days, total excess, days, walking) exactly as publication does.
+Ranking on day count alone would trade four days at 9.2 h for three days one of
+which is 11.95 h, which is fewer broken promises but a much worse one.
 
 **Run this only on a finished grid.**  A cell that has not been built yet looks
 exactly like a cell that failed, so on a half-built grid this cheerfully fills
@@ -49,6 +67,14 @@ def rank(r):
     return 99 if r is None else r
 
 
+def self_name(h, r, pace):
+    return f"preset_selfsup_{h}h" + (f"_r{r}" if r else "") + f"_{pace}.json"
+
+
+def supp_name(h, ferry, pace):
+    return f"preset_supported_{h}h_{'ferry' if ferry else 'noferry'}_{pace}.json"
+
+
 def recount(pre, budget):
     """Restate which days run over, for the budget this cell actually has."""
     over = []
@@ -61,10 +87,61 @@ def recount(pre, budget):
     return pre
 
 
+def score(pre):
+    """(over, excess, days, walk) -- lower is better, in that order.
+
+    Call only after recount() against the receiving cell's budget.
+    """
+    ob = pre['days_over_budget']
+    return (len(ob), sum(o['over_by'] for o in ob), pre['n_days'],
+            sum(a['seconds'] for d in pre['days'] for a in d['arcs']))
+
+
+def load(grid, name, budget):
+    with open(os.path.join(grid, name), encoding='utf-8') as f:
+        return recount(json.load(f), budget)
+
+
+def resolve(grid, have, name, dominators, budget):
+    """The best itinerary legal in this cell: its own, or a stricter cell's."""
+    best = None
+    for cand in ([name] if name in have else []) + [
+            c for c in dominators if c in have]:
+        d = load(grid, cand, budget)
+        s = score(d)
+        if best is None or s < best[0]:
+            best = (s, cand, d)
+    return best
+
+
+def cells():
+    """Every cell in the grid, with the cells whose answers are legal in it."""
+    for pace in ('heavy', 'standard', 'strong', 'fast'):
+        for h in HOURS:
+            for r in RESUPPLY:
+                yield (self_name(h, r, pace), h, r,
+                       [self_name(h2, r2, pace)
+                        for h2 in HOURS if h2 <= h
+                        for r2 in RESUPPLY if rank(r2) <= rank(r)
+                        and self_name(h2, r2, pace) != self_name(h, r, pace)])
+            for ferry in (True, False):
+                # A no-ferry itinerary is valid wherever a ferry is merely
+                # permitted; the reverse is not true.
+                yield (supp_name(h, ferry, pace), h, None,
+                       [supp_name(h2, f2, pace)
+                        for h2 in HOURS if h2 <= h
+                        for f2 in ((True, False) if ferry else (False,))
+                        if supp_name(h2, f2, pace) != supp_name(h, ferry, pace)])
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--grid', default=os.path.join('out', 'grid'))
     ap.add_argument('--dry-run', action='store_true')
+    ap.add_argument('--no-replace', action='store_true',
+                    help='only fill empty cells; leave a built-but-worse '
+                         'supported cell showing more days than a stricter one '
+                         'next to it')
     ap.add_argument('--min-built', type=int, default=200,
                     help='refuse to fill a grid this incomplete, since an '
                          'unbuilt cell is indistinguishable from a failed one')
@@ -78,80 +155,53 @@ def main():
             f"filling now would freeze worse answers into cells that have not "
             f"been solved yet.  Finish build_grid.py first, or pass "
             f"--min-built {n_built} if you really mean it.")
-    paces = sorted({m.group(3) for f in have
-                    for m in [SELF.match(f) or SUPP.match(f)] if m})
-    filled, still = [], []
 
-    for pace in paces:
-        for h in HOURS:
-            for r in RESUPPLY:
-                name = (f"preset_selfsup_{h}h" + (f"_r{r}" if r else "")
-                        + f"_{pace}.json")
-                if name in have:
-                    continue
-                best = None
-                for h2 in HOURS:
-                    if h2 > h:
-                        continue
-                    for r2 in RESUPPLY:
-                        if rank(r2) > rank(r):
-                            continue
-                        cand = (f"preset_selfsup_{h2}h"
-                                + (f"_r{r2}" if r2 else "") + f"_{pace}.json")
-                        if cand not in have:
-                            continue
-                        with open(os.path.join(A.grid, cand),
-                                  encoding='utf-8') as f:
-                            d = json.load(f)
-                        if best is None or d['n_days'] < best[0]:
-                            best = (d['n_days'], cand, d)
-                if best is None:
-                    still.append(name)
-                    continue
-                filled.append((name, best[1], best[0]))
-                if not A.dry_run:
-                    with open(os.path.join(A.grid, name), 'w',
-                              encoding='utf-8') as f:
-                        json.dump(recount(best[2], h * 3600), f, indent=2)
-
-        for h in HOURS:
-            for ferry in (True, False):
-                name = (f"preset_supported_{h}h_"
-                        f"{'ferry' if ferry else 'noferry'}_{pace}.json")
-                if name in have:
-                    continue
-                best = None
-                for h2 in HOURS:
-                    if h2 > h:
-                        continue
-                    # A no-ferry itinerary is valid wherever a ferry is merely
-                    # permitted; the reverse is not true.
-                    for f2 in ((True, False) if ferry else (False,)):
-                        cand = (f"preset_supported_{h2}h_"
-                                f"{'ferry' if f2 else 'noferry'}_{pace}.json")
-                        if cand not in have:
-                            continue
-                        with open(os.path.join(A.grid, cand),
-                                  encoding='utf-8') as f:
-                            d = json.load(f)
-                        if best is None or d['n_days'] < best[0]:
-                            best = (d['n_days'], cand, d)
-                if best is None:
-                    still.append(name)
-                    continue
-                filled.append((name, best[1], best[0]))
-                if not A.dry_run:
-                    with open(os.path.join(A.grid, name), 'w',
-                              encoding='utf-8') as f:
-                        json.dump(recount(best[2], h * 3600), f, indent=2)
+    filled, fixed, still = [], [], []
+    for name, hours, rmax, dominators in cells():
+        best = resolve(A.grid, have, name, dominators, hours * 3600)
+        if best is None:
+            still.append(name)
+            continue
+        s, src, pre = best
+        if src == name:
+            continue
+        if name in have:
+            # Only where the stricter cell is better on something a hiker would
+            # notice.  Ranking down to walking seconds would also replace 28
+            # cells that tie on days and differ by a fraction of a percent,
+            # collapsing distinct configurations into copies of each other --
+            # someone who asked for no resupply limit should not silently be
+            # handed the every-four-days itinerary to save 20 minutes.
+            #
+            # And never a self-supported cell that already has an answer: that
+            # file is the service's own output at those settings, which is a
+            # stronger property than one fewer day.  See the module docstring.
+            if (A.no_replace or SELF.match(name)
+                    or s[:3] >= score(load(A.grid, name, hours * 3600))[:3]):
+                continue
+            fixed.append((name, src, s[2]))
+        else:
+            filled.append((name, src, s[2]))
+        # The file has to claim the window its filename promises, not the
+        # tighter one it was solved under.  The itinerary satisfies both by
+        # construction, and check 2e re-derives the window from the arcs, so
+        # this cannot launder a violation.
+        if rmax is not None or 'max_days_between_resupply' in pre:
+            pre['max_days_between_resupply'] = rmax
+        if not A.dry_run:
+            with open(os.path.join(A.grid, name), 'w', encoding='utf-8') as f:
+                json.dump(pre, f, indent=2)
 
     for name, src, n in filled:
-        print(f"  {name:<44} <- {src}  ({n}d)")
-    print(f"{len(filled)} cell(s) filled from a stricter neighbour, "
-          f"{len(still)} still empty")
+        print(f"  FILL    {name:<44} <- {src}  ({n}d)")
+    for name, src, n in fixed:
+        print(f"  REPLACE {name:<44} <- {src}  ({n}d)")
+    print(f"{len(filled)} empty cell(s) filled, {len(fixed)} built cell(s) "
+          f"replaced by a stricter one that did better, {len(still)} still empty"
+          + ("   [dry run, nothing written]" if A.dry_run else ""))
     if still:
         print("still empty (nothing stricter succeeded either):")
-        for n in sorted(still)[:20]:
+        for n in sorted(still)[:24]:
             print(f"  {n}")
 
 
