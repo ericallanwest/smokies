@@ -44,8 +44,9 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import carp_pool                                       # noqa: E402
+import carp_price_exact                                # noqa: E402
 import carp_preset                                     # noqa: E402
-from carp_common import Net                            # noqa: E402
+from carp_common import Net, day_optimum               # noqa: E402
 from carp_search import insertion as _insert_delta      # noqa: E402
 
 
@@ -160,6 +161,9 @@ def main():
     ap.add_argument('--bank', default=os.path.join('out', 'bank.json'))
     ap.add_argument('--data', default=os.path.join('docs', 'data'))
     ap.add_argument('--iterations', type=int, default=15)
+    ap.add_argument('--exact', type=float, default=0,
+                    help='seconds per round of exact CP-SAT pricing; with this '
+                         'the loop can end in a proof rather than a guess')
     ap.add_argument('--dump-columns', default=None,
                     help='append every day the pricer invented to this bank, '
                          'so carp_pool can build an itinerary out of them')
@@ -229,8 +233,38 @@ def main():
                 break
             obj, duals = got
             new, best_prize = price_heuristic(net, cols, duals, budget)
+            exact_ub, proved = None, False
+            if A.exact and not new:
+                # The heuristic giving up is not the same as there being
+                # nothing left, and at 12 h it was demonstrably not: it topped
+                # out at 1.05 where CP-SAT found a day worth 1.56.  So the
+                # exact pricer runs precisely when the cheap one is finished,
+                # and its answer decides whether this is convergence or only
+                # exhaustion.
+                exact_ub, got_p, picked, proved = carp_price_exact.kappa(
+                    net, duals, budget, A.exact, log=lambda *_: None)
+                if got_p > 1.0 + 1e-9 and picked:
+                    # The pricing model undercharges on purpose -- every cost is
+                    # the cheaper of the two orientations -- so the day it names
+                    # can be dearer than the budget once routed for real.  That
+                    # is harmless for the bound and fatal for the column, so the
+                    # cheapest trails come off until it fits.  What is left is
+                    # worth less than the pricer claimed but is a genuine day,
+                    # and if it still beats 1 the LP wanted it.
+                    keep = sorted(picked, key=lambda e: -duals[e])
+                    while keep:
+                        cost, route = day_optimum(net, keep, 13)
+                        if route and cost <= budget:
+                            break
+                        keep.pop()
+                    prize = sum(duals[e] for e in keep)
+                    if keep and prize > 1.0 + 1e-9:
+                        new = [(route, cost, prize)]
+                    best_prize = max(got_p, prize if keep else 0.0)
             print(f"  iter {it:>2}  LP {obj:7.2f}   best day collects "
-                  f"{best_prize:5.2f}   {len(new)} new columns")
+                  f"{best_prize:5.2f}   {len(new)} new columns"
+                  + (f"   [exact: <= {exact_ub:.3f}"
+                     + (", proved]" if proved else "]") if exact_ub else ""))
             if not new:
                 break
             for route, cost, _ in new:
