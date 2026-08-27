@@ -124,6 +124,49 @@ def best_day(net, duals, budget, forbid_repeat=(), trace=False):
     return best, repeats
 
 
+def kappa_hop_knapsack(net, duals, budget, bucket=BUCKET):
+    """Knapsack again, but charging each trail the cheapest way in.
+
+    The plain knapsack lets a day collect trails scattered across the park for
+    nothing, which is why it came back at 4.34 against a heuristic best of 1.4.
+    This charges what cannot be avoided: in any walk, every covered trail except
+    the first is entered from the head of another covered trail, so it owes at
+    least the shortest hop from anywhere a covered trail could have ended.
+
+    Undercharging keeps it a valid upper bound on kappa -- the real day pays the
+    actual hops, which are no cheaper -- and one trail is let off, so the budget
+    is raised by the largest single hop rather than each item discounted.
+    """
+    heads = {net.legs[e][d][1] for e in net.required for d in (0, 1)}
+    items, worst_hop = [], 0
+    for e in net.required:
+        pi = duals.get(e, 0.0)
+        if pi <= 0:
+            continue
+        best = None
+        for d in (0, 1):
+            tail, _, w = net.legs[e][d]
+            hop = min((net.dist(h, tail) for h in heads if h != tail),
+                      default=0)
+            hop = 0 if hop == float('inf') else hop
+            if best is None or w + hop < best[0]:
+                best = (w + hop, hop)
+        if best is None:
+            continue
+        items.append((max(1, int(best[0] // bucket)), pi))
+        worst_hop = max(worst_hop, best[1])
+    cap = int((budget + worst_hop) // bucket)
+    dp = [0.0] * (cap + 1)
+    for w, v in items:
+        if w > cap:
+            continue
+        for c in range(cap, w - 1, -1):
+            alt = dp[c - w] + v
+            if alt > dp[c]:
+                dp[c] = alt
+    return max(dp)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--hours', type=float, required=True)
@@ -138,6 +181,8 @@ def main():
     with open(A.duals, encoding='utf-8') as f:
         duals = {k: float(v) for k, v in json.load(f).items()}
     budget = A.hours * 3600
+    hop = kappa_hop_knapsack(net, duals, budget)
+    print(f"  hop-charged knapsack: kappa <= {hop:.4f}")
     forbid = set()
     for rnd in range(A.dssr + 1):
         kappa, repeats = best_day(net, duals, budget, forbid,
@@ -150,7 +195,9 @@ def main():
         if len(forbid) >= 12:
             print("  memory full; stopping while the bound is still valid")
             break
-    print(json.dumps({'kappa_upper': kappa, 'hours': A.hours,
+    best = min(kappa, hop)
+    print(f"  best available: kappa <= {best:.4f}")
+    print(json.dumps({'kappa_upper': best, 'hours': A.hours,
                       'held': sorted(forbid)}))
 
 
