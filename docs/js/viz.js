@@ -756,7 +756,9 @@ async function loadPreset(key) {
       });
     if (seq !== _loadSeq) return;   // superseded by a newer selection
     await renderItinerary(itinerary);
-    _shownPace = { ...PACE_DEFAULT };   // presets are the published pace
+    // Presets are published at four paces now, so the itinerary on screen was
+    // built at whichever one the buttons are on -- not always the default.
+    _shownPace = { ...paceFromUI() };
     applyPresetStart();
     // Again now META is loaded: the style note reports this itinerary's
     // over-budget days, which are not known until it arrives.
@@ -824,14 +826,28 @@ function renderParamControls() {
       : (+rsEl.value > 8 ? '∞' : rsEl.value);
   }
 
+  const fpGrp = document.getElementById('ferryPresetGroup');
+  if (fpGrp) fpGrp.style.display = supported ? '' : 'none';
+  const fpNote = document.getElementById('ferryPresetNote');
+  if (fpNote) {
+    fpNote.textContent = ferryAllowedFromUI()
+      ? 'The boat reaches Lakeshore, which is hours from any road at both '
+        + 'ends. Allowing it is what makes the shorter days possible — but it '
+        + 'has to be booked.'
+      : 'Roads only. The remotest required trail then takes 13.7 h pick-up to '
+        + 'pick-up, so nothing shorter than that exists without the boat.';
+  }
+
   const note = document.getElementById('styleNote');
   if (!note) return;
-  const min = _index?.styles?.supported?.min_hours;
-  if (supported && min && hours < min) {
+  // What exists is the grid's answer, not a constant's: Heavy pack has no 8 h
+  // supported itinerary where Standard does, and roads-only has none below
+  // 11 h.  Ask the index about the combination actually selected.
+  const gap = _index?.presets?.[currentPresetKey()]?.unavailable;
+  if (gap) {
     // Not a missing preset: the park itself rules this out.  Say so here, at
     // the control, rather than waiting for the load to fail.
-    note.textContent = `Not possible below ${min} h — the remotest required `
-      + `trail is further from a pick-up than that. Try ${min} h.`;
+    note.textContent = gap;
     note.classList.add('warn');
   } else if (supported) {
     const ob = META?.days_over_budget ?? [];
@@ -874,18 +890,30 @@ function renderParamControls() {
 function renderFerryPicker() {
   const grp = document.getElementById('ferryGroup');
   if (!grp) return;
-  const supported = styleFromUI() === 'supported';
+  // Gated by the sidebar's own ferry checkbox: a hiker who has said they will
+  // not take the boat should not then be asked which boat.
+  const supported = styleFromUI() === 'supported' && ferryAllowedFromUI();
   grp.style.display = supported ? 'block' : 'none';
-  if (!supported) return;
+  if (!supported) {
+    document.querySelectorAll('input[name="ferry"]')
+      .forEach(el => { el.checked = false; });
+    return;
+  }
 
   const box = document.getElementById('ferryOptions');
   if (box && !box.children.length) {
     for (const f of ferryLandings()) {
       const lab = document.createElement('label');
-      lab.innerHTML = `<input type="checkbox" name="ferry" value="${f.node}"> ${f.name}`;
+      // Ticked by default, so a Build starts from the same set the published
+      // itinerary used.  It defaulted to none, which is why a 12 h supported
+      // Build returned days nobody could walk while the 12 h preset was fine.
+      lab.innerHTML = `<input type="checkbox" name="ferry" value="${f.node}" checked> ${f.name}`;
       box.appendChild(lab);
     }
     box.addEventListener('change', renderFerryPicker);
+  } else if (box && !document.querySelector('input[name="ferry"]:checked')) {
+    document.querySelectorAll('input[name="ferry"]')
+      .forEach(el => { el.checked = true; });
   }
   const n = document.querySelectorAll('input[name="ferry"]:checked').length;
   const note = document.getElementById('ferryNote');
@@ -903,9 +931,32 @@ function ferryFromUI() {
     .map(el => el.value);
 }
 
+// Whether a *published* itinerary may depend on the boat.  Distinct from
+// ferryFromUI above, which picks individual landings for a custom solve: a
+// preset either was built with the landings available or was not.
+function ferryAllowedFromUI() {
+  return document.getElementById('allowFerry')?.checked !== false;
+}
+
+// Which of the four published paces the sliders currently sit on, or null for
+// anything in between.  Null is the signal that no preset can serve this and
+// only a live solve can -- see the reselect handler.
+function paceKeyFromUI() {
+  const p = paceFromUI();
+  const named = _index?.paces
+    ?? [{ key: 'standard', v0: 6000, k: 3.5, peak: -0.05 }];
+  return named.find(q => q.v0 === p.v0 && q.k === p.k && q.peak === p.peak)
+    ?.key ?? null;
+}
+
 function currentPresetKey() {
   const rs = resupplyFromUI();
-  return `${styleFromUI()}_${maxDayFromUI()}h` + (rs ? `_r${rs}` : '');
+  const pace = paceKeyFromUI() ?? 'standard';
+  if (styleFromUI() === 'supported') {
+    return `supported_${maxDayFromUI()}h`
+      + (ferryAllowedFromUI() ? '_ferry' : '_noferry') + `_${pace}`;
+  }
+  return `selfsup_${maxDayFromUI()}h` + (rs ? `_r${rs}` : '') + `_${pace}`;
 }
 
 // ── Custom solve (beta): on-demand solving via the backend service ─────────
@@ -973,9 +1024,22 @@ function renderPace() {
   note.textContent = stale
     ? 'A different pace makes a different itinerary, not the same one re-timed. '
       + 'Build to re-solve the circuit at this pace (about 10–25 s).'
-    : paceIsDefault(p)
+    : paceKeyFromUI()
       ? 'Published pace — this itinerary is pre-solved at these settings.'
       : 'This itinerary was built at this pace.';
+
+  // The four buttons in the sidebar select published itineraries; the sliders
+  // below do not, and a hiker who has dragged one deserves to know that before
+  // the preset list stops responding to them.
+  const tierNote = document.getElementById('paceTierNote');
+  if (tierNote) {
+    tierNote.textContent = paceKeyFromUI()
+      ? 'A slower pace is a different circuit, not the same one re-timed — '
+        + 'each of these is solved separately.'
+      : 'Custom pace: no published itinerary matches these sliders.'
+        + (backendUrl() ? ' Build to solve one.' : '');
+    tierNote.classList.toggle('warn', !paceKeyFromUI());
+  }
   return p;
 }
 
@@ -1087,10 +1151,9 @@ function buildCsv() {
     ['Resupply window', supported ? 'n/a - the crew resupplies you'
       : (META.max_days_between_resupply
          ? 'every ' + META.max_days_between_resupply + ' days' : 'none')],
-    ['Pace', paceIsDefault(pace)
-      ? 'published'
-      : levelSpeedMph(pace).toFixed(1) + ' mph flat, k ' + pace.k.toFixed(1)
-        + ', fastest ' + (pace.peak * 100).toFixed(0) + '%'],
+    ['Pace', (_index?.paces ?? []).find(q => q.key === paceKeyFromUI())?.label
+      ?? (levelSpeedMph(pace).toFixed(1) + ' mph flat, k ' + pace.k.toFixed(1)
+          + ', fastest ' + (pace.peak * 100).toFixed(0) + '%')],
   ];
   if (_shownEnds.start) meta.push(['Start pinned', nodeName(_shownEnds.start)]);
   if (_shownEnds.end)   meta.push(['Finish pinned', nodeName(_shownEnds.end)]);
@@ -1176,8 +1239,12 @@ function downloadCsv() {
   const bits = [META.hiking_style === 'supported' ? 'supported' : 'selfsup',
                 maxDayFromUI() + 'h'];
   if (META.max_days_between_resupply) bits.push('r' + META.max_days_between_resupply);
-  const p = paceFromUI();
-  if (!paceIsDefault(p)) bits.push('k' + p.k.toFixed(1));
+  const pk = paceKeyFromUI();
+  // The pace is part of what the itinerary *is* now, so it belongs in the
+  // filename even at Standard -- two downloads that differ only by pace would
+  // otherwise land on top of each other.
+  if (pk) bits.push(pk);
+  else bits.push('k' + paceFromUI().k.toFixed(1));
   if (_shownEnds.start) {
     bits.push(_shownEnds.start + (_shownEnds.end ? '-' + _shownEnds.end : ''));
   }
@@ -1314,7 +1381,10 @@ function reportEndpointSaving(data) {
 function supportedFloor() {
   const f = _index?.styles?.supported?.solver_floor_hours;
   if (!f) return 0;
-  return ferryFromUI().length ? f.ferry : f.roads;
+  // The sidebar checkbox is what decides this, not the landing picker below
+  // it: the picker only exists with a backend configured, and the floor is a
+  // fact about the itinerary either way.
+  return ferryAllowedFromUI() ? f.ferry : f.roads;
 }
 
 async function solveCustom() {
@@ -1600,11 +1670,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // set and a backend is available, a parameter change re-solves instead.
   const reselect = () => {
     renderParamControls();
-    if (!paceIsDefault(paceFromUI()) && backendUrl()) solveCustom();
+    if (!paceKeyFromUI() && backendUrl()) solveCustom();
     else loadPreset(currentPresetKey());
   };
   document.querySelectorAll('input[name="style"]')
     .forEach(el => el.addEventListener('change', reselect));
+  document.getElementById('allowFerry')?.addEventListener('change', reselect);
   // 'input' rather than 'change' would re-solve on every pixel of a drag; the
   // readouts update live, the itinerary follows when the slider is let go.
   ['maxDay', 'resupply'].forEach(id => {
@@ -1617,11 +1688,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const bkParam = new URLSearchParams(location.search).get('backend');
   if (bkParam === 'off')  localStorage.setItem('smokiesBackend', 'off');
   else if (bkParam)       localStorage.setItem('smokiesBackend', bkParam);
-  ['paceV0', 'paceK', 'pacePeak'].forEach(id =>
-    document.getElementById(id).addEventListener('input', renderPace));
+  ['paceV0', 'paceK', 'pacePeak'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', renderPace);
+    // Dragging onto one of the four published settings should load that
+    // itinerary, the same as pressing its button would.
+    el.addEventListener('change', () => { if (paceKeyFromUI()) reselect(); });
+  });
   document.querySelectorAll('#paceTiers button').forEach(b =>
-    b.addEventListener('click', () => setPaceUI(
-      { v0: +b.dataset.v0, k: +b.dataset.k, peak: +b.dataset.peak })));
+    b.addEventListener('click', () => {
+      setPaceUI({ v0: +b.dataset.v0, k: +b.dataset.k, peak: +b.dataset.peak });
+      reselect();     // a tier is one of the four published paces, so this
+                      // swaps the itinerary rather than only the labels
+    }));
   const qp = new URLSearchParams(location.search);
   if (qp.has('v0') || qp.has('k') || qp.has('peak')) {
     setPaceUI({ v0: +(qp.get('v0') ?? PACE_DEFAULT.v0),
@@ -1649,8 +1728,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Load the default preset on startup.  renderParamControls runs twice on
   // purpose: once now so the readouts are never blank, and again once the
-  // index has landed, since the Supported minimum comes from it.
+  // index has landed, since it is the index that says which paces exist and
+  // which combinations do not.
+  //
+  // The load itself waits for the index rather than racing it: currentPresetKey
+  // has to name a pace, and before the index arrives every pace looks custom,
+  // so a ?v0=5400 link would open the Standard itinerary and then sit there
+  // claiming to be Heavy pack.
   renderParamControls();
-  loadPresetIndex().then(renderParamControls);
-  loadPreset(currentPresetKey());
+  loadPresetIndex().then(() => {
+    renderParamControls();
+    renderPace();
+    loadPreset(currentPresetKey());
+  });
 });

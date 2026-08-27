@@ -30,10 +30,24 @@ import argparse
 import json
 import os
 import re
-import shutil
 
 SELF = re.compile(r'^preset_selfsup_(\d+)h(?:_r(\d+))?_(\w+)\.json$')
 SUPP = re.compile(r'^preset_supported_(\d+)h_(ferry|noferry)_(\w+)\.json$')
+
+
+def emit(src, dest, minify):
+    """Copy a preset, optionally without the whitespace.
+
+    288 cells at four paces is 55 MB pretty-printed and 30 MB without the
+    indentation, and every rebuild writes another full set into git history.
+    Nobody reads a 190 KB itinerary by eye, and the app parses either form
+    identically, so the indentation is pure cost.
+    """
+    with open(src, encoding='utf-8') as f:
+        d = json.load(f)
+    with open(dest, 'w', encoding='utf-8') as f:
+        json.dump(d, f, separators=(',', ':')) if minify else json.dump(d, f,
+                                                                       indent=2)
 
 
 def score(path, budget):
@@ -54,6 +68,8 @@ def main():
     ap.add_argument('--grid', default=os.path.join('out', 'grid'))
     ap.add_argument('--data', default=os.path.join('docs', 'data'))
     ap.add_argument('--dry-run', action='store_true')
+    ap.add_argument('--pretty', action='store_true',
+                    help='keep the indentation, at roughly twice the bytes')
     ap.add_argument('--no-aliases', action='store_true',
                     help='skip the old filenames; only once the frontend reads '
                          'the index for its filename')
@@ -102,8 +118,8 @@ def main():
         else:
             (took if rival else added).append(name)
             winner = src
-        if not A.dry_run and os.path.abspath(winner) != os.path.abspath(dest):
-            shutil.copyfile(winner, dest)
+        if not A.dry_run:
+            emit(winner, dest, not A.pretty)
 
         if pace == 'standard':
             (std_self if SELF.match(name) else std_supp)[
@@ -121,8 +137,8 @@ def main():
                 aliases.append((f"preset_supported_{h}h.json", win))
         for name, win in aliases:
             dest = os.path.join(A.data, name)
-            if not A.dry_run and os.path.abspath(win) != os.path.abspath(dest):
-                shutil.copyfile(win, dest)
+            if not A.dry_run:
+                emit(win, dest, not A.pretty)
 
     for n, r in kept:
         print(f"  KEEP  {n:<46} (published {r} is no worse)")

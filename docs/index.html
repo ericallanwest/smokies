@@ -30,10 +30,31 @@
     </div>
     <div class="param-note" id="styleNote"></div>
   </div>
+  <!-- Pace is a published axis now, not just a custom-solve knob: every
+       combination below exists at all four settings, so this selects a preset
+       rather than needing a backend. -->
+  <div class="param-group">
+    <div class="param-label">Pace</div>
+    <div class="pace-tiers" id="paceTiers">
+      <button type="button" data-v0="5400" data-k="4.2" data-peak="-0.05">Heavy pack</button>
+      <button type="button" data-v0="6000" data-k="3.5" data-peak="-0.05" class="on">Standard</button>
+      <button type="button" data-v0="6300" data-k="3.2" data-peak="-0.05">Strong</button>
+      <button type="button" data-v0="6600" data-k="3.0" data-peak="-0.04">Fast</button>
+    </div>
+    <div class="param-note" id="paceTierNote"></div>
+  </div>
   <div class="param-group">
     <div class="pace-row"><span>Max hiking day</span><output id="maxDayOut">12 h</output></div>
     <input type="range" id="maxDay" min="8" max="16" step="1" value="12"
            aria-label="Max hiking day, hours">
+  </div>
+  <!-- Supported only. The boat costs money and runs to a timetable, so whether
+       an itinerary may depend on one is the hiker's call, not ours. -->
+  <div class="param-group" id="ferryPresetGroup" style="display:none">
+    <div class="param-options">
+      <label title="Fontana Lake boat shuttle to the Hazel Creek and Eagle Creek landings"><input type="checkbox" id="allowFerry" checked> Allow the Fontana Lake ferry</label>
+    </div>
+    <div class="param-note" id="ferryPresetNote"></div>
   </div>
   <div class="param-group" id="resupplyGroup">
     <div class="pace-row" title="Maximum full hiking days without passing a resupply point"><span>Max days without resupply</span><output id="resupplyOut">∞</output></div>
@@ -78,13 +99,6 @@
       <div class="param-label" style="margin-top:0">Ferry landings</div>
       <div class="param-options" id="ferryOptions"></div>
       <p class="pace-note" id="ferryNote"></p>
-    </div>
-
-    <div class="pace-tiers" id="paceTiers">
-      <button type="button" data-v0="5400" data-k="4.2" data-peak="-0.05">Heavy pack</button>
-      <button type="button" data-v0="6000" data-k="3.5" data-peak="-0.05" class="on">Standard</button>
-      <button type="button" data-v0="6300" data-k="3.2" data-peak="-0.05">Strong</button>
-      <button type="button" data-v0="6600" data-k="3.0" data-peak="-0.04">Fast</button>
     </div>
 
     <div class="pace-row">
