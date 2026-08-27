@@ -11,6 +11,8 @@ direction they mean and are checked against the solver's own usage
 (smokies_circuit_solver_20260509a.py:1759).
 """
 import csv
+import json
+import math
 import os
 
 import networkx as nx
@@ -28,13 +30,81 @@ def find_csv(start='.'):
     raise SystemExit(f'cannot find {CSV_NAME}')
 
 
+# The published pace, and the three the app offers alongside it.  These mirror
+# the buttons in docs/index.html; a preset built at one of them is a default,
+# anything else is a custom solve.
+PACES = {
+    'standard': (6000.0, 3.5, -0.05),
+    'heavy': (5400.0, 4.2, -0.05),
+    'strong': (6300.0, 3.2, -0.05),
+    'fast': (6600.0, 3.0, -0.04),
+}
+
+
+def find_profiles(start='.'):
+    for d in (start, os.path.join('docs', 'data'), 'solver',
+              os.path.join('..', 'docs', 'data')):
+        p = os.path.join(d, 'segment_profiles.json')
+        if os.path.exists(p):
+            return p
+    return None
+
+
+def retime(rows, pace, profiles_path=None):
+    """Re-time every edge for a pace other than the published one.
+
+    The CSV's costs are baked at the standard pace, so a preset for Heavy pack
+    cannot be built from them.  segment_profiles.json carries, per segment, the
+    distance and rise in each 1% slope bin, and time is the sum over bins of
+    distance over speed -- the same histogram re-times both directions, so they
+    cannot disagree.  This mirrors the solver's own block exactly, because a
+    preset that priced its days differently from the solver would be comparing
+    two different parks.
+    """
+    v0, k, peak = pace
+    path = profiles_path or find_profiles()
+    if path is None:
+        raise SystemExit('need segment_profiles.json to re-time for a pace')
+    with open(path, encoding='utf-8') as f:
+        prof = json.load(f)['segments']
+
+    def speed(s):
+        return v0 * math.exp(-k * abs(s - peak))
+
+    def secs(bins, reverse):
+        t = 0.0
+        for dist_m, rise_m in bins.values():
+            if dist_m <= 0:
+                continue
+            s = rise_m / dist_m
+            t += dist_m / speed(-s if reverse else s) * 3600.0
+        return t
+
+    missing = []
+    for r in rows:
+        rec = prof.get(str(float(r['ID'])))
+        if rec is None:
+            missing.append(str(r['ID']))
+            continue
+        r['cost_A_to_B'] = int(round(secs(rec['bins'], False)))
+        r['cost_B_to_A'] = int(round(secs(rec['bins'], True)))
+    if missing:
+        # Keeping a baked cost for an edge with no histogram would quietly mix
+        # two pace models in one itinerary.
+        raise SystemExit(f'segment_profiles.json missing {len(missing)} edge(s)')
+    return rows
+
+
 class Net:
     """The trail graph plus everything a day-cost needs."""
 
-    def __init__(self, csv_path=None, ferry=True):
+    def __init__(self, csv_path=None, ferry=True, pace=None, profiles=None):
         rows = list(csv.DictReader(
             open(csv_path or find_csv(), encoding='utf-8-sig')))
         self.rows = [r for r in rows if not int(r.get('is_trail_closed') or 0)]
+        self.pace = pace
+        if pace and tuple(pace) != PACES['standard']:
+            self.rows = retime(self.rows, pace, profiles)
         G = nx.DiGraph()
         for r in self.rows:
             a, b = r['node_A'], r['node_B']
