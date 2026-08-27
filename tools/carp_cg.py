@@ -190,11 +190,27 @@ def main():
         pre = json.load(open(pre_path, encoding='utf-8'))
         net = nets[bool(pre.get('ferry_landings'))]
         ex = exs[bool(pre.get('ferry_landings'))]
-        cols = [c for c in carp_pool.price_all(net, routes, ex)
-                if c['seconds'] <= budget]
-        print(f"{os.linesep}=== {h} h ===  {len(cols)} columns inside budget, "
-              f"published {pre['n_days']} days")
+        priced = carp_pool.price_all(net, routes, ex)
+        cols = [c for c in priced if c['seconds'] <= budget]
+        # Some tiers have trails no day can cover inside the budget -- at 8 h
+        # there are four, and they are exactly the ones the published itinerary
+        # declares as running over.  Held to the strict budget the LP is simply
+        # infeasible, so those tiers are bounded against the same relaxed
+        # problem the itinerary solves: days may run a quarter over.
+        strict = {e for c in cols for e in c['covers']}
+        relaxed = len(strict) < len(net.required)
+        if relaxed:
+            cols = [c for c in priced
+                    if c['seconds'] <= budget * carp_pool.HARD_MULTIPLE]
+        print(f"{os.linesep}=== {h} h ===  {len(cols)} columns, "
+              f"published {pre['n_days']} days"
+              + ("  (days up to a quarter over allowed, as the itinerary does)"
+                 if relaxed else ""))
 
+        # Never carried over from the previous tier: when a tier breaks out of
+        # the loop early, reporting the last tier's duals silently prints one
+        # tier's answer under another's heading.
+        duals, obj, best_prize = None, None, None
         for it in range(1, A.iterations + 1):
             by_edge = {e: [] for e in net.required}
             for i, c in enumerate(cols):
@@ -226,14 +242,44 @@ def main():
                 json.dump({k: v for k, v in duals.items() if v > 0}, f)
             print(f"  duals -> {dest} "
                   f"({sum(1 for v in duals.values() if v > 0)} priced trails)")
+        if duals is None:
+            print("  no LP solved for this tier; nothing to report")
+            continue
         total_dual = sum(duals.values())
         kappa = A.kappa or kappa_knapsack(net, duals, budget)
         bound = math.ceil(total_dual / max(1.0, kappa))
         how = 'exact pricer' if A.kappa else 'knapsack relaxation'
-        print(f"  sum of duals {total_dual:.2f},  kappa <= {kappa:.2f} "
-              f"({how})")
-        print(f"  LOWER BOUND {bound} days   published {pre['n_days']}   "
-              f"gap {pre['n_days'] - bound} days")
+        # Two numbers, and it matters which is which.
+        #
+        # The LP value is the informative one: at convergence -- once no day
+        # can collect more than 1 -- the restricted LP equals the true LP and
+        # is a valid lower bound on the day count.  Short of convergence it is
+        # an estimate sitting *above* the true LP, so it is reported as an
+        # estimate and not as a bound.
+        #
+        # Farley's ratio is valid at any point, but only as strong as the kappa
+        # behind it, and every relaxation tried so far is far too loose to be
+        # worth acting on.  It is printed for completeness rather than use.
+        # Convergence here is the *heuristic* pricer giving up, which is not a
+        # certificate: it can miss a column that exists, and any column it
+        # missed would have pushed the LP lower.  So even a converged figure is
+        # an estimate of the true LP rather than a proof of it, and the true LP
+        # is what would bound the day count.  Only an exact pricer closes that,
+        # which is why the phrasing below never promises "at least".
+        conv = best_prize <= 1.0 + 1e-9
+        print(f"  LP {obj:.2f}  -- "
+              + ("the heuristic pricer found nothing better; likely close to "
+                 f"the true LP, so roughly {math.ceil(obj)} days"
+                 if conv else
+                 f"still descending (a day collects {best_prize:.2f}), so "
+                 f"{math.ceil(obj)} days is an optimistic estimate")
+              + ", not a proven bound")
+        print(f"  published {pre['n_days']} days, "
+              f"{pre['n_days'] - math.ceil(obj)} above that figure")
+        print("  (a restricted LP sits above the true one, so this is where "
+              "the optimum plausibly is, not a floor under it)")
+        print(f"  [Farley: duals {total_dual:.2f} / kappa <= {kappa:.2f} "
+              f"({how}) = {bound} days, valid but far too loose to use]")
 
 
 if __name__ == '__main__':
