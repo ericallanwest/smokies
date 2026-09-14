@@ -9,6 +9,7 @@ Usage:
 
 import argparse
 import json
+import os
 import urllib.request
 from pathlib import Path
 
@@ -26,6 +27,36 @@ ICON_MAP = {
     "TI": "sign",
     "RI": "sign",
 }
+
+
+def carto_basemap_key():
+    """The API key CARTO raster basemaps require as of 2026.
+
+    The failure mode without one is quiet: a keyless tile still returns HTTP
+    200, only with "API KEY REQUIRED" stamped across it, and a wrong key is
+    byte-identical to no key. Nothing raises downstream, so this does - a
+    traceback here beats a watermark on a map that has already been shared.
+
+    Read from CARTO_BASEMAP_KEY in the environment, else the repo-root .env
+    (see .env.example). Keys are issued at https://carto.com/basemaps/apikey/
+    """
+    key = os.environ.get("CARTO_BASEMAP_KEY", "").strip()
+    if key:
+        return key
+    env = Path(__file__).resolve().parent.parent / ".env"
+    if env.exists():
+        for line in env.read_text(encoding="utf-8").splitlines():
+            name, _, value = line.strip().partition("=")
+            if name.strip() == "CARTO_BASEMAP_KEY":
+                key = value.strip().strip('"').strip("'")
+                if key:
+                    return key
+    raise RuntimeError(
+        "CARTO_BASEMAP_KEY is not set, so the CartoDB Light basemap would render "
+        'with an "API KEY REQUIRED" watermark across every tile. Set it in the '
+        f"environment or in {env} (see .env.example). "
+        "Keys are issued at https://carto.com/basemaps/apikey/"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -330,7 +361,8 @@ def fetch_mapwarper_bounds(map_id, timeout=10):
         return MAPWARPER_FALLBACK
 
 
-def render_html(meta, geom_dict, days_data, bg_layer, opt_layer, all_nodes, home_bounds):
+def render_html(meta, geom_dict, days_data, bg_layer, opt_layer, all_nodes, home_bounds,
+                carto_key):
     geom_json      = json.dumps(geom_dict,  separators=(",", ":"))
     days_json      = json.dumps(days_data,  separators=(",", ":"))
     bg_json        = json.dumps(bg_layer,   separators=(",", ":"))
@@ -545,7 +577,7 @@ const BASEMAPS = {{
     'https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png',
     {{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', maxZoom:19, zIndex:1}}),
   'CartoDB Light': L.tileLayer(
-    'https://{{s}}.basemaps.cartocdn.com/light_all/{{z}}/{{x}}/{{y}}{{r}}.png',
+    'https://{{s}}.basemaps.cartocdn.com/light_all/{{z}}/{{x}}/{{y}}{{r}}.png?key={carto_key}',
     {{attribution:'&copy; OpenStreetMap contributors &copy; CARTO', maxZoom:19, zIndex:1}}),
   'Google Maps': L.tileLayer(
     'https://mt1.google.com/vt/lyrs=m&x={{x}}&y={{y}}&z={{z}}',
@@ -1031,6 +1063,9 @@ def main():
                     help=f"Output HTML file (default: {DEFAULT_OUT})")
     args = ap.parse_args()
 
+    # Before any loading: a missing key is the one failure worth failing fast on.
+    carto_key = carto_basemap_key()
+
     print(f"Loading {args.itinerary} ...")
     itinerary = load_json(args.itinerary)
 
@@ -1073,7 +1108,8 @@ def main():
     print(f"  Optional segments: {len(opt_layer)}")
 
     print("Rendering HTML ...")
-    html = render_html(meta, geom_dict, days_data, bg_layer, opt_layer, all_nodes, home_bounds)
+    html = render_html(meta, geom_dict, days_data, bg_layer, opt_layer, all_nodes, home_bounds,
+                       carto_key)
 
     out_path = Path(args.out)
     out_path.write_text(html, encoding="utf-8")
